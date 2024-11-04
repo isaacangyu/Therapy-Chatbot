@@ -1,0 +1,39 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter Run Debug",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "web-server",
+            "toolArgs": ["--web-port", "3000"]
+        },
+        {
+            "name": "Flutter Run Profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "deviceId": "web-server",
+            "toolArgs": ["--web-port", "3000"]
+        },
+        {
+            "name": "Flutter Run Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "deviceId": "web-server",
+            "toolArgs": ["--web-port", "3000"]
+        },
+        {
+            "name": "Python Django Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "args": [
+                "runserver"
+            ],
+            "django": true,
+            "autoStartBrowser": false,
+            "program": "${workspaceFolder}/manage.py",
+        }
+    ]
+}

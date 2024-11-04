@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Servers",
+            "type": "shell",
+            "command": "./scripts/start-all.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Frontend",
+            "type": "shell",
+            "command": "./scripts/start-frontend.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Backend",
+            "type": "shell",
+            "command": "./scripts/start-backend.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Django Migrate",
+            "type": "shell",
+            "command": "./scripts/django-migrate.sh",
+            "problemMatcher": []
+        }
+    ]
+}
