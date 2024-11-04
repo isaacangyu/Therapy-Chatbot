@@ -4,6 +4,7 @@ The devcontainer is compatible with both GitHub Codespaces and a locally running
 
 ## Usage
 1. Create a new repo from this template.
+> Important: The automated project structure setup will fail if the repo name contains non-alphanumeric characters (aside from underscores).
 2. Specify package versions (ignore for default versions):
     - Specify the desired Flutter version using the `FLUTTER_VERSION` environment variable in `.devcontainer/Dockerfile`.
     - Specify the desired Django version in `requirements.txt`.
