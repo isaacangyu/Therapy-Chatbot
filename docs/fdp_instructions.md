@@ -11,6 +11,7 @@ The devcontainer is compatible with both GitHub Codespaces and a locally running
     - All other package versions will likely require modifying the base image used by the Dockerfile.
 3. (Optional) If the devcontainer will be run locally, install the [Dart Debug Extension](https://chrome.google.com/webstore/detail/dart-debug-extension/eljbmlghnomdjgdjmbdekegdkbabckhm).
 4. Create a devcontainer either locally or with GitHub Codespaces.
+> If asked to manually locate the Flutter SDK path, enter `/usr/local/flutter/`.
 
 ### Running the App
 > Use the command palette (<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd>) to search and select "Run Task" to see a list of configured tasks.
