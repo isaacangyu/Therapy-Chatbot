@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../login/login.dart'; // we use LoginPage
+import '../breathing/breathing.dart'; // we use BreathingPage
+import '../journal/journal.dart'; // we use JournalPage
+import '../profile/profile.dart'; // we use ProfilePage
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +32,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 45, 221, 98)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -81,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.amber,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -112,6 +116,43 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            ElevatedButton( // Isaac, Alex
+              child: const Text('Navigate to Login'), // will be replaced by Profile >> Sign out
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+            // Navigate to second route when tapped.
+              },),
+            ElevatedButton( 
+              child: const Text('Navigate to Breathing'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const BreathingPage()),
+                );
+            // Navigate to second route when tapped.
+          },),
+            ElevatedButton( // Shrida, Sharngi
+              child: const Text('Navigate to Journal'), 
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const JournalPage()),
+                );
+            // Navigate to second route when tapped.
+          },),
+            ElevatedButton( // Vaani
+              child: const Text('Navigate to Profile'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+            // Navigate to second route when tapped.
+          },
+        ),
           ],
         ),
       ),
