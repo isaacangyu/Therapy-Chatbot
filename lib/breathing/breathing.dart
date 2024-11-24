@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class NewPage extends StatelessWidget {
+class BreathingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
