@@ -31,6 +31,7 @@ The devcontainer is compatible with both GitHub Codespaces and a locally running
 - To hot **restart** the Flutter app, press <kbd>r</kbd> in the task terminal.
 
 ## Tips
+- If you receive an HTTP 401 status code when attempting to access Flutter via port 3000 in Codespaces, try making the forwarded port public.
 - If you are unable to access the Django web interface, try removing port 8000 from VSCode's list of forwarded ports, and then adding it back manually.
 - Use the "Django Migrate" task to automatically apply database migrations.
 - The Flutter web server can be launched independently from Django with the "Start Frontend" task.
