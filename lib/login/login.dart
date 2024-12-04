@@ -34,7 +34,7 @@ class LoginPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Login',
+              const Text('Login',
                   style: TextStyle(
                       fontSize: 35,
                       color: Colors.teal,
@@ -47,7 +47,7 @@ class LoginPage extends StatelessWidget {
                     children: [
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Email',
                           hintText: 'Enter email',
                           prefixIcon: Icon(Icons.email),
@@ -58,12 +58,12 @@ class LoginPage extends StatelessWidget {
                           return value!.isEmpty ? 'Please enter email' : null;
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       TextFormField(
                         keyboardType: TextInputType.visiblePassword,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Password',
                           hintText: 'Enter password',
                           prefixIcon: Icon(Icons.password),
@@ -76,19 +76,19 @@ class LoginPage extends StatelessWidget {
                               : null;
                         },
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       MaterialButton(
                         onPressed: () {},
                         minWidth: 1000,
-                        child: Text('Login'),
                         color: Colors.teal,
                         textColor: Colors.white,
+                        child: const Text('Login'),
                       ),
                       TextButton(
                         onPressed: () {},
-                        child: Text('Forgot password?'), // left justify
+                        child: const Text('Forgot password?'), // left justify
                       )
                     ],
                   ),

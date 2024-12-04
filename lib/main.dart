@@ -130,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => BreathingPage()),
+                  MaterialPageRoute(builder: (context) => const BreathingPage()),
                 );
             // Navigate to second route when tapped.
           },),
