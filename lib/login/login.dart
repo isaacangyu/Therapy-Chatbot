@@ -1,101 +1,123 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:therapy_chatbot/main.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key}); // back button?
+  const LoginPage({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Login Page',
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a purple toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 45, 221, 98)),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(title: const Text('Login Page')),
-          body: Column(
+    final theme = Theme.of(context);
+    final appState = context.watch<AppState>();
+    
+    final textFormDecoration = InputDecoration(
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: theme.colorScheme.inversePrimary)
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: theme.colorScheme.onPrimary),
+      ),
+      labelStyle: theme.primaryTextTheme.bodyLarge,
+      hintStyle: theme.primaryTextTheme.bodyLarge!.copyWith(
+        color: theme.colorScheme.inversePrimary,
+      ),
+    );
+    
+    return Scaffold(
+      backgroundColor: theme.colorScheme.primary,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text('Login',
-                  style: TextStyle(
-                      fontSize: 35,
-                      color: Colors.teal,
-                      fontWeight: FontWeight.bold)),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+              SizedBox(
+                width: 125,
+                height: 125,
+                child: Placeholder(
+                  color: theme.colorScheme.inversePrimary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Login',
+                style: theme.primaryTextTheme.headlineLarge,
+              ),
+              const SizedBox(height: 20),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
                 child: Form(
                   child: Column(
                     children: [
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
+                        decoration: textFormDecoration.copyWith(
+                          prefixIcon: Icon(Icons.email, color: theme.primaryIconTheme.color),
                           labelText: 'Email',
-                          hintText: 'Enter email',
-                          prefixIcon: Icon(Icons.email),
-                          border: OutlineInputBorder(),
+                          hintText: 'user@example.com',
                         ),
-                        onChanged: (value) {},
-                        validator: (value) {
-                          return value!.isEmpty ? 'Please enter email' : null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.visiblePassword,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          hintText: 'Enter password',
-                          prefixIcon: Icon(Icons.password),
-                          border: OutlineInputBorder(),
-                        ),
-                        onChanged: (value) {},
+                        style: theme.primaryTextTheme.bodyLarge,
+                        cursorColor: theme.colorScheme.onPrimary,
                         validator: (value) {
                           return value!.isEmpty
-                              ? 'Please enter password'
-                              : null;
+                            ? 'Please enter email'
+                            : null;
                         },
                       ),
-                      const SizedBox(
-                        height: 30,
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        decoration: textFormDecoration.copyWith(
+                          prefixIcon: Icon(Icons.password, color: theme.primaryIconTheme.color),
+                          labelText: 'Password',
+                          hintText: 'Enter your password',
+                        ),
+                        style: theme.primaryTextTheme.bodyLarge,
+                        cursorColor: theme.colorScheme.onPrimary,
+                        validator: (value) {
+                          return value!.isEmpty
+                            ? 'Please enter email'
+                            : null;
+                        },
                       ),
-                      MaterialButton(
-                        onPressed: () {},
-                        minWidth: 1000,
-                        color: Colors.teal,
-                        textColor: Colors.white,
+                      const SizedBox(height: 20),
+                      ElevatedButton(
                         child: const Text('Login'),
+                        onPressed: () {
+                        },
                       ),
+                      const SizedBox(height: 10),
                       TextButton(
-                        onPressed: () {},
-                        child: const Text('Forgot password?'), // left justify
-                      )
+                        style: TextButton.styleFrom(
+                          foregroundColor: theme.buttonTheme.colorScheme!.onPrimary,
+                        ),
+                        child: const Text('Forgot Password?'),
+                        onPressed: () {
+                        },
+                      ),
                     ],
                   ),
                 ),
-              )
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  side: BorderSide(color: theme.colorScheme.onPrimary),
+                ),
+                child: const Text('Create Account'),
+                onPressed: () {
+                  appState.preferences.updateColorScheme(
+                    ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 62, 62, 62))
+                  );
+                },
+              ),
             ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
