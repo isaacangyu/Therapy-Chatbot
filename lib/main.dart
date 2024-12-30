@@ -15,12 +15,20 @@ class App extends StatelessWidget {
       create: (context) => AppState(),
       child: Consumer<AppState>(
         builder: (context, appState, child) {
+          var themeData = ThemeData(
+            useMaterial3: true,
+            colorScheme: appState.preferences.colorScheme,
+          );
+          themeData = themeData.copyWith(
+            textSelectionTheme: themeData.textSelectionTheme.copyWith(
+              selectionColor: themeData.colorScheme.inversePrimary,
+              selectionHandleColor: themeData.colorScheme.inversePrimary,
+              cursorColor: themeData.colorScheme.onPrimary,
+            ),
+          );
           return MaterialApp(
             title: 'Therapy Chatbot',
-            theme: ThemeData(
-              useMaterial3: true,
-              colorScheme: appState.preferences.colorScheme,
-            ),
+            theme: themeData,
             home: const LoginPage(),
           );
         },
