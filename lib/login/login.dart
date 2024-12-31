@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:therapy_chatbot/main.dart';
+import 'package:email_validator/email_validator.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -8,7 +7,6 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final appState = context.watch<AppState>();
     
     final activeColor = theme.colorScheme.onPrimaryContainer;
     final inactiveColor = theme.colorScheme.inversePrimary;
@@ -26,6 +24,8 @@ class LoginPage extends StatelessWidget {
         color: inactiveColor,
       ),
     );
+    
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     
     return Scaffold(
       backgroundColor: theme.colorScheme.primaryContainer,
@@ -53,6 +53,7 @@ class LoginPage extends StatelessWidget {
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Form(
+                  key: formKey,
                   child: Column(
                     children: [
                       TextFormField(
@@ -66,10 +67,9 @@ class LoginPage extends StatelessWidget {
                           color: activeColor,
                         ),
                         cursorColor: activeColor,
+                        autovalidateMode: AutovalidateMode.onUnfocus,
                         validator: (value) {
-                          return value!.isEmpty
-                            ? 'Please enter email'
-                            : null;
+                          return (value != null && !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
                         },
                       ),
                       const SizedBox(height: 10),
@@ -87,19 +87,15 @@ class LoginPage extends StatelessWidget {
                         ),
                         cursorColor: activeColor,
                         validator: (value) {
-                          return value!.isEmpty
-                            ? 'Please enter email'
-                            : null;
+                          return (value != null && value.contains('@')) ? 'Do not use the @ char.' : null;
                         },
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton(
                         child: const Text('Login'),
                         onPressed: () {
-                          appState.preferences.updateColorScheme(
-                            const Color.fromARGB(255, 100, 149, 237),
-                            0.0,
-                          );
+                          if (formKey.currentState!.validate()) {
+                          }
                         },
                       ),
                       const SizedBox(height: 10),
@@ -109,10 +105,6 @@ class LoginPage extends StatelessWidget {
                         ),
                         child: const Text('Forgot password?'),
                         onPressed: () {
-                          appState.preferences.updateColorScheme(
-                            const Color.fromARGB(255, 255, 255, 255),
-                            0.0,
-                          );
                         },
                       ),
                     ],
@@ -127,10 +119,6 @@ class LoginPage extends StatelessWidget {
                 ),
                 child: const Text('Create Account'),
                 onPressed: () {
-                  appState.preferences.updateColorScheme(
-                    const Color.fromARGB(255, 0, 0, 0),
-                    0.0,
-                  );
                 },
               ),
             ],
