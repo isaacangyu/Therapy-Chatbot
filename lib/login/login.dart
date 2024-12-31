@@ -10,21 +10,25 @@ class LoginPage extends StatelessWidget {
     final theme = Theme.of(context);
     final appState = context.watch<AppState>();
     
+    final activeColor = theme.colorScheme.onPrimaryContainer;
+    final inactiveColor = theme.colorScheme.inversePrimary;
     final textFormDecoration = InputDecoration(
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: theme.colorScheme.inversePrimary)
+        borderSide: BorderSide(color: inactiveColor)
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: theme.colorScheme.onPrimary),
+        borderSide: BorderSide(color: activeColor),
       ),
-      labelStyle: theme.primaryTextTheme.bodyLarge,
-      hintStyle: theme.primaryTextTheme.bodyLarge!.copyWith(
-        color: theme.colorScheme.inversePrimary,
+      labelStyle: theme.textTheme.bodyLarge!.copyWith(
+        color: activeColor,
+      ),
+      hintStyle: theme.textTheme.bodyLarge!.copyWith(
+        color: inactiveColor,
       ),
     );
     
     return Scaffold(
-      backgroundColor: theme.colorScheme.primary,
+      backgroundColor: theme.colorScheme.primaryContainer,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -35,13 +39,15 @@ class LoginPage extends StatelessWidget {
                 width: 125,
                 height: 125,
                 child: Placeholder(
-                  color: theme.colorScheme.inversePrimary,
+                  color: inactiveColor, // Replace with app icon.
                 ),
               ),
               const SizedBox(height: 20),
               Text(
                 'Login',
-                style: theme.primaryTextTheme.headlineLarge,
+                style: theme.textTheme.headlineLarge!.copyWith(
+                  color: activeColor,
+                ),
               ),
               const SizedBox(height: 20),
               ConstrainedBox(
@@ -52,12 +58,14 @@ class LoginPage extends StatelessWidget {
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         decoration: textFormDecoration.copyWith(
-                          prefixIcon: Icon(Icons.email, color: theme.primaryIconTheme.color),
+                          prefixIcon: Icon(Icons.email, color: activeColor),
                           labelText: 'Email',
                           hintText: 'user@example.com',
                         ),
-                        style: theme.primaryTextTheme.bodyLarge,
-                        cursorColor: theme.colorScheme.onPrimary,
+                        style: theme.textTheme.bodyLarge!.copyWith(
+                          color: activeColor,
+                        ),
+                        cursorColor: activeColor,
                         validator: (value) {
                           return value!.isEmpty
                             ? 'Please enter email'
@@ -70,12 +78,14 @@ class LoginPage extends StatelessWidget {
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: textFormDecoration.copyWith(
-                          prefixIcon: Icon(Icons.password, color: theme.primaryIconTheme.color),
+                          prefixIcon: Icon(Icons.password, color: activeColor),
                           labelText: 'Password',
                           hintText: 'Enter your password',
                         ),
-                        style: theme.primaryTextTheme.bodyLarge,
-                        cursorColor: theme.colorScheme.onPrimary,
+                        style: theme.textTheme.bodyLarge!.copyWith(
+                          color: activeColor,
+                        ),
+                        cursorColor: activeColor,
                         validator: (value) {
                           return value!.isEmpty
                             ? 'Please enter email'
@@ -86,15 +96,23 @@ class LoginPage extends StatelessWidget {
                       ElevatedButton(
                         child: const Text('Login'),
                         onPressed: () {
+                          appState.preferences.updateColorScheme(
+                            const Color.fromARGB(255, 100, 149, 237),
+                            0.0,
+                          );
                         },
                       ),
                       const SizedBox(height: 10),
                       TextButton(
                         style: TextButton.styleFrom(
-                          foregroundColor: theme.buttonTheme.colorScheme!.onPrimary,
+                          foregroundColor: activeColor,
                         ),
-                        child: const Text('Forgot Password?'),
+                        child: const Text('Forgot password?'),
                         onPressed: () {
+                          appState.preferences.updateColorScheme(
+                            const Color.fromARGB(255, 255, 255, 255),
+                            0.0,
+                          );
                         },
                       ),
                     ],
@@ -104,13 +122,14 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 20),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  side: BorderSide(color: theme.colorScheme.onPrimary),
+                  foregroundColor: activeColor,
+                  side: BorderSide(color: activeColor),
                 ),
                 child: const Text('Create Account'),
                 onPressed: () {
                   appState.preferences.updateColorScheme(
-                    ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 62, 62, 62))
+                    const Color.fromARGB(255, 0, 0, 0),
+                    0.0,
                   );
                 },
               ),

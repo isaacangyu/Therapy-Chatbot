@@ -23,7 +23,7 @@ class App extends StatelessWidget {
             textSelectionTheme: themeData.textSelectionTheme.copyWith(
               selectionColor: themeData.colorScheme.inversePrimary,
               selectionHandleColor: themeData.colorScheme.inversePrimary,
-              cursorColor: themeData.colorScheme.onPrimary,
+              cursorColor: themeData.colorScheme.onPrimaryContainer,
             ),
           );
           return MaterialApp(
@@ -52,10 +52,17 @@ class AppState extends ChangeNotifier {
 
 class Preferences {
   AppState? appState;
-  var colorScheme = ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 100, 149, 237));
+  var colorScheme = ColorScheme.fromSeed(
+    seedColor: const Color.fromARGB(255, 100, 149, 237),
+    dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+  );
   
-  void updateColorScheme(ColorScheme colorScheme) {
-    this.colorScheme = colorScheme;
+  void updateColorScheme(Color seedColor, double contrastLevel) {
+    colorScheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      contrastLevel: contrastLevel,
+      dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+    );
     appState?.notifyListeners();
   }
 }
