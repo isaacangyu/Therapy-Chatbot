@@ -15,20 +15,39 @@ class App extends StatelessWidget {
       create: (context) => AppState(),
       child: Consumer<AppState>(
         builder: (context, appState, child) {
-          var themeData = ThemeData(
+          var lightThemeData = ThemeData(
             useMaterial3: true,
             colorScheme: appState.preferences.colorScheme,
           );
-          themeData = themeData.copyWith(
-            textSelectionTheme: themeData.textSelectionTheme.copyWith(
-              selectionColor: themeData.colorScheme.inversePrimary,
-              selectionHandleColor: themeData.colorScheme.inversePrimary,
-              cursorColor: themeData.colorScheme.onPrimary,
+          lightThemeData = lightThemeData.copyWith(
+            textSelectionTheme: lightThemeData.textSelectionTheme.copyWith(
+              selectionColor: lightThemeData.colorScheme.inversePrimary,
+              selectionHandleColor: lightThemeData.colorScheme.inversePrimary,
+              cursorColor: lightThemeData.colorScheme.onPrimary,
             ),
           );
+
+          var darkThemeData = ThemeData(
+            useMaterial3: true,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: appState.preferences.colorScheme.primary,
+              brightness: Brightness.dark,
+            ),
+            brightness: Brightness.dark,
+          );
+          darkThemeData = darkThemeData.copyWith(
+            textSelectionTheme: darkThemeData.textSelectionTheme.copyWith(
+              selectionColor: darkThemeData.colorScheme.inversePrimary,
+              selectionHandleColor: darkThemeData.colorScheme.inversePrimary,
+              cursorColor: darkThemeData.colorScheme.onPrimary,
+            ),
+          );
+
           return MaterialApp(
             title: 'Therapy Chatbot',
-            theme: themeData,
+            theme: lightThemeData,
+            darkTheme: darkThemeData,
+            themeMode: ThemeMode.dark,
             home: const LoginPage(),
           );
         },
