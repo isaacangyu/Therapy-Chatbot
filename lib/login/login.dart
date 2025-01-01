@@ -86,7 +86,7 @@ class LoginPage extends StatelessWidget {
                           color: activeColor,
                         ),
                         cursorColor: activeColor,
-                        autovalidateMode: AutovalidateMode.always,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           return value != null ? validatePassword(value) : null;
                         },
