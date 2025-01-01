@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:therapy_chatbot/util/persistence.dart';
@@ -16,8 +17,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var database = Provider.of<AppDatabase>(context);
     return ChangeNotifierProvider(
-      create: (context) => AppState(),
+      create: (context) => AppState(database),
       child: Consumer<AppState>(
         builder: (context, appState, child) {
           var themeData = ThemeData(
@@ -45,8 +47,21 @@ class App extends StatelessWidget {
 class AppState extends ChangeNotifier {
   final preferences = Preferences();
   
-  AppState() {
-    preferences.appState = this;
+  AppState(AppDatabase database) {    
+    database.getUserPreferences().then((userPreferences) {
+      preferences.appState = this;
+      preferences.colorScheme = ColorScheme.fromSeed(
+        seedColor: Color(userPreferences.seedColor),
+        dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+      );
+    });
+    
+    if (kDebugMode) {
+      print('''
+Default preferences from app database:
+Color Scheme: ${preferences.colorScheme}
+''');
+    }
   }
   
   @override
@@ -57,10 +72,7 @@ class AppState extends ChangeNotifier {
 
 class Preferences {
   AppState? appState;
-  var colorScheme = ColorScheme.fromSeed(
-    seedColor: const Color.fromARGB(255, 100, 149, 237),
-    dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-  );
+  ColorScheme? colorScheme;
   
   void updateColorScheme(Color seedColor, double contrastLevel) {
     colorScheme = ColorScheme.fromSeed(

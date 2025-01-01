@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -18,6 +20,27 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await m.createAll();
+      
+      var defaultSeedColor = const Color.fromARGB(255, 100, 149, 237).value;
+      await into(preferences).insert(PreferencesCompanion(
+        name: const Value('default'),
+        seedColor: Value(defaultSeedColor),
+      ));
+      await into(preferences).insert(PreferencesCompanion(
+        name: const Value('user'),
+        seedColor: Value(defaultSeedColor),
+      ));
+    },
+  );
+
+  Future<Preference> getUserPreferences() async {
+    return await (select(preferences)..where((t) => t.name.equals('user'))).getSingle();
+  }
 
   static QueryExecutor _openConnection() {
     // `driftDatabase` from `package:drift_flutter` stores the database in
