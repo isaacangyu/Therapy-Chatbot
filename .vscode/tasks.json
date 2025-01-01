@@ -30,6 +30,18 @@
             "type": "shell",
             "command": "./scripts/flutter-analyze.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Drift build_runner build",
+            "type": "shell",
+            "command": "./scripts/drift-build_runner-build.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drift build_runner watch",
+            "type": "shell",
+            "command": "./scripts/drift-build_runner-watch.sh",
+            "problemMatcher": []
         }
     ]
 }
