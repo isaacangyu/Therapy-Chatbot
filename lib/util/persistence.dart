@@ -5,6 +5,7 @@ part 'persistence.g.dart';
 
 class Preferences extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
   IntColumn get seedColor => integer()();
 }
 
@@ -21,6 +22,6 @@ class AppDatabase extends _$AppDatabase {
   static QueryExecutor _openConnection() {
     // `driftDatabase` from `package:drift_flutter` stores the database in
     // `getApplicationDocumentsDirectory()`.
-    return driftDatabase(name: 'my_database');
+    return driftDatabase(name: 'therapy_chatbot_database');
   }
 }

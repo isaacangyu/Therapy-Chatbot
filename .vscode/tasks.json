@@ -42,6 +42,12 @@
             "type": "shell",
             "command": "./scripts/drift-build_runner-watch.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Drift drift_dev make-migrations",
+            "type": "shell",
+            "command": "./scripts/drift-drift_dev-make-migrations.sh",
+            "problemMatcher": []
         }
     ]
 }

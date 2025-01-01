@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:therapy_chatbot/util/persistence.dart';
 import 'package:therapy_chatbot/login/login.dart';
 
 void main() {
-  runApp(const App());
+  runApp(Provider<AppDatabase>(
+    create: (context) => AppDatabase(),
+    child: const App(),
+    dispose: (context, db) => db.close(),
+  ));
 }
 
 class App extends StatelessWidget {
