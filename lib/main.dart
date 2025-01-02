@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:therapy_chatbot/preferences.dart';
 import 'package:therapy_chatbot/util/persistence.dart';
 import 'package:therapy_chatbot/login/login.dart';
 
@@ -56,30 +56,14 @@ class AppState extends ChangeNotifier {
       );
     });
     
-    if (kDebugMode) {
-      print('''
+    debugPrint('''
 Default preferences from app database:
 Color Scheme: ${preferences.colorScheme}
 ''');
-    }
   }
   
   @override
   void notifyListeners() {
     super.notifyListeners();
-  }
-}
-
-class Preferences {
-  AppState? appState;
-  ColorScheme? colorScheme;
-  
-  void updateColorScheme(Color seedColor, double contrastLevel) {
-    colorScheme = ColorScheme.fromSeed(
-      seedColor: seedColor,
-      contrastLevel: contrastLevel,
-      dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-    );
-    appState?.notifyListeners();
   }
 }
