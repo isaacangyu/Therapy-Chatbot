@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:therapy_chatbot/preferences.dart';
 import 'package:therapy_chatbot/util/persistence.dart';
 import 'package:therapy_chatbot/login/login.dart';
+
+const appTitle = kDebugMode ? 'DEBUG | Therapy Chatbot' : 'Therapy Chatbot';
 
 void main() {
   runApp(Provider<AppDatabase>(
@@ -22,21 +25,40 @@ class App extends StatelessWidget {
       create: (context) => AppState(database),
       child: Consumer<AppState>(
         builder: (context, appState, child) {
-          var themeData = ThemeData(
-            useMaterial3: true,
-            colorScheme: appState.preferences.colorScheme,
-          );
-          themeData = themeData.copyWith(
-            textSelectionTheme: themeData.textSelectionTheme.copyWith(
-              selectionColor: themeData.colorScheme.inversePrimary,
-              selectionHandleColor: themeData.colorScheme.inversePrimary,
-              cursorColor: themeData.colorScheme.onPrimaryContainer,
-            ),
-          );
-          return MaterialApp(
-            title: 'Therapy Chatbot',
-            theme: themeData,
-            home: const LoginPage(),
+          return FutureBuilder(
+            future: appState.preferencesLoaded,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const MaterialApp(
+                  title: appTitle,
+                  home: Scaffold(
+                    backgroundColor: Colors.black,
+                    body: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    ),
+                  ),
+                );
+              }
+              var themeData = ThemeData(
+                useMaterial3: true,
+                colorScheme: appState.preferences.colorScheme,
+              );
+              themeData = themeData.copyWith(
+                textSelectionTheme: themeData.textSelectionTheme.copyWith(
+                  selectionColor: themeData.colorScheme.inversePrimary,
+                  selectionHandleColor: themeData.colorScheme.inversePrimary,
+                  cursorColor: themeData.colorScheme.onPrimaryContainer,
+                ),
+              );
+              debugPrint('Building main app widget tree.');
+              return MaterialApp(
+                title: appTitle,
+                theme: themeData,
+                home: const LoginPage(),
+              );
+            },
           );
         },
       ),
@@ -46,20 +68,20 @@ class App extends StatelessWidget {
 
 class AppState extends ChangeNotifier {
   final preferences = Preferences();
+  late final Future<void> preferencesLoaded;
   
-  AppState(AppDatabase database) {    
-    database.getUserPreferences().then((userPreferences) {
+  AppState(AppDatabase database) {
+    preferencesLoaded = database.getUserPreferences().then((userPreferences) {
       preferences.appState = this;
       preferences.colorScheme = ColorScheme.fromSeed(
         seedColor: Color(userPreferences.seedColor),
         dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
       );
-    });
-    
-    debugPrint('''
+      debugPrint('''
 Default preferences from app database:
 Color Scheme: ${preferences.colorScheme}
 ''');
+    });
   }
   
   @override
