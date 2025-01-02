@@ -6,12 +6,11 @@ targets:
     # Reducing sources makes the build slightly faster (some of these are required
     # to exist in the default target).
     sources:
-      - lib/**
-      - web/**
-      - "tool/**"
-      - pubspec.yaml
+      - lib/util/persistence.dart
+      - lib/util/tables.dart
+      - web/worker.dart
+      - tool/builder.dart
       - lib/$lib$
-      - $package$
     builders:
       drift_dev:
         # These options change how drift generates code
