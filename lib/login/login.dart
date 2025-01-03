@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:therapy_chatbot/util/theme.dart';
+import 'package:therapy_chatbot/login/forgot_password.dart';
+import 'package:therapy_chatbot/main.dart';
+import 'package:therapy_chatbot/util/navigation.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -9,7 +11,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = Provider.of<ProjectTheme>(context);
+    final projectTheme = context.watch<AppState>().projectTheme;
     
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     
@@ -92,6 +94,7 @@ class LoginPage extends StatelessWidget {
                         ),
                         child: const Text('Forgot password?'),
                         onPressed: () {
+                          pushRoute(context, const ForgotPasswordPage());
                         },
                       ),
                     ],

@@ -53,14 +53,14 @@ class App extends StatelessWidget {
                   cursorColor: themeData.colorScheme.onPrimaryContainer,
                 ),
               );
+              appState.projectTheme = ProjectTheme(themeData);
+              
               debugPrint('Building main app widget tree.');
-              return Provider<ProjectTheme>(
-                create: (context) => ProjectTheme(themeData),
-                child: MaterialApp(
-                  title: appTitle,
-                  theme: themeData,
-                  home: const LoginPage(),
-                ),
+              
+              return MaterialApp(
+                title: appTitle,
+                theme: themeData,
+                home: const LoginPage(),
               );
             },
           );
@@ -71,6 +71,8 @@ class App extends StatelessWidget {
 }
 
 class AppState extends ChangeNotifier {
+  late ProjectTheme projectTheme; // Updated in App.build.
+  
   final preferences = Preferences();
   late final Future<void> preferencesLoaded;
   
@@ -81,6 +83,7 @@ class AppState extends ChangeNotifier {
         seedColor: Color(userPreferences.seedColor),
         dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
       );
+      
       debugPrint('''
 Default preferences from app database:
 Color Scheme: ${preferences.colorScheme}
