@@ -35,11 +35,11 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 125,
                 height: 125,
-                child: Placeholder(
-                  color: inactiveColor, // Replace with app icon.
+                child: Image(
+                  image: AssetImage('app_assets/icon.png'),
                 ),
               ),
               const SizedBox(height: 20),
