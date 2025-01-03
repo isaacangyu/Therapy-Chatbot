@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:therapy_chatbot/util/theme.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -7,28 +9,12 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    final activeColor = theme.colorScheme.onPrimaryContainer;
-    final inactiveColor = theme.colorScheme.inversePrimary;
-    final textFormDecoration = InputDecoration(
-      enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: inactiveColor)
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: activeColor),
-      ),
-      labelStyle: theme.textTheme.bodyLarge!.copyWith(
-        color: activeColor,
-      ),
-      hintStyle: theme.textTheme.bodyLarge!.copyWith(
-        color: inactiveColor,
-      ),
-    );
+    final projectTheme = Provider.of<ProjectTheme>(context);
     
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     
     return Scaffold(
-      backgroundColor: theme.colorScheme.primaryContainer,
+      backgroundColor: projectTheme.primaryColor,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(10),
@@ -46,7 +32,7 @@ class LoginPage extends StatelessWidget {
               Text(
                 'Login',
                 style: theme.textTheme.headlineLarge!.copyWith(
-                  color: activeColor,
+                  color: projectTheme.activeColor,
                 ),
               ),
               const SizedBox(height: 20),
@@ -58,15 +44,15 @@ class LoginPage extends StatelessWidget {
                     children: [
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        decoration: textFormDecoration.copyWith(
-                          prefixIcon: Icon(Icons.email, color: activeColor),
+                        decoration: projectTheme.textFormDecoration.copyWith(
+                          prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
                           labelText: 'Email',
                           hintText: 'user@example.com',
                         ),
                         style: theme.textTheme.bodyLarge!.copyWith(
-                          color: activeColor,
+                          color: projectTheme.activeColor,
                         ),
-                        cursorColor: activeColor,
+                        cursorColor: projectTheme.activeColor,
                         autovalidateMode: AutovalidateMode.onUnfocus,
                         validator: (value) {
                           return (value != null && !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
@@ -77,15 +63,15 @@ class LoginPage extends StatelessWidget {
                         obscureText: true,
                         enableSuggestions: false,
                         autocorrect: false,
-                        decoration: textFormDecoration.copyWith(
-                          prefixIcon: Icon(Icons.password, color: activeColor),
+                        decoration: projectTheme.textFormDecoration.copyWith(
+                          prefixIcon: Icon(Icons.password, color: projectTheme.activeColor),
                           labelText: 'Password',
                           hintText: 'Enter your password',
                         ),
                         style: theme.textTheme.bodyLarge!.copyWith(
-                          color: activeColor,
+                          color: projectTheme.activeColor,
                         ),
-                        cursorColor: activeColor,
+                        cursorColor: projectTheme.activeColor,
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           return value != null ? validatePassword(value) : null;
@@ -102,7 +88,7 @@ class LoginPage extends StatelessWidget {
                       const SizedBox(height: 10),
                       TextButton(
                         style: TextButton.styleFrom(
-                          foregroundColor: activeColor,
+                          foregroundColor: projectTheme.activeColor,
                         ),
                         child: const Text('Forgot password?'),
                         onPressed: () {
@@ -115,8 +101,8 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 20),
               OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: activeColor,
-                  side: BorderSide(color: activeColor),
+                  foregroundColor: projectTheme.activeColor,
+                  side: BorderSide(color: projectTheme.activeColor),
                 ),
                 child: const Text('Create Account'),
                 onPressed: () {

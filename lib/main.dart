@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:therapy_chatbot/preferences.dart';
 import 'package:therapy_chatbot/util/persistence.dart';
 import 'package:therapy_chatbot/login/login.dart';
+import 'package:therapy_chatbot/util/theme.dart';
 
 const appTitle = kDebugMode ? 'DEBUG | Therapy Chatbot' : 'Therapy Chatbot';
 
@@ -53,10 +54,13 @@ class App extends StatelessWidget {
                 ),
               );
               debugPrint('Building main app widget tree.');
-              return MaterialApp(
-                title: appTitle,
-                theme: themeData,
-                home: const LoginPage(),
+              return Provider<ProjectTheme>(
+                create: (context) => ProjectTheme(themeData),
+                child: MaterialApp(
+                  title: appTitle,
+                  theme: themeData,
+                  home: const LoginPage(),
+                ),
               );
             },
           );
