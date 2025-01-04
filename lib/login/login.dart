@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:therapy_chatbot/login/forgot_password.dart';
-import 'package:therapy_chatbot/main.dart';
-import 'package:therapy_chatbot/util/navigation.dart';
+
+import '/main.dart';
+import '/util/navigation.dart';
+import '/login/forgot_password.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:therapy_chatbot/main.dart';
+
+import '/main.dart';
 
 class Preferences {
   AppState? appState;

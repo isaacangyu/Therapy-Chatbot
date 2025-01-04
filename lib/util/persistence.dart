@@ -1,12 +1,12 @@
-import 'dart:ui';
-
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:therapy_chatbot/util/persistence.steps.dart';
-import 'package:therapy_chatbot/util/tables.dart';
-import 'connection/connection.dart' as impl;
+
+import '/util/tables.dart';
+import '/util/persistence.steps.dart';
+import '/util/connection/connection.dart' as impl;
+import '/util/global.dart';
 
 part 'persistence.g.dart';
 
@@ -67,15 +67,8 @@ class AppDatabase extends _$AppDatabase {
     onCreate: (m) async {
       await m.createAll();
       
-      var defaultSeedColor = const Color.fromARGB(255, 100, 149, 237).value;
-      await into(preferences).insert(PreferencesCompanion(
-        name: const Value('default'),
-        seedColor: Value(defaultSeedColor),
-      ));
-      await into(preferences).insert(PreferencesCompanion(
-        name: const Value('user'),
-        seedColor: Value(defaultSeedColor),
-      ));
+      await into(preferences).insert(Global.defaultBasePreferences);
+      await into(preferences).insert(Global.defaultUserPreferences);
     },
     beforeOpen: (details) async {
       if (!kDebugMode) {

@@ -1,12 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:therapy_chatbot/preferences.dart';
-import 'package:therapy_chatbot/util/persistence.dart';
-import 'package:therapy_chatbot/login/login.dart';
-import 'package:therapy_chatbot/util/theme.dart';
 
-const appTitle = kDebugMode ? 'DEBUG | Therapy Chatbot' : 'Therapy Chatbot';
+import '/preferences.dart';
+import '/login/login.dart';
+import '/util/global.dart';
+import '/util/persistence.dart';
+import '/util/theme.dart';
 
 void main() {
   runApp(Provider<AppDatabase>(
@@ -30,16 +29,9 @@ class App extends StatelessWidget {
             future: appState.preferencesLoaded,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const MaterialApp(
-                  title: appTitle,
-                  home: Scaffold(
-                    backgroundColor: Colors.black,
-                    body: Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    ),
-                  ),
+                return MaterialApp(
+                  title: Global.appTitle,
+                  home: Global.loadingScreen(Colors.black, Colors.white),
                 );
               }
               var themeData = ThemeData(
@@ -58,7 +50,7 @@ class App extends StatelessWidget {
               debugPrint('Building main app widget tree.');
               
               return MaterialApp(
-                title: appTitle,
+                title: Global.appTitle,
                 theme: themeData,
                 home: const LoginPage(),
               );
