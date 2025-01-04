@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:therapy_chatbot/util/persistence.steps.dart';
 import 'package:therapy_chatbot/util/tables.dart';
 import 'connection/connection.dart' as impl;
 
@@ -40,10 +41,29 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(DatabaseConnection super.connection);
   
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      await customStatement('PRAGMA foreign_keys = OFF');
+
+      await m.runMigrationSteps(
+        from: from,
+        to: to,
+        steps: migrationSteps(
+          from1To2: (m, schema) async {
+            // Nothing.
+          }
+        )
+      );
+
+      // Assert that the schema is valid after migrations.
+      if (kDebugMode) {
+        final wrongForeignKeys = await customSelect('PRAGMA foreign_key_check').get();
+        assert(wrongForeignKeys.isEmpty, '${wrongForeignKeys.map((e) => e.data)}');
+      }
+    },
     onCreate: (m) async {
       await m.createAll();
       
@@ -58,6 +78,9 @@ class AppDatabase extends _$AppDatabase {
       ));
     },
     beforeOpen: (details) async {
+      if (!kDebugMode) {
+        return;
+      }
       // Enabling foreign key contraints ensures 
       // that child tables only reference values that 
       // exist in parent tables.

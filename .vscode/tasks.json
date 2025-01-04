@@ -48,6 +48,12 @@
             "type": "shell",
             "command": "./scripts/drift-drift_dev-make-migrations.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Flutter Test",
+            "type": "shell",
+            "command": "./scripts/flutter-test.sh",
+            "problemMatcher": []
         }
     ]
 }
