@@ -27,4 +27,6 @@ class Global {
       ),
     );
   }
+  
+  static const forgotPasswordInfoUrl = 'https://raw.githubusercontent.com/isaacangyu/Therapy-Chatbot/refs/heads/staging/api/forgot_password_info.json';
 }

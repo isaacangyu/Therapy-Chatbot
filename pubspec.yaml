@@ -45,6 +45,8 @@ dependencies:
   sqlite3: ^2.5.0
   sqlite3_flutter_libs: ^0.5.28
   flutter_launcher_icons: ^0.14.2
+  http: ^1.2.2
+  flutter_html: ^3.0.0-beta.2
 
 dev_dependencies:
   flutter_test:
