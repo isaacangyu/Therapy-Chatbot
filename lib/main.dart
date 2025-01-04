@@ -6,6 +6,9 @@ import 'package:therapy_chatbot/util/persistence.dart';
 import 'package:therapy_chatbot/login/login.dart';
 import 'package:therapy_chatbot/util/theme.dart';
 
+// Debug imports:
+import 'login/forgot_password.dart';
+
 const appTitle = kDebugMode ? 'DEBUG | Therapy Chatbot' : 'Therapy Chatbot';
 
 void main() {
@@ -55,12 +58,29 @@ class App extends StatelessWidget {
               );
               appState.projectTheme = ProjectTheme(themeData);
               
+              Widget hotRestartPage = const LoginPage();
+              if (kDebugMode) {
+                void getDebugDataSynchronous() async {
+                  var pageName = (await database.getDebugData()).hotRestartPage;
+                  debugPrint('Hot restart page: $pageName');
+                  if (pageName == const LoginPage().runtimeType.toString()) {
+                    hotRestartPage = const LoginPage();
+                  } else if (pageName == const ForgotPasswordPage().runtimeType.toString()) {
+                    hotRestartPage = const ForgotPasswordPage();
+                  } else {
+                    throw UnimplementedError('Hot restart page $pageName not implemented.');
+                  }
+                  debugPrint('yea');
+                }
+                getDebugDataSynchronous();
+              }
+              
               debugPrint('Building main app widget tree.');
               
               return MaterialApp(
                 title: appTitle,
                 theme: themeData,
-                home: const LoginPage(),
+                home: kDebugMode ? hotRestartPage : const LoginPage(),
               );
             },
           );

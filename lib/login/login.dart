@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:therapy_chatbot/hot_restart_mixin.dart';
 import 'package:therapy_chatbot/login/forgot_password.dart';
 import 'package:therapy_chatbot/main.dart';
 import 'package:therapy_chatbot/util/navigation.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatelessWidget with HotRestartMixin {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    hotRestartPrepare(context);
+    
     final theme = Theme.of(context);
     final projectTheme = context.watch<AppState>().projectTheme;
     

@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:therapy_chatbot/hot_restart_mixin.dart';
 import 'package:therapy_chatbot/main.dart';
 
-class ForgotPasswordPage extends StatelessWidget {
+class ForgotPasswordPage extends StatelessWidget with HotRestartMixin {
   const ForgotPasswordPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final appState = context.watch<AppState>();
+    hotRestartPrepare(context);
+    
     final projectTheme = context.watch<AppState>().projectTheme;
     
     return Scaffold(
       backgroundColor: projectTheme.primaryColor,
       appBar: AppBar(
-        title: Text('Forgot Password'),
+        title: const Text('Forgot Password'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            appState.preferences.updateColorScheme(Colors.black, 0.0);
-          }, 
-          child: Text('What')
-        ),
       ),
     );
   }

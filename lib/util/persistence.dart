@@ -5,11 +5,12 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:therapy_chatbot/util/tables.dart';
+import 'package:therapy_chatbot/login/login.dart';
 import 'connection/connection.dart' as impl;
 
 part 'persistence.g.dart';
 
-@DriftDatabase(tables: [Preferences])
+@DriftDatabase(tables: [Preferences, Debug])
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.
@@ -40,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(DatabaseConnection super.connection);
   
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -56,6 +57,12 @@ class AppDatabase extends _$AppDatabase {
         name: const Value('user'),
         seedColor: Value(defaultSeedColor),
       ));
+      
+      if (kDebugMode) {
+        await into(debug).insert(DebugCompanion(
+          hotRestartPage: Value(const LoginPage().runtimeType.toString()),
+        ));
+      }
     },
     beforeOpen: (details) async {
       // Enabling foreign key contraints ensures 
@@ -68,5 +75,12 @@ class AppDatabase extends _$AppDatabase {
 
   Future<Preference> getUserPreferences() async {
     return await (select(preferences)..where((t) => t.name.equals('user'))).getSingle();
+  }
+  
+  Future<DebugData> getDebugData() async {
+    return await (select(debug)..where((t) => t.id.equals(1))).getSingle();
+  }
+  Future<int> updateDebugData(String page) async {
+    return await (update(debug)..where((t) => t.id.equals(1))).write(DebugCompanion(hotRestartPage: Value(page)));
   }
 }
