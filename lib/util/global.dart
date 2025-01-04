@@ -28,5 +28,7 @@ class Global {
     );
   }
   
-  static const forgotPasswordInfoUrl = 'https://raw.githubusercontent.com/isaacangyu/Therapy-Chatbot/refs/heads/staging/api/forgot_password_info.json';
+  // static const apiBaseUrl = 'https://raw.githubusercontent.com/isaacangyu/Therapy-Chatbot/refs/heads/staging/api';
+  static const apiBaseUrl = 'http://localhost:5000/api';
+  static const forgotPasswordInfoUrl = '$apiBaseUrl/forgot_password_info.json';
 }

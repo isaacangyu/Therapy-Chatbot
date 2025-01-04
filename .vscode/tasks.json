@@ -54,6 +54,12 @@
             "type": "shell",
             "command": "./scripts/flutter-test.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Start API Test Backend",
+            "type": "shell",
+            "command": "./scripts/start-api-test-backend.py",
+            "problemMatcher": []
         }
     ]
 }

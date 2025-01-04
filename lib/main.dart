@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/preferences.dart';
 import '/login/login.dart';
 import '/util/global.dart';
 import '/util/persistence.dart';
 import '/util/theme.dart';
+import '/app_state.dart';
 
 void main() {
   runApp(Provider<AppDatabase>(
@@ -59,32 +59,5 @@ class App extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class AppState extends ChangeNotifier {
-  late ProjectTheme projectTheme; // Updated in App.build.
-  
-  final preferences = Preferences();
-  late final Future<void> preferencesLoaded;
-  
-  AppState(AppDatabase database) {
-    preferencesLoaded = database.getUserPreferences().then((userPreferences) {
-      preferences.appState = this;
-      preferences.colorScheme = ColorScheme.fromSeed(
-        seedColor: Color(userPreferences.seedColor),
-        dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-      );
-      
-      debugPrint('''
-Default preferences from app database:
-Color Scheme: ${preferences.colorScheme}
-''');
-    });
-  }
-  
-  @override
-  void notifyListeners() {
-    super.notifyListeners();
   }
 }

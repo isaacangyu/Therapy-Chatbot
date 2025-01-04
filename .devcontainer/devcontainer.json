@@ -4,7 +4,7 @@
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 	"postCreateCommand": "sh .devcontainer/fdp-setup.sh",
-	"forwardPorts": [3000, 8000], // Add 5432 to forward PostgreSQL.
+	"forwardPorts": [3000, 5000, 8000], // Add 5432 to forward PostgreSQL.
 	"customizations": {
 		"vscode": {
 			"extensions": [

@@ -5,7 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
-import '/main.dart';
+import '/app_state.dart';
 import '/util/global.dart';
 
 class ForgotPasswordPage extends StatefulWidget {

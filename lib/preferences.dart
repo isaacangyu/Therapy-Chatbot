@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/main.dart';
+import '/app_state.dart';
 
 class Preferences {
   AppState? appState;

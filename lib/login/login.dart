@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 
-import '/main.dart';
+import '/app_state.dart';
 import '/util/navigation.dart';
 import '/login/forgot_password.dart';
 
