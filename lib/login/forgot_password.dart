@@ -29,22 +29,22 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     final theme = Theme.of(context);
     final projectTheme = context.watch<AppState>().projectTheme;
     
-    return FutureBuilder(
-      future: forgotPasswordInfo,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Global.loadingScreen(projectTheme.primaryColor, projectTheme.activeColor);
-        }
-        if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-        return Scaffold(      
-          backgroundColor: projectTheme.primaryColor,
-          appBar: AppBar(
-            title: const Text('Forgot Password'),
-            centerTitle: true,
-          ),
-          body: Padding(
+    return Scaffold(      
+      backgroundColor: projectTheme.primaryColor,
+      appBar: AppBar(
+        title: const Text('Forgot Password'),
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+        future: forgotPasswordInfo,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Global.loadingScreen(projectTheme.primaryColor, projectTheme.activeColor);
+          }
+          if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          }
+          return Padding(
             padding: const EdgeInsets.all(20),
             child: Center(
               child: Html(
@@ -57,9 +57,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 },
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
@@ -83,14 +83,14 @@ class ForgotPasswordInfo {
 Future<ForgotPasswordInfo> fetchForgotPasswordInfo() async {
   http.Response response;
   try {
-    response = await http.get(Uri.parse(Global.forgotPasswordInfoUrl));    
+    response = await http.get(Uri.parse(Global.forgotPasswordInfoUrl));
   } catch (e) {
-    return ForgotPasswordInfo(message: e.toString());
+    return ForgotPasswordInfo(message: 'Failed to fetch forgot password info. Exception: ${e.toString()}');
   }
   
   if (response.statusCode == 200) {
     return ForgotPasswordInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   } else {
-    return const ForgotPasswordInfo(message: 'Failed to fetch forgot password info.');
+    return ForgotPasswordInfo(message: 'Failed to fetch forgot password info. Error code: ${response.statusCode}');
   }
 }
