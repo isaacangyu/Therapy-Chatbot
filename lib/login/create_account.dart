@@ -1,10 +1,17 @@
+import 'dart:convert';
+
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
-import 'package:therapy_chatbot/util/theme.dart';
+import 'package:http/http.dart' as http;
 
 import '/app_state.dart';
 import '/login/validate_password.dart';
+import '/util/navigation.dart';
+import '/util/theme.dart';
+import '/util/global.dart';
 
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});
@@ -85,6 +92,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
             cursorColor: widget.projectTheme.activeColor,
             autovalidateMode: AutovalidateMode.onUnfocus,
             validator: (value) {
+              if (kDebugMode) {
+                return null;
+              }
               return (value != null && !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
             },
           ),
@@ -132,6 +142,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
             cursorColor: widget.projectTheme.activeColor,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
+              if (kDebugMode) {
+                return null;
+              }
               return value != null ? validatePassword(value) : null;
             },
           ),
@@ -157,8 +170,29 @@ class _RegistrationFormState extends State<RegistrationForm> {
           ElevatedButton.icon(
             icon: const Icon(Icons.check),
             label: const Text('Confirm'),
-            onPressed: () {
+            onPressed: () async {
               if (formKey.currentState!.validate()) {
+                pushRoute(
+                  context,
+                  CreatingAccountPage(widget: widget)
+                );
+                var creationState = await createAccount(emailController.text, passwordController.text);
+                if (creationState.success) {
+                  pushRoute(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    const Placeholder()
+                  );
+                } else {
+                  pushRoute(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    RegistrationFailedPage(
+                      widget: widget,
+                      reason: creationState.message ?? '???'
+                    )
+                  );
+                }
               }
             },
           ),
@@ -166,4 +200,94 @@ class _RegistrationFormState extends State<RegistrationForm> {
       ),
     );
   }
+}
+
+class RegistrationFailedPage extends StatelessWidget {
+  const RegistrationFailedPage({
+    super.key,
+    required this.widget,
+    required this.reason,
+  });
+
+  final RegistrationForm widget;
+  final String reason;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: widget.projectTheme.primaryColor,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Html(data: 'Failed to create account:<br>$reason'),
+              TextButton.icon(
+                icon: Icon(Icons.arrow_back, color: widget.projectTheme.activeColor),
+                label: const Text('Return to login.'),
+                onPressed: () {
+                  Navigator.popUntil(
+                    context,
+                    (route) => route.isFirst
+                  );
+                },
+              )
+            ],
+          )
+        ),
+      ),
+    );
+  }
+}
+
+class CreatingAccountPage extends StatelessWidget {
+  const CreatingAccountPage({
+    super.key,
+    required this.widget,
+  });
+
+  final RegistrationForm widget;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      child: Global.loadingScreen(
+        widget.projectTheme.primaryColor,
+        widget.projectTheme.activeColor,
+        child: const Text('Creating account...'),
+      )
+    );
+  }
+}
+
+Future<CreationState> createAccount(String email, String password) async {  
+  http.Response response;
+  try {
+    response = await http.post(
+      Uri.parse('${Global.baseURL}/create_account'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'password': password,
+      }),
+    );
+  } catch (e) {
+    return CreationState(false, message: e.toString());
+  }
+  
+  if (response.statusCode == 200) {
+    var json = jsonDecode(response.body) as Map<String, dynamic>;
+    return CreationState(json['success'], message: json['message']);
+  } else {
+    return CreationState(false, message: response.statusCode.toString());
+  }
+}
+
+class CreationState {
+  CreationState(this.success, {this.message});
+  
+  bool success;
+  String? message;
 }
