@@ -5,16 +5,23 @@ import 'package:email_validator/email_validator.dart';
 import '/app_state.dart';
 import '/util/navigation.dart';
 import '/login/forgot_password.dart';
+import '/login/create_account.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  var passwordVisible = false;
+  
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final projectTheme = context.watch<AppState>().projectTheme;
-    
-    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     
     return Scaffold(
       backgroundColor: projectTheme.primaryColor,
@@ -63,22 +70,29 @@ class LoginPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
-                        obscureText: true,
+                        obscureText: !passwordVisible,
                         enableSuggestions: false,
                         autocorrect: false,
                         decoration: projectTheme.textFormDecoration.copyWith(
                           prefixIcon: Icon(Icons.password, color: projectTheme.activeColor),
                           labelText: 'Password',
                           hintText: 'Enter your password',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              passwordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: projectTheme.activeColor,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                passwordVisible = !passwordVisible;
+                              });
+                            },
+                          ),
                         ),
                         style: theme.textTheme.bodyLarge!.copyWith(
                           color: projectTheme.activeColor,
                         ),
                         cursorColor: projectTheme.activeColor,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        validator: (value) {
-                          return value != null ? validatePassword(value) : null;
-                        },
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton(
@@ -110,6 +124,7 @@ class LoginPage extends StatelessWidget {
                 ),
                 child: const Text('Create Account'),
                 onPressed: () {
+                  pushRoute(context, const RegistrationPage());
                 },
               ),
             ],
@@ -118,26 +133,4 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-  
-  String? validatePassword(String password) {
-    var lengthTest = PasswordTest(RegExp(r'^.{8,}$'), 'Password must be at least 8 characters long.');
-    var lowerCaseTest = PasswordTest(RegExp(r'[a-z]'), 'Password must contain at least one lowercase letter.');
-    var upperCaseTest = PasswordTest(RegExp(r'[A-Z]'), 'Password must contain at least one uppercase letter.');
-    var digitTest = PasswordTest(RegExp(r'[0-9]'), 'Password must contain at least one digit.');
-    var specialCharacterTest = PasswordTest(RegExp(r'[!@#\$%^&*(),.?":{}|<>]'), 'Password must contain at least one special character.');
-    
-    for (var test in [lengthTest, lowerCaseTest, upperCaseTest, digitTest, specialCharacterTest]) {
-      if (!test.regexp.hasMatch(password)) {
-        return test.message;
-      }
-    }
-    return null;
-  }
-}
-
-class PasswordTest {
-  final RegExp regexp;
-  final String message;
-  
-  PasswordTest(this.regexp, this.message);
 }

@@ -81,11 +81,16 @@ class ForgotPasswordInfo {
 }
 
 Future<ForgotPasswordInfo> fetchForgotPasswordInfo() async {
-  final response = await http.get(Uri.parse(Global.forgotPasswordInfoUrl));
+  http.Response response;
+  try {
+    response = await http.get(Uri.parse(Global.forgotPasswordInfoUrl));    
+  } catch (e) {
+    return ForgotPasswordInfo(message: e.toString());
+  }
   
   if (response.statusCode == 200) {
     return ForgotPasswordInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   } else {
-    throw Exception('Failed to fetch forgot password info.');
+    return const ForgotPasswordInfo(message: 'Failed to fetch forgot password info.');
   }
 }
