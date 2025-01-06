@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:therapy_chatbot/login/forgot_password.dart';
+import '../login/forgot_password.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key}); // back button?
@@ -53,7 +53,7 @@ class LoginPage extends StatelessWidget {
                           hintText: 'Enter email',
                           prefixIcon: Icon(Icons.email),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                         ),
                         onChanged: (value) {},
@@ -71,7 +71,7 @@ class LoginPage extends StatelessWidget {
                           hintText: 'Enter password',
                           prefixIcon: Icon(Icons.password),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                         ),
                         onChanged: (value) {},
@@ -86,13 +86,20 @@ class LoginPage extends StatelessWidget {
                       ),
                       ElevatedButton(
                         onPressed: () {},
-                        minWidth: 1000,
-                        color: Colors.teal,
-                        textColor: Colors.white,
+                        // minWidth: 1000,
+                        // color: Colors.teal,
+                        // textColor: Colors.white,
                         child: const Text('Login'),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ForgotPasswordPage()),
+                          );
+                        },
                         child: Text('Forgot password?'), // left justify
                       )
                     ],
