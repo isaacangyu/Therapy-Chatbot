@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:therapy_chatbot/login/forgot_password.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key}); // back button?
@@ -51,7 +52,9 @@ class LoginPage extends StatelessWidget {
                           labelText: 'Email',
                           hintText: 'Enter email',
                           prefixIcon: Icon(Icons.email),
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
                         ),
                         onChanged: (value) {},
                         validator: (value) {
@@ -67,7 +70,9 @@ class LoginPage extends StatelessWidget {
                           labelText: 'Password',
                           hintText: 'Enter password',
                           prefixIcon: Icon(Icons.password),
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
                         ),
                         onChanged: (value) {},
                         validator: (value) {
@@ -79,15 +84,25 @@ class LoginPage extends StatelessWidget {
                       SizedBox(
                         height: 30,
                       ),
-                      MaterialButton(
+                      ElevatedButton(
                         onPressed: () {},
-                        minWidth: 1000,
+                        style: ButtonStyle(
+                          // look into preserving ratio between text and button
+                          fixedSize: WidgetStateProperty.all<Size>(
+                            Size(200.0, 50.0), // Button width and height
+                          ),
+                        ),
                         child: Text('Login'),
-                        color: Colors.teal,
-                        textColor: Colors.white,
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const ForgotPasswordPage()),
+                          );
+                        },
                         child: Text('Forgot password?'), // left justify
                       )
                     ],

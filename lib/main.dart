@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Mental Health Chatbot',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -32,10 +32,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 45, 221, 98)),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color.fromARGB(255, 45, 221, 98)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Mental Health Chatbot Home Page'),
     );
   }
 }
@@ -116,43 +117,50 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            ElevatedButton( // Isaac, Alex
-              child: const Text('Navigate to Login'), // will be replaced by Profile >> Sign out
+            ElevatedButton(
+              // Isaac, Alex
+              child: const Text(
+                  'Navigate to Login'), // will be replaced by Profile >> Sign out
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
-            // Navigate to second route when tapped.
-              },),
-            ElevatedButton( // Vaani
+              },
+            ),
+            ElevatedButton(
+              // Vaani
               child: const Text('Navigate to Breathing'),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => BreathingPage()),
                 );
-            // Navigate to second route when tapped.
-          },),
-            ElevatedButton( // Shrida, Sharngi
-              child: const Text('Navigate to Journal'), 
+                // Navigate to second route when tapped.
+              },
+            ),
+            ElevatedButton(
+              // Shrida, Sharngi
+              child: const Text('Navigate to Journal'),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const JournalPage()),
                 );
-            // Navigate to second route when tapped.
-          },),
-            ElevatedButton( // Vaani
+                // Navigate to second route when tapped.
+              },
+            ),
+            ElevatedButton(
+              // Vaani
               child: const Text('Navigate to Profile'),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const ProfilePage()),
                 );
-            // Navigate to second route when tapped.
-          },
-        ),
+                // Navigate to second route when tapped.
+              },
+            ),
           ],
         ),
       ),
