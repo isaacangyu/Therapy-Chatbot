@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '/initialization/initialization.dart';
 import '/login/login.dart';
 import '/util/global.dart';
 import '/util/persistence.dart';
@@ -29,9 +30,9 @@ class App extends StatelessWidget {
             future: appState.preferencesLoaded,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return MaterialApp(
+                return const MaterialApp(
                   title: Global.appTitle,
-                  home: Global.loadingScreen(Colors.black, Colors.white),
+                  home: InitializationScreen(),
                 );
               }
               var themeData = ThemeData(
