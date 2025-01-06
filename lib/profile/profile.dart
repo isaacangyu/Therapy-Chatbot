@@ -3,29 +3,58 @@ import 'package:flutter/material.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login Page',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 45, 221, 98)),
-        useMaterial3: true,
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text('Profile'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const CircleAvatar( // Profile picture.
+                radius: 60.0,
+                backgroundColor: Colors.teal,
+                child: ClipOval(
+                  child: SizedBox(
+                    width: 100.0,
+                    height: 100.0,
+                    child: Placeholder(),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              ElevatedButton.icon( // Settings button.
+                onPressed: () {
+                  // Nothing for now.
+                },
+                icon: const Icon(Icons.settings),
+                style: const ButtonStyle(
+                  foregroundColor: WidgetStatePropertyAll(Colors.teal),
+                ),
+                label: const Text('Settings'),
+              ),
+              const Spacer(),
+              MaterialButton( // Signout button.
+                onPressed: () {
+                  // Nothing for now.
+                },
+                color: Colors.teal,
+                textColor: Colors.white,
+                child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

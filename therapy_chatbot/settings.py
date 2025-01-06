@@ -77,8 +77,12 @@ WSGI_APPLICATION = "therapy_chatbot.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": "localhost",
+        "USER": "postgres",
+        "NAME": "postgres",
+        "PORT": "5432",
+        "PASSWORD": "postgres"
     }
 }
 

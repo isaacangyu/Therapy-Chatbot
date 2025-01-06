@@ -24,6 +24,12 @@
             "type": "shell",
             "command": "./scripts/django-migrate.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Flutter Analyze",
+            "type": "shell",
+            "command": "./scripts/flutter-analyze.sh",
+            "problemMatcher": []
         }
     ]
 }
