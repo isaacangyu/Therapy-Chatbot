@@ -18,7 +18,7 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  late Future<ForgotPasswordInfo> forgotPasswordInfo;
+  late Future<String> forgotPasswordInfo;
 
   final formKey = GlobalKey<FormState>();  
   final emailController = TextEditingController();
@@ -52,9 +52,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Global.loadingScreen(projectTheme.primaryColor, projectTheme.activeColor);
           }
-          if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
           return Padding(
             padding: const EdgeInsets.all(20),
             child: Center(
@@ -62,7 +59,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Html(
-                    data: snapshot.data!.message,
+                    data: snapshot.data!,
                     style: {
                       'body': Style(
                         color: projectTheme.activeColor,
@@ -133,35 +130,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 }
 
-class ForgotPasswordInfo {
-  final String message;
-  
-  const ForgotPasswordInfo({required this.message});
-  
-  factory ForgotPasswordInfo.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'message': String message,
-      } => 
-        ForgotPasswordInfo(message: message),
-      _ => throw const FormatException('Invalid JSON format.'),
-    };
-  }
-}
-
-Future<ForgotPasswordInfo> fetchForgotPasswordInfo() async {
-  http.Response response;
+Future<String> fetchForgotPasswordInfo() async {
   try {
-    response = await http.get(Uri.parse(Global.forgotPasswordInfoUrl));
+    var response = await http.get(Uri.parse(Global.forgotPasswordInfoUrl));
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body) as Map<String, dynamic>;
+      return json['message'];
+    }
+    debugPrint('HTTP response code: ${response.statusCode}');
   } catch (e) {
-    return ForgotPasswordInfo(message: 'Failed to fetch forgot password info. Exception: ${e.toString()}');
+    debugPrint('Request exception: $e');
   }
-  
-  if (response.statusCode == 200) {
-    return ForgotPasswordInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-  } else {
-    return ForgotPasswordInfo(message: 'Failed to fetch forgot password info. Error code: ${response.statusCode}');
-  }
+  return 'There was a problem getting forgot password information. Please check your internet connection and use the form below.';
 }
 
 Future<bool> requestPasswordReset(String email) async {
@@ -173,9 +153,10 @@ Future<bool> requestPasswordReset(String email) async {
         'email': email,
       }),
     );
+    debugPrint('HTTP response code: ${response.statusCode}');
     return response.statusCode == 200;
   } catch (e) {
-    debugPrint(e.toString());
+    debugPrint('Request exception: $e');
   }
   return false;
 }

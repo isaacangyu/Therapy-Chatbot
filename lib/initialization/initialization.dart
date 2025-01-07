@@ -37,16 +37,11 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
       seedColor: Color(userPreferences.seedColor),
       dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
     );
-    
-    debugPrint('''
-Default preferences from app database:
-Color Scheme: ${appState.preferences.colorScheme}
-''');
   } catch (e) {
     debugPrint(e.toString());
     return InitializationState(
       false,
-      'Failed to load app preferences.'
+      message: 'Failed to load app preferences.'
     );
   }
   
@@ -54,47 +49,46 @@ Color Scheme: ${appState.preferences.colorScheme}
   if (latestAppVersion != null && latestAppVersion != Global.appVersion) {
     return InitializationState(
       false,
-      'An update is availabe. Please update to version $latestAppVersion.'
+      message: 'An update is availabe. Please update to version $latestAppVersion.'
     );
   }
   
   try {
     appState.sessionInfo = await database.getSession();
-    
-    debugPrint('''
-Session info:
-Token: ${appState.sessionInfo.token}
-Logged in: ${appState.sessionInfo.loggedIn}
-''');
   } catch (e) {
     debugPrint(e.toString());
     return InitializationState(
       false,
-      'Failed to load session info.'
+      message: 'Failed to load session info.'
     );
   }
   var backendBaseUrl = await fetchBackendBaseUrl();
   if (backendBaseUrl == null && !appState.sessionInfo.loggedIn) {
     return InitializationState(
       false,
-      'Unable to reach online services. Please check your internet connection.'
+      message: 'Unable to reach online services. Please check your internet connection.'
     );
   }
   
   if (latestAppVersion == null && backendBaseUrl != null) {
     return InitializationState(
       false,
-      'Unable to resolve conflicting information.'
+      message: 'Unable to resolve conflicting information.'
     );
   }
   
-  debugPrint('Latest App Version: $latestAppVersion');
-  debugPrint('Current App Version: ${Global.appVersion}');
-  debugPrint('Backend Base URL: $backendBaseUrl');
-  
-  if (kDebugMode) {
-    backendBaseUrl = null;
-  }
+  debugPrint('''
+Default preferences from app database:
+Color Scheme: ${appState.preferences.colorScheme}
+
+Session info:
+Token: ${appState.sessionInfo.token}
+Logged in: ${appState.sessionInfo.loggedIn}
+
+Latest App Version: $latestAppVersion
+Current App Version: ${Global.appVersion}
+Backend Base URL: $backendBaseUrl
+''');
   
   if (backendBaseUrl != null) {
     Global.baseURL = backendBaseUrl;
@@ -110,46 +104,40 @@ Logged in: ${appState.sessionInfo.loggedIn}
     await Future.delayed(const Duration(seconds: 2));
   }
   
-  return backendBaseUrl == null ? InitializationState(
-    true,
-    'You are in offline mode.'
-  ) : InitializationState(
-    true,
-    ''
-  );
+  return InitializationState(true);
 }
 
 Future<String?> fetchLatestAppVersion() async {
   try {
-    http.Response response;
-    response = await http.get(Uri.parse(Global.latestAppVersionUrl));
+    var response = await http.get(Uri.parse(Global.latestAppVersionUrl));
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body) as Map<String, dynamic>;
       return json['version'];
     }
+    debugPrint('HTTP response code: ${response.statusCode}');
   } catch (e) {
-    debugPrint(e.toString());
+    debugPrint('Request exception: $e');
   }
   return null;
 }
 
 Future<String?> fetchBackendBaseUrl() async {
   try {
-    http.Response response;
-    response = await http.get(Uri.parse(Global.backendBaseUrl));
+    var response = await http.get(Uri.parse(Global.backendBaseUrl));
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body) as Map<String, dynamic>;
       return json['url'];
     }
+    debugPrint('HTTP response code: ${response.statusCode}');
   } catch (e) {
-    debugPrint(e.toString());
+    debugPrint('Request exception: $e');
   }
   return null;
 }
 
 class InitializationState {
-  InitializationState(this.success, this.message);
+  InitializationState(this.success, {this.message});
   
   bool success;
-  String message;
+  String? message;
 }

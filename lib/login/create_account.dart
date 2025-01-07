@@ -177,21 +177,21 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   CreatingAccountPage(widget: widget)
                 );
                 var creationState = await createAccount(emailController.text, passwordController.text);
-                if (creationState.success) {
-                  pushRoute(
-                    // ignore: use_build_context_synchronously
-                    context,
-                    const Placeholder()
-                  );
-                } else {
-                  pushRoute(
-                    // ignore: use_build_context_synchronously
-                    context,
-                    RegistrationFailedPage(
-                      widget: widget,
-                      reason: creationState.message ?? '???'
-                    )
-                  );
+                if (context.mounted) {
+                  if (creationState.success) {
+                    pushRoute(
+                      context,
+                      const Placeholder()
+                    );
+                  } else {
+                    pushRoute(
+                      context,
+                      RegistrationFailedPage(
+                        widget: widget,
+                        reason: creationState.message ?? '???'
+                      )
+                    );
+                  }
                 }
               }
             },
@@ -263,9 +263,8 @@ class CreatingAccountPage extends StatelessWidget {
 }
 
 Future<CreationState> createAccount(String email, String password) async {  
-  http.Response response;
   try {
-    response = await http.post(
+    var response = await http.post(
       Uri.parse('${Global.baseURL}/create_account'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
@@ -273,16 +272,15 @@ Future<CreationState> createAccount(String email, String password) async {
         'password': password,
       }),
     );
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body) as Map<String, dynamic>;
+      return CreationState(json['success'], message: json['message']);
+    }
+    debugPrint('HTTP response code: ${response.statusCode}');
   } catch (e) {
-    return CreationState(false, message: e.toString());
+    debugPrint('Request exception: $e');
   }
-  
-  if (response.statusCode == 200) {
-    var json = jsonDecode(response.body) as Map<String, dynamic>;
-    return CreationState(json['success'], message: json['message']);
-  } else {
-    return CreationState(false, message: response.statusCode.toString());
-  }
+  return CreationState(false, message: 'Please check your internet connection.');
 }
 
 class CreationState {

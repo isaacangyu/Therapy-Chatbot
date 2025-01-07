@@ -40,7 +40,7 @@ class App extends StatelessWidget {
               if (!snapshot.data!.success) {
                 return MaterialApp(
                   title: Global.appTitle,
-                  home: NoticeScreen(snapshot.data!.message),
+                  home: NoticeScreen(snapshot.data!.message!),
                 );
               }
               
