@@ -5,6 +5,11 @@ class Preferences extends Table with AutoIncrementingPrimaryKey {
   IntColumn get seedColor => integer()();
 }
 
+class Session extends Table with AutoIncrementingPrimaryKey {
+  TextColumn get token => text()();
+  BoolColumn get loggedIn => boolean()();
+}
+
 mixin AutoIncrementingPrimaryKey on Table {
   IntColumn get id => integer().autoIncrement()();
 }

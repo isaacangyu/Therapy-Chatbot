@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '/initialization/init.dart';
 import '/util/theme.dart';
 import '/util/persistence.dart';
 import '/preferences.dart';
@@ -7,22 +8,13 @@ import '/preferences.dart';
 class AppState extends ChangeNotifier {
   late ProjectTheme projectTheme; // Updated in App.build.
   
+  late final Future<InitializationState> initializationComplete;
+  
   final preferences = Preferences();
-  late final Future<void> preferencesLoaded;
+  late final SessionData sessionInfo;
   
   AppState(AppDatabase database) {
-    preferencesLoaded = database.getUserPreferences().then((userPreferences) {
-      preferences.appState = this;
-      preferences.colorScheme = ColorScheme.fromSeed(
-        seedColor: Color(userPreferences.seedColor),
-        dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
-      );
-      
-      debugPrint('''
-Default preferences from app database:
-Color Scheme: ${preferences.colorScheme}
-''');
-    });
+    initializationComplete = initializeApp(database, this);
   }
   
   @override

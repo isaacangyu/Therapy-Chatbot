@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '/util/persistence.dart';
 
 class Global {
+  static const appVersion = '1.0.0+1';
+  
   static const appTitle = kDebugMode ? 'DEBUG | Therapy Chatbot' : 'Therapy Chatbot';
   
   static final defaultSeedColor = const Color.fromARGB(255, 100, 149, 237).value;
@@ -35,9 +37,11 @@ class Global {
     );
   }
   
-  // static const apiBaseUrl = 'https://raw.githubusercontent.com/isaacangyu/Therapy-Chatbot/refs/heads/staging/api';
-  static const apiBaseUrl = 'http://localhost:5000/api';
-  static const forgotPasswordInfoUrl = '$apiBaseUrl/forgot_password_info.json';
+  // static const initBaseUrl = 'https://raw.githubusercontent.com/isaacangyu/Therapy-Chatbot/refs/heads/staging/api';
+  static const initBaseUrl = 'http://localhost:5000/api';
+  static const forgotPasswordInfoUrl = '$initBaseUrl/forgot_password_info.json';
+  static const latestAppVersionUrl = '$initBaseUrl/latest_app_version.json';
+  static const backendBaseUrl = '$initBaseUrl/base_url.json';
   
-  static const baseURL = 'http://localhost:8000';
+  static String? baseURL;
 }

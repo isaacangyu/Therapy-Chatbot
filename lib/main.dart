@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '/initialization/initialization.dart';
+import '/initialization/notice.dart';
 import '/login/login.dart';
 import '/util/global.dart';
 import '/util/persistence.dart';
@@ -27,7 +28,7 @@ class App extends StatelessWidget {
       child: Consumer<AppState>(
         builder: (context, appState, child) {
           return FutureBuilder(
-            future: appState.preferencesLoaded,
+            future: appState.initializationComplete,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const MaterialApp(
@@ -35,6 +36,14 @@ class App extends StatelessWidget {
                   home: InitializationScreen(),
                 );
               }
+              
+              if (!snapshot.data!.success) {
+                return MaterialApp(
+                  title: Global.appTitle,
+                  home: NoticeScreen(snapshot.data!.message),
+                );
+              }
+              
               var themeData = ThemeData(
                 useMaterial3: true,
                 colorScheme: appState.preferences.colorScheme,

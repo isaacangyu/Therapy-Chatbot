@@ -10,7 +10,7 @@ import '/util/global.dart';
 
 part 'persistence.g.dart';
 
-@DriftDatabase(tables: [Preferences])
+@DriftDatabase(tables: [Preferences, Session])
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.
@@ -54,7 +54,14 @@ class AppDatabase extends _$AppDatabase {
         steps: migrationSteps(
           from1To2: (m, schema) async {
             // Nothing.
-          }
+          },
+          from2To3: (m, schema) async {
+            await m.createTable(schema.session);
+            await into(session).insert(const SessionCompanion(
+              token: Value(''),
+              loggedIn: Value(false),
+            ));
+          },
         )
       );
 
@@ -69,6 +76,10 @@ class AppDatabase extends _$AppDatabase {
       
       await into(preferences).insert(Global.defaultBasePreferences);
       await into(preferences).insert(Global.defaultUserPreferences);
+      await into(session).insert(const SessionCompanion(
+        token: Value(''),
+        loggedIn: Value(false),
+      ));
     },
     beforeOpen: (details) async {
       if (!kDebugMode) {
@@ -84,5 +95,9 @@ class AppDatabase extends _$AppDatabase {
 
   Future<Preference> getUserPreferences() async {
     return await (select(preferences)..where((t) => t.name.equals('user'))).getSingle();
+  }
+  
+  Future<SessionData> getSession() async {
+    return await (select(session)..where((t) => t.id.equals(1))).getSingle();
   }
 }
