@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '/initialization/init.dart';
+import 'initialization/initialization.dart';
 import '/util/theme.dart';
 import '/util/persistence.dart';
 import '/preferences.dart';

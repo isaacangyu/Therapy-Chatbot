@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/initialization/initialization.dart';
+import 'initialization/splash.dart';
 import '/initialization/notice.dart';
 import '/login/login.dart';
 import '/util/global.dart';
@@ -33,7 +33,7 @@ class App extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const MaterialApp(
                   title: Global.appTitle,
-                  home: InitializationScreen(),
+                  home: SplashScreen(),
                 );
               }
               
