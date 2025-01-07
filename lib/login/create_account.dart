@@ -61,6 +61,7 @@ class RegistrationForm extends StatefulWidget {
 
 class _RegistrationFormState extends State<RegistrationForm> {
   final formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   var passwordVisible = false;
@@ -78,6 +79,26 @@ class _RegistrationFormState extends State<RegistrationForm> {
       key: formKey,
       child: Column(
         children: [
+          TextFormField(
+            controller: nameController,
+            keyboardType: TextInputType.name,
+            decoration: widget.projectTheme.textFormDecoration.copyWith(
+              prefixIcon: Icon(Icons.person, color: widget.projectTheme.activeColor),
+              labelText: 'Name',
+            ),
+            style: widget.theme.textTheme.bodyLarge!.copyWith(
+              color: widget.projectTheme.activeColor,
+            ),
+            cursorColor: widget.projectTheme.activeColor,
+            autovalidateMode: AutovalidateMode.onUnfocus,
+            validator: (value) {
+              if (kDebugMode) {
+                return null;
+              }
+              return (value != null && value.isEmpty) ? 'Please enter a name.' : null;
+            },
+          ),
+          const SizedBox(height: 10),
           TextFormField(
             controller: emailController,
             keyboardType: TextInputType.emailAddress,
@@ -176,7 +197,11 @@ class _RegistrationFormState extends State<RegistrationForm> {
                   context,
                   CreatingAccountPage(widget: widget)
                 );
-                var creationState = await createAccount(emailController.text, passwordController.text);
+                var creationState = await createAccount(
+                  nameController.text,
+                  emailController.text,
+                  passwordController.text
+                );
                 if (context.mounted) {
                   if (creationState.success) {
                     pushRoute(
@@ -262,12 +287,13 @@ class CreatingAccountPage extends StatelessWidget {
   }
 }
 
-Future<CreationState> createAccount(String email, String password) async {  
+Future<CreationState> createAccount(String name, String email, String password) async {  
   try {
     var response = await http.post(
       Uri.parse('${Global.baseURL}/create_account'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
+        'name': name,
         'email': email,
         'password': password,
       }),
