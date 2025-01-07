@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '/util/global.dart';
 
@@ -13,11 +14,12 @@ class InitializationScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
+            SizedBox(
               width: 125,
               height: 125,
-              child: Image(
-                image: AssetImage('app_assets/icon.png'),
+              child: FadeInImage(
+                placeholder: MemoryImage(kTransparentImage),
+                image: const AssetImage('app_assets/icon.png'),
               ),
             ),
             SizedBox(

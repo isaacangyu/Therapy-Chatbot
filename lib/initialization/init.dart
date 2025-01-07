@@ -92,6 +92,11 @@ Logged in: ${appState.sessionInfo.loggedIn}
   debugPrint('Backend Base URL: $backendBaseUrl');
   
   Global.baseURL = backendBaseUrl;
+  
+  // Insert some artificial delay.
+  // Otherwise, the splash screen image is "janky".
+  await Future.delayed(const Duration(seconds: 2));
+  
   return backendBaseUrl == null ? InitializationState(
     true,
     'You are in offline mode.'
