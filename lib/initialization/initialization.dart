@@ -92,8 +92,18 @@ Logged in: ${appState.sessionInfo.loggedIn}
   debugPrint('Current App Version: ${Global.appVersion}');
   debugPrint('Backend Base URL: $backendBaseUrl');
   
-  Global.baseURL = backendBaseUrl;
+  if (kDebugMode) {
+    backendBaseUrl = null;
+  }
   
+  if (backendBaseUrl != null) {
+    Global.baseURL = backendBaseUrl;
+    Global.online = true;
+    // To do later.
+  } else {
+    Global.online = false;
+  }
+    
   // Insert some artificial delay.
   // Otherwise, the splash screen image is "janky".
   if (!kDebugMode) {

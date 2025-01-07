@@ -43,5 +43,18 @@ class Global {
   static const latestAppVersionUrl = '$initBaseUrl/latest_app_version.json';
   static const backendBaseUrl = '$initBaseUrl/base_url.json';
   
+  static bool offline(BuildContext context) {
+    if (online) {
+      return false;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("This function isn't available offline.")
+      )
+    );
+    return true;
+  }
+  static late bool online;
   static String? baseURL;
+  static String? resetPasswordUrl;
 }
