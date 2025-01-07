@@ -79,7 +79,7 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
   
   debugPrint('''
 Default preferences from app database:
-Color Scheme: ${appState.preferences.colorScheme}
+Color Scheme Seed: ${appState.preferences.colorScheme?.primaryContainer}
 
 Session info:
 Token: ${appState.sessionInfo.token}

@@ -68,6 +68,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   
   @override
   void dispose() {
+    nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -95,7 +96,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
               if (kDebugMode) {
                 return null;
               }
-              return (value != null && value.isEmpty) ? 'Please enter a name.' : null;
+              return (value == null || value.isEmpty) ? 'Please enter a name.' : null;
             },
           ),
           const SizedBox(height: 10),
@@ -116,7 +117,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
               if (kDebugMode) {
                 return null;
               }
-              return (value != null && !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
+              return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
             },
           ),
           const SizedBox(height: 10),
@@ -166,7 +167,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
               if (kDebugMode) {
                 return null;
               }
-              return value != null ? validatePassword(value) : null;
+              return value == null ? 'Invalid password.' : validatePassword(value);
             },
           ),
           const SizedBox(height: 10),
@@ -239,6 +240,9 @@ class RegistrationFailedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final projectTheme = context.watch<AppState>().projectTheme;
+    
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -247,10 +251,31 @@ class RegistrationFailedPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Html(data: 'Failed to create account:<br>$reason'),
-              TextButton.icon(
+              Container(
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Html(
+                  style: {
+                    'body': Style(
+                      color: theme.colorScheme.onSecondaryContainer,
+                      fontSize: FontSize(theme.textTheme.bodyLarge!.fontSize!),
+                    ),
+                  },
+                  data: 'Failed to create account:<br>$reason',
+                )
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton.icon(
                 icon: Icon(Icons.arrow_back, color: widget.projectTheme.activeColor),
-                label: const Text('Return to login.'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: projectTheme.activeColor,
+                  side: BorderSide(color: projectTheme.activeColor),
+                ),
+                label: const Text('Return to Login'),
                 onPressed: () {
                   Navigator.popUntil(
                     context,

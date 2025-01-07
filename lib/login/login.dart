@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                         cursorColor: projectTheme.activeColor,
                         autovalidateMode: AutovalidateMode.onUnfocus,
                         validator: (value) {
-                          return (value != null && !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
+                          return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
                         },
                       ),
                       const SizedBox(height: 10),

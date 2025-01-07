@@ -58,15 +58,23 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Html(
-                    data: snapshot.data!,
-                    style: {
-                      'body': Style(
-                        color: projectTheme.activeColor,
-                        fontSize: FontSize(theme.textTheme.bodyLarge!.fontSize!),
-                      ),
-                    },
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Html(
+                      data: snapshot.data!,
+                      style: {
+                        'body': Style(
+                          color: theme.colorScheme.onSecondaryContainer,
+                          fontSize: FontSize(theme.textTheme.bodyLarge!.fontSize!),
+                        ),
+                      },
+                    ),
                   ),
+                  const SizedBox(height: 20),
                   Form(
                     key: formKey,
                     child: Column(
@@ -88,7 +96,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             if (kDebugMode) {
                               return null;
                             }
-                            return (value != null && !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
+                            return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
                           },
                         ),
                         const SizedBox(height: 20),
@@ -132,7 +140,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
 Future<String> fetchForgotPasswordInfo() async {
   try {
-    var response = await http.get(Uri.parse(Global.forgotPasswordInfoUrl));
+    var response = await http.get(
+      Uri.parse(Global.forgotPasswordInfoUrl),
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
+    );
     if (response.statusCode == 200) {
       var json = jsonDecode(response.body) as Map<String, dynamic>;
       return json['message'];
