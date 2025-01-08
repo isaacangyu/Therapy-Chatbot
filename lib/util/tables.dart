@@ -6,7 +6,7 @@ class Preferences extends Table with AutoIncrementingPrimaryKey {
 }
 
 class Session extends Table with AutoIncrementingPrimaryKey {
-  TextColumn get token => text()();
+  TextColumn get token => text().nullable()();
   BoolColumn get loggedIn => boolean()();
 }
 

@@ -235,8 +235,8 @@ class $SessionTable extends Session with TableInfo<$SessionTable, SessionData> {
   static const VerificationMeta _tokenMeta = const VerificationMeta('token');
   @override
   late final GeneratedColumn<String> token = GeneratedColumn<String>(
-      'token', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      'token', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _loggedInMeta =
       const VerificationMeta('loggedIn');
   @override
@@ -264,8 +264,6 @@ class $SessionTable extends Session with TableInfo<$SessionTable, SessionData> {
     if (data.containsKey('token')) {
       context.handle(
           _tokenMeta, token.isAcceptableOrUnknown(data['token']!, _tokenMeta));
-    } else if (isInserting) {
-      context.missing(_tokenMeta);
     }
     if (data.containsKey('logged_in')) {
       context.handle(_loggedInMeta,
@@ -285,7 +283,7 @@ class $SessionTable extends Session with TableInfo<$SessionTable, SessionData> {
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       token: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}token'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}token']),
       loggedIn: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}logged_in'])!,
     );
@@ -299,15 +297,16 @@ class $SessionTable extends Session with TableInfo<$SessionTable, SessionData> {
 
 class SessionData extends DataClass implements Insertable<SessionData> {
   final int id;
-  final String token;
+  final String? token;
   final bool loggedIn;
-  const SessionData(
-      {required this.id, required this.token, required this.loggedIn});
+  const SessionData({required this.id, this.token, required this.loggedIn});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['token'] = Variable<String>(token);
+    if (!nullToAbsent || token != null) {
+      map['token'] = Variable<String>(token);
+    }
     map['logged_in'] = Variable<bool>(loggedIn);
     return map;
   }
@@ -315,7 +314,8 @@ class SessionData extends DataClass implements Insertable<SessionData> {
   SessionCompanion toCompanion(bool nullToAbsent) {
     return SessionCompanion(
       id: Value(id),
-      token: Value(token),
+      token:
+          token == null && nullToAbsent ? const Value.absent() : Value(token),
       loggedIn: Value(loggedIn),
     );
   }
@@ -325,7 +325,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SessionData(
       id: serializer.fromJson<int>(json['id']),
-      token: serializer.fromJson<String>(json['token']),
+      token: serializer.fromJson<String?>(json['token']),
       loggedIn: serializer.fromJson<bool>(json['loggedIn']),
     );
   }
@@ -334,14 +334,18 @@ class SessionData extends DataClass implements Insertable<SessionData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'token': serializer.toJson<String>(token),
+      'token': serializer.toJson<String?>(token),
       'loggedIn': serializer.toJson<bool>(loggedIn),
     };
   }
 
-  SessionData copyWith({int? id, String? token, bool? loggedIn}) => SessionData(
+  SessionData copyWith(
+          {int? id,
+          Value<String?> token = const Value.absent(),
+          bool? loggedIn}) =>
+      SessionData(
         id: id ?? this.id,
-        token: token ?? this.token,
+        token: token.present ? token.value : this.token,
         loggedIn: loggedIn ?? this.loggedIn,
       );
   SessionData copyWithCompanion(SessionCompanion data) {
@@ -375,7 +379,7 @@ class SessionData extends DataClass implements Insertable<SessionData> {
 
 class SessionCompanion extends UpdateCompanion<SessionData> {
   final Value<int> id;
-  final Value<String> token;
+  final Value<String?> token;
   final Value<bool> loggedIn;
   const SessionCompanion({
     this.id = const Value.absent(),
@@ -384,10 +388,9 @@ class SessionCompanion extends UpdateCompanion<SessionData> {
   });
   SessionCompanion.insert({
     this.id = const Value.absent(),
-    required String token,
+    this.token = const Value.absent(),
     required bool loggedIn,
-  })  : token = Value(token),
-        loggedIn = Value(loggedIn);
+  }) : loggedIn = Value(loggedIn);
   static Insertable<SessionData> custom({
     Expression<int>? id,
     Expression<String>? token,
@@ -401,7 +404,7 @@ class SessionCompanion extends UpdateCompanion<SessionData> {
   }
 
   SessionCompanion copyWith(
-      {Value<int>? id, Value<String>? token, Value<bool>? loggedIn}) {
+      {Value<int>? id, Value<String?>? token, Value<bool>? loggedIn}) {
     return SessionCompanion(
       id: id ?? this.id,
       token: token ?? this.token,
@@ -580,12 +583,12 @@ typedef $$PreferencesTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function()>;
 typedef $$SessionTableCreateCompanionBuilder = SessionCompanion Function({
   Value<int> id,
-  required String token,
+  Value<String?> token,
   required bool loggedIn,
 });
 typedef $$SessionTableUpdateCompanionBuilder = SessionCompanion Function({
   Value<int> id,
-  Value<String> token,
+  Value<String?> token,
   Value<bool> loggedIn,
 });
 
@@ -670,7 +673,7 @@ class $$SessionTableTableManager extends RootTableManager<
               $$SessionTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            Value<String> token = const Value.absent(),
+            Value<String?> token = const Value.absent(),
             Value<bool> loggedIn = const Value.absent(),
           }) =>
               SessionCompanion(
@@ -680,7 +683,7 @@ class $$SessionTableTableManager extends RootTableManager<
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            required String token,
+            Value<String?> token = const Value.absent(),
             required bool loggedIn,
           }) =>
               SessionCompanion.insert(

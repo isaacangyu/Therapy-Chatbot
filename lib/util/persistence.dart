@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(DatabaseConnection super.connection);
   
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -62,6 +62,21 @@ class AppDatabase extends _$AppDatabase {
               loggedIn: Value(false),
             ));
           },
+          from3To4: (m, schema) async {
+            await m.alterTable(
+              TableMigration(session, columnTransformer: {
+                session.token: session.token.cast<String>(),
+              })
+            );
+            var sessionData = await (select(session)..where((t) => t.id.equals(1))).getSingleOrNull();
+            if (sessionData != null && sessionData.token == '') {
+              await (update(session)..where((t) => t.id.equals(1))).write(SessionCompanion(
+                token: const Value(null),
+                loggedIn: Value(sessionData.loggedIn),
+              ));
+            }
+            debugPrint('Ran database migration: 3 -> 4');
+          },
         )
       );
 
@@ -77,7 +92,7 @@ class AppDatabase extends _$AppDatabase {
       await into(preferences).insert(Global.defaultBasePreferences);
       await into(preferences).insert(Global.defaultUserPreferences);
       await into(session).insert(const SessionCompanion(
-        token: Value(''),
+        token: Value(null),
         loggedIn: Value(false),
       ));
     },
