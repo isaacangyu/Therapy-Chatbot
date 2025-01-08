@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '/util/global.dart';
+import '/widgets/loading.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -24,7 +25,7 @@ class SplashScreen extends StatelessWidget {
             ),
             SizedBox(
               height: 100,
-              child: Global.loadingScreen(
+              child: LoadingScreen(
                 Color(Global.defaultSeedColor),
                 Colors.black
               )

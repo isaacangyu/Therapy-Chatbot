@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 import '/app_state.dart';
 import '/util/global.dart';
+import '/widgets/loading.dart';
+import '/widgets/scroll.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -50,85 +52,87 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         future: forgotPasswordInfo,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Global.loadingScreen(projectTheme.primaryColor, projectTheme.activeColor);
+            return LoadingScreen(projectTheme.primaryColor, projectTheme.activeColor);
           }
-          return Padding(
-            padding: const EdgeInsets.all(20),
+          return Scroll(
             child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Html(
-                      data: snapshot.data!,
-                      style: {
-                        'body': Style(
-                          color: theme.colorScheme.onSecondaryContainer,
-                          fontSize: FontSize(theme.textTheme.bodyLarge!.fontSize!),
-                        ),
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Form(
-                    key: formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: projectTheme.textFormDecoration.copyWith(
-                            prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
-                            labelText: 'Email',
-                            hintText: 'user@example.com',
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Html(
+                        data: snapshot.data!,
+                        style: {
+                          'body': Style(
+                            color: theme.colorScheme.onSecondaryContainer,
+                            fontSize: FontSize(theme.textTheme.bodyLarge!.fontSize!),
                           ),
-                          style: theme.textTheme.bodyLarge!.copyWith(
-                            color: projectTheme.activeColor,
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: projectTheme.textFormDecoration.copyWith(
+                              prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
+                              labelText: 'Email',
+                              hintText: 'user@example.com',
+                            ),
+                            style: theme.textTheme.bodyLarge!.copyWith(
+                              color: projectTheme.activeColor,
+                            ),
+                            cursorColor: projectTheme.activeColor,
+                            autovalidateMode: AutovalidateMode.onUnfocus,
+                            validator: (value) {
+                              if (kDebugMode) {
+                                return null;
+                              }
+                              return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
+                            },
                           ),
-                          cursorColor: projectTheme.activeColor,
-                          autovalidateMode: AutovalidateMode.onUnfocus,
-                          validator: (value) {
-                            if (kDebugMode) {
-                              return null;
-                            }
-                            return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
-                          },
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton.icon(
-                          icon: const Icon(Icons.check),
-                          label: const Text('Confirm'),
-                          onPressed: () async {
-                            if (formKey.currentState!.validate()) {
-                              if (Global.offline(context)) {
-                                return;
-                              }
-                              var success = await requestPasswordReset(emailController.text);
-                              if (success && context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Password reset request sent.'),
-                                  )
-                                );
-                              } else if (!success && context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Could not send password reset request.'),
-                                  )
-                                );
+                          const SizedBox(height: 20),
+                          ElevatedButton.icon(
+                            icon: const Icon(Icons.check),
+                            label: const Text('Confirm'),
+                            onPressed: () async {
+                              if (formKey.currentState!.validate()) {
+                                if (Global.offline(context)) {
+                                  return;
+                                }
+                                var success = await requestPasswordReset(emailController.text);
+                                if (success && context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Password reset request sent.'),
+                                    )
+                                  );
+                                } else if (!success && context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Could not send password reset request.'),
+                                    )
+                                  );
+                                }
                               }
                             }
-                          }
-                        ),
-                      ]
-                    )
-                  ),
-                ],
+                          ),
+                        ]
+                      )
+                    ),
+                  ],
+                ),
               ),
             ),
           );

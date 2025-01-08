@@ -12,6 +12,8 @@ import '/login/validate_password.dart';
 import '/util/navigation.dart';
 import '/util/theme.dart';
 import '/util/global.dart';
+import '/widgets/loading.dart';
+import '/widgets/scroll.dart';
 
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});
@@ -27,17 +29,19 @@ class RegistrationPage extends StatelessWidget {
         title: const Text('Create Account'),
         centerTitle: true,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 500),
-                child: RegistrationForm(projectTheme: projectTheme, theme: theme),
-              ),
-            ],
+      body: Scroll(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: RegistrationForm(projectTheme: projectTheme, theme: theme),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -303,7 +307,7 @@ class CreatingAccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      child: Global.loadingScreen(
+      child: LoadingScreen(
         widget.projectTheme.primaryColor,
         widget.projectTheme.activeColor,
         child: const Text('Creating account...'),

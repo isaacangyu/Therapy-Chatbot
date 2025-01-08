@@ -19,24 +19,6 @@ class Global {
     seedColor: drift.Value(defaultSeedColor),
   );
   
-  static Widget loadingScreen(Color backgroundColor, Color indicatorColor, {Widget? child}) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(indicatorColor),
-            ),
-            const SizedBox(height: 10),
-            child ?? const SizedBox.shrink()
-          ],
-        ),
-      ),
-    );
-  }
-  
   // static const initBaseUrl = 'https://raw.githubusercontent.com/isaacangyu/Therapy-Chatbot/refs/heads/staging/api';
   static const initBaseUrl = 'http://localhost:5000/api';
   static const forgotPasswordInfoUrl = '$initBaseUrl/forgot_password_info.json';
