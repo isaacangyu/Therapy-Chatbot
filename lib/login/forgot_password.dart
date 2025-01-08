@@ -1,14 +1,12 @@
-import 'dart:convert';
-
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 import '/app_state.dart';
 import '/util/global.dart';
+import '/util/network.dart';
 import '/widgets/loading.dart';
 import '/widgets/scroll.dart';
 
@@ -107,10 +105,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             icon: const Icon(Icons.check),
                             label: const Text('Confirm'),
                             onPressed: () async {
+                              // if (Global.offline(context)) {
+                              //   return;
+                              // }
                               if (formKey.currentState!.validate()) {
-                                if (Global.offline(context)) {
-                                  return;
-                                }
                                 var success = await requestPasswordReset(emailController.text);
                                 if (success && context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -142,38 +140,21 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 }
 
-Future<String> fetchForgotPasswordInfo() async {
-  try {
-    var response = await http.get(
-      Uri.parse(Global.forgotPasswordInfoUrl),
-      headers: {
-        'Cache-Control': 'no-cache'
-      }
-    );
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body) as Map<String, dynamic>;
-      return json['message'];
-    }
-    debugPrint('HTTP response code: ${response.statusCode}');
-  } catch (e) {
-    debugPrint('Request exception: $e');
-  }
-  return 'There was a problem getting forgot password information. Please check your internet connection and use the form below.';
+Future<String> fetchForgotPasswordInfo() {
+  return httpGetApi(
+    Global.forgotPasswordInfoUrl,
+    (json) => json['message'],
+    () => 'There was a problem getting forgot password information. Please check your internet connection and use the form below.',
+  );
 }
 
-Future<bool> requestPasswordReset(String email) async {
-  try {
-    var response = await http.post(
-      Uri.parse('${Global.resetPasswordUrl}'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-      }),
-    );
-    debugPrint('HTTP response code: ${response.statusCode}');
-    return response.statusCode == 200;
-  } catch (e) {
-    debugPrint('Request exception: $e');
-  }
-  return false;
+Future<bool> requestPasswordReset(String email) {
+  return httpPostSecure(
+    Global.resetPasswordUrl,
+    {
+      'email': email,
+    },
+    (_) => true,
+    () => false,
+  );
 }

@@ -25,6 +25,9 @@ class Global {
   static const latestAppVersionUrl = '$initBaseUrl/latest_app_version.json';
   static const backendBaseUrl = '$initBaseUrl/base_url.json';
   
+  static const certBaseUrl = 'http://localhost:5000/cert/${kDebugMode ? 'test' : 'prod'}';
+  static const publicKeyUrl = '$certBaseUrl/public/public.pem';
+  
   static bool offline(BuildContext context) {
     if (online) {
       return false;
@@ -38,5 +41,7 @@ class Global {
   }
   static late bool online;
   static String? baseURL;
+  static String? verificationUrl;
+  static String? createAccountUrl;
   static String? resetPasswordUrl;
 }

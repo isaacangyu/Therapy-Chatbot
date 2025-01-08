@@ -1,17 +1,15 @@
-import 'dart:convert';
-
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 import '/app_state.dart';
 import '/login/validate_password.dart';
 import '/util/navigation.dart';
 import '/util/theme.dart';
 import '/util/global.dart';
+import '/util/network.dart';
 import '/widgets/loading.dart';
 import '/widgets/scroll.dart';
 
@@ -197,6 +195,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
             icon: const Icon(Icons.check),
             label: const Text('Confirm'),
             onPressed: () async {
+              if (Global.offline(context)) {
+                return;
+              }
               if (formKey.currentState!.validate()) {
                 pushRoute(
                   context,
@@ -316,26 +317,17 @@ class CreatingAccountPage extends StatelessWidget {
   }
 }
 
-Future<CreationState> createAccount(String name, String email, String password) async {  
-  try {
-    var response = await http.post(
-      Uri.parse('${Global.baseURL}/create_account'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'name': name,
-        'email': email,
-        'password': password,
-      }),
-    );
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body) as Map<String, dynamic>;
-      return CreationState(json['success'], message: json['message']);
-    }
-    debugPrint('HTTP response code: ${response.statusCode}');
-  } catch (e) {
-    debugPrint('Request exception: $e');
-  }
-  return CreationState(false, message: 'Please check your internet connection.');
+Future<CreationState> createAccount(String name, String email, String password) {
+  return httpPostSecure(
+    Global.createAccountUrl,
+    {
+      'name': name,
+      'email': email,
+      'password': password,
+    },
+    (json) => CreationState(json['success'], message: json['message']),
+    () => CreationState(false, message: 'Please check your internet connection.'),
+  );
 }
 
 class CreationState {

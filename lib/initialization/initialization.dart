@@ -1,12 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import '/app_state.dart';
 import '/util/global.dart';
 import '/util/persistence.dart';
+import '/util/network.dart';
 
 /// App Initialization Procedure
 /// 
@@ -28,6 +26,8 @@ import '/util/persistence.dart';
 ///    > If the user is not logged in, halt initialization.
 ///    - In the case that A fails and B succeeds, halt initialization.
 ///      There may be an update required.
+/// 3. If and only if the user will be online, 
+///    fetch cryptographic keys. Halt initialization on failure.
 /// 
 Future<InitializationState> initializeApp(AppDatabase database, AppState appState) async {
   try {
@@ -93,7 +93,17 @@ Backend Base URL: $backendBaseUrl
   if (backendBaseUrl != null) {
     Global.baseURL = backendBaseUrl;
     Global.online = true;
-    // To do later.
+    Global.verificationUrl = '$backendBaseUrl/verify';
+    Global.resetPasswordUrl = '$backendBaseUrl/account/reset_password';
+    Global.createAccountUrl = '$backendBaseUrl/account/create';
+    
+    var keysLoaded = await loadKeys();
+    if (!keysLoaded) {
+      return InitializationState(
+        false,
+        message: 'Missing security features.'
+      );
+    }
   } else {
     Global.online = false;
   }
@@ -107,32 +117,20 @@ Backend Base URL: $backendBaseUrl
   return InitializationState(true);
 }
 
-Future<String?> fetchLatestAppVersion() async {
-  try {
-    var response = await http.get(Uri.parse(Global.latestAppVersionUrl));
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body) as Map<String, dynamic>;
-      return json['version'];
-    }
-    debugPrint('HTTP response code: ${response.statusCode}');
-  } catch (e) {
-    debugPrint('Request exception: $e');
-  }
-  return null;
+Future<String?> fetchLatestAppVersion() {
+  return httpGetApi(
+    Global.latestAppVersionUrl,
+    (json) => json['version'],
+    () => null,
+  );
 }
 
-Future<String?> fetchBackendBaseUrl() async {
-  try {
-    var response = await http.get(Uri.parse(Global.backendBaseUrl));
-    if (response.statusCode == 200) {
-      var json = jsonDecode(response.body) as Map<String, dynamic>;
-      return json['url'];
-    }
-    debugPrint('HTTP response code: ${response.statusCode}');
-  } catch (e) {
-    debugPrint('Request exception: $e');
-  }
-  return null;
+Future<String?> fetchBackendBaseUrl() {
+  return httpGetApi(
+    Global.backendBaseUrl,
+    (json) => json['url'],
+    () => null,
+  );
 }
 
 class InitializationState {
