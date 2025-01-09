@@ -76,7 +76,7 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
     );
   }
   
-  var latestAppVersion = await fetchLatestAppVersion();
+  var latestAppVersion = await _fetchLatestAppVersion();
   if (latestAppVersion != null && latestAppVersion != Global.appVersion) {
     return InitializationState(
       false,
@@ -84,7 +84,7 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
     );
   }
   
-  var backendBaseUrl = await fetchBackendBaseUrl();
+  var backendBaseUrl = await _fetchBackendBaseUrl();
   if (backendBaseUrl == null && !appState.session.data.loggedIn) {
     return InitializationState(
       false,
@@ -137,7 +137,7 @@ Backend Base URL: $backendBaseUrl
   return InitializationState(true);
 }
 
-Future<String?> fetchLatestAppVersion() {
+Future<String?> _fetchLatestAppVersion() {
   return httpGetApi(
     API.latestAppVersion,
     (json) => json['version'],
@@ -145,7 +145,7 @@ Future<String?> fetchLatestAppVersion() {
   );
 }
 
-Future<String?> fetchBackendBaseUrl() {
+Future<String?> _fetchBackendBaseUrl() {
   return httpGetApi(
     API.backendBase,
     (json) => json['url'],

@@ -23,10 +23,13 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var database = Provider.of<AppDatabase>(context);
-    return ChangeNotifierProvider(
-      create: (context) => AppState(database),
-      child: Consumer<AppState>(
-        builder: (context, appState, child) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppState(database)),
+        ChangeNotifierProvider(create: (_) => ProjectTheme()),
+      ],
+      child: Consumer2<AppState, ProjectTheme>(
+        builder: (context, appState, projectTheme, child) {
           return FutureBuilder(
             future: appState.initializationComplete,
             builder: (context, snapshot) {
@@ -45,7 +48,8 @@ class App extends StatelessWidget {
               }
               
               var themeData = calculateThemeData(appState.preferences.colorScheme);
-              appState.projectTheme = ProjectTheme(themeData);
+              projectTheme.set(themeData);
+              appState.projectTheme = projectTheme;
               
               debugPrint('Building main app widget tree.');
               

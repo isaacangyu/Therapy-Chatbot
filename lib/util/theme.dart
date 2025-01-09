@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class ProjectTheme {
+class ProjectTheme extends ChangeNotifier {
   late Color primaryColor;
   late Color activeColor;
   late Color inactiveColor;
   late InputDecoration textFormDecoration;
 
-  ProjectTheme(ThemeData themeData) {
+  void set(ThemeData themeData) {
     primaryColor = themeData.colorScheme.primaryContainer;
     activeColor = themeData.colorScheme.onPrimaryContainer;
     inactiveColor = themeData.colorScheme.inversePrimary;
@@ -24,6 +24,11 @@ class ProjectTheme {
         color: inactiveColor,
       ),
     );
+  }
+  
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
   }
 }
 
