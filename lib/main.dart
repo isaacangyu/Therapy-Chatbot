@@ -17,12 +17,24 @@ void main() {
   ));
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
 
   @override
+  State<App> createState() => _AppInit();
+}
+
+class _AppInit extends State<App> {
+  late final AppDatabase database;
+  
+  @override
+  void initState() {
+    super.initState();
+    database = context.read<AppDatabase>();
+  }
+  
+  @override
   Widget build(BuildContext context) {
-    var database = Provider.of<AppDatabase>(context);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState(database)),
