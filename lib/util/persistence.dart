@@ -48,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {
       await customStatement('PRAGMA foreign_keys = OFF');
 
-      await m.runMigrationSteps(
+      await transaction(() async => await m.runMigrationSteps(
         from: from,
         to: to,
         steps: migrationSteps(
@@ -78,7 +78,7 @@ class AppDatabase extends _$AppDatabase {
             debugPrint('Ran database migration: 3 -> 4');
           },
         )
-      );
+      ));
 
       // Assert that the schema is valid after migrations.
       if (kDebugMode) {
