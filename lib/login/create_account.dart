@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import '/app_state.dart';
 import '/login/validate_password.dart';
 import '/util/navigation.dart';
-import '/util/theme.dart';
 import '/util/global.dart';
 import '/util/network.dart';
 import '/widgets/loading.dart';
@@ -18,7 +17,6 @@ class RegistrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final projectTheme = context.watch<AppState>().projectTheme;
     
     return Scaffold(
@@ -36,7 +34,7 @@ class RegistrationPage extends StatelessWidget {
               children: [
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 500),
-                  child: RegistrationForm(projectTheme: projectTheme, theme: theme),
+                  child: const RegistrationForm(),
                 ),
               ],
             ),
@@ -48,51 +46,49 @@ class RegistrationPage extends StatelessWidget {
 }
 
 class RegistrationForm extends StatefulWidget {
-  const RegistrationForm({
-    super.key,
-    required this.projectTheme,
-    required this.theme,
-  });
-
-  final ProjectTheme projectTheme;
-  final ThemeData theme;
-
+  const RegistrationForm({super.key});
+  
   @override
   State<RegistrationForm> createState() => _RegistrationFormState();
 }
 
 class _RegistrationFormState extends State<RegistrationForm> {
-  final formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  var passwordVisible = false;
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  var _passwordVisible = false;
   
   @override
   void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
+    final appState = context.watch<AppState>();
+    final theme = Theme.of(context);
+    final projectTheme = appState.projectTheme;
+    final online = appState.session.online;
+    
     return Form(
-      key: formKey,
+      key: _formKey,
       child: Column(
         children: [
           TextFormField(
-            controller: nameController,
+            controller: _nameController,
             keyboardType: TextInputType.name,
-            decoration: widget.projectTheme.textFormDecoration.copyWith(
-              prefixIcon: Icon(Icons.person, color: widget.projectTheme.activeColor),
+            decoration: projectTheme.textFormDecoration.copyWith(
+              prefixIcon: Icon(Icons.person, color: projectTheme.activeColor),
               labelText: 'Name',
             ),
-            style: widget.theme.textTheme.bodyLarge!.copyWith(
-              color: widget.projectTheme.activeColor,
+            style: theme.textTheme.bodyLarge!.copyWith(
+              color: projectTheme.activeColor,
             ),
-            cursorColor: widget.projectTheme.activeColor,
+            cursorColor: projectTheme.activeColor,
             autovalidateMode: AutovalidateMode.onUnfocus,
             validator: (value) {
               if (kDebugMode) {
@@ -103,17 +99,17 @@ class _RegistrationFormState extends State<RegistrationForm> {
           ),
           const SizedBox(height: 10),
           TextFormField(
-            controller: emailController,
+            controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: widget.projectTheme.textFormDecoration.copyWith(
-              prefixIcon: Icon(Icons.email, color: widget.projectTheme.activeColor),
+            decoration: projectTheme.textFormDecoration.copyWith(
+              prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
               labelText: 'Email',
               hintText: 'user@example.com',
             ),
-            style: widget.theme.textTheme.bodyLarge!.copyWith(
-              color: widget.projectTheme.activeColor,
+            style: theme.textTheme.bodyLarge!.copyWith(
+              color: projectTheme.activeColor,
             ),
-            cursorColor: widget.projectTheme.activeColor,
+            cursorColor: projectTheme.activeColor,
             autovalidateMode: AutovalidateMode.onUnfocus,
             validator: (value) {
               if (kDebugMode) {
@@ -125,45 +121,45 @@ class _RegistrationFormState extends State<RegistrationForm> {
           const SizedBox(height: 10),
           TextFormField(
             keyboardType: TextInputType.emailAddress,
-            decoration: widget.projectTheme.textFormDecoration.copyWith(
-              prefixIcon: Icon(Icons.email, color: widget.projectTheme.activeColor),
+            decoration: projectTheme.textFormDecoration.copyWith(
+              prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
               labelText: 'Confirm Email',
             ),
-            style: widget.theme.textTheme.bodyLarge!.copyWith(
-              color: widget.projectTheme.activeColor,
+            style: theme.textTheme.bodyLarge!.copyWith(
+              color: projectTheme.activeColor,
             ),
-            cursorColor: widget.projectTheme.activeColor,
+            cursorColor: projectTheme.activeColor,
             autovalidateMode: AutovalidateMode.onUnfocus,
             validator: (value) {
-              return (value != emailController.text) ? 'Emails do not match.' : null;
+              return (value != _emailController.text) ? 'Emails do not match.' : null;
             },
           ),
           const SizedBox(height: 10),
           TextFormField(
-            controller: passwordController,
-            obscureText: !passwordVisible,
+            controller: _passwordController,
+            obscureText: !_passwordVisible,
             enableSuggestions: false,
             autocorrect: false,
-            decoration: widget.projectTheme.textFormDecoration.copyWith(
-              prefixIcon: Icon(Icons.password, color: widget.projectTheme.activeColor),
+            decoration: projectTheme.textFormDecoration.copyWith(
+              prefixIcon: Icon(Icons.password, color: projectTheme.activeColor),
               labelText: 'Password',
               hintText: 'Enter your password',
               suffixIcon: IconButton(
                 icon: Icon(
-                  passwordVisible ? Icons.visibility : Icons.visibility_off,
-                  color: widget.projectTheme.activeColor,
+                  _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: projectTheme.activeColor,
                 ),
                 onPressed: () {
                   setState(() {
-                    passwordVisible = !passwordVisible;
+                    _passwordVisible = !_passwordVisible;
                   });
                 },
               )
             ),
-            style: widget.theme.textTheme.bodyLarge!.copyWith(
-              color: widget.projectTheme.activeColor,
+            style: theme.textTheme.bodyLarge!.copyWith(
+              color: projectTheme.activeColor,
             ),
-            cursorColor: widget.projectTheme.activeColor,
+            cursorColor: projectTheme.activeColor,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
               if (kDebugMode) {
@@ -174,20 +170,20 @@ class _RegistrationFormState extends State<RegistrationForm> {
           ),
           const SizedBox(height: 10),
           TextFormField(
-            obscureText: !passwordVisible,
+            obscureText: !_passwordVisible,
             enableSuggestions: false,
             autocorrect: false,
-            decoration: widget.projectTheme.textFormDecoration.copyWith(
-              prefixIcon: Icon(Icons.password, color: widget.projectTheme.activeColor),
+            decoration: projectTheme.textFormDecoration.copyWith(
+              prefixIcon: Icon(Icons.password, color: projectTheme.activeColor),
               labelText: 'Confirm Password',
             ),
-            style: widget.theme.textTheme.bodyLarge!.copyWith(
-              color: widget.projectTheme.activeColor,
+            style: theme.textTheme.bodyLarge!.copyWith(
+              color: projectTheme.activeColor,
             ),
-            cursorColor: widget.projectTheme.activeColor,
+            cursorColor: projectTheme.activeColor,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
-              return value != passwordController.text ? 'Passwords do not match' : null;
+              return value != _passwordController.text ? 'Passwords do not match' : null;
             },
           ),
           const SizedBox(height: 20),
@@ -195,18 +191,18 @@ class _RegistrationFormState extends State<RegistrationForm> {
             icon: const Icon(Icons.check),
             label: const Text('Confirm'),
             onPressed: () async {
-              if (Global.offline(context)) {
+              if (Global.offline(context, online)) {
                 return;
               }
-              if (formKey.currentState!.validate()) {
+              if (_formKey.currentState!.validate()) {
                 pushRoute(
                   context,
-                  CreatingAccountPage(widget: widget)
+                  const CreatingAccountPage()
                 );
                 var creationState = await createAccount(
-                  nameController.text,
-                  emailController.text,
-                  passwordController.text
+                  _nameController.text,
+                  _emailController.text,
+                  _passwordController.text
                 );
                 if (context.mounted) {
                   if (creationState.success) {
@@ -218,7 +214,6 @@ class _RegistrationFormState extends State<RegistrationForm> {
                     pushRoute(
                       context,
                       RegistrationFailedPage(
-                        widget: widget,
                         reason: creationState.message ?? '???'
                       )
                     );
@@ -236,11 +231,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
 class RegistrationFailedPage extends StatelessWidget {
   const RegistrationFailedPage({
     super.key,
-    required this.widget,
     required this.reason,
   });
 
-  final RegistrationForm widget;
   final String reason;
 
   @override
@@ -251,7 +244,7 @@ class RegistrationFailedPage extends StatelessWidget {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: widget.projectTheme.primaryColor,
+        backgroundColor: projectTheme.primaryColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -275,7 +268,7 @@ class RegistrationFailedPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               OutlinedButton.icon(
-                icon: Icon(Icons.arrow_back, color: widget.projectTheme.activeColor),
+                icon: Icon(Icons.arrow_back, color: projectTheme.activeColor),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: projectTheme.activeColor,
                   side: BorderSide(color: projectTheme.activeColor),
@@ -297,20 +290,16 @@ class RegistrationFailedPage extends StatelessWidget {
 }
 
 class CreatingAccountPage extends StatelessWidget {
-  const CreatingAccountPage({
-    super.key,
-    required this.widget,
-  });
-
-  final RegistrationForm widget;
+  const CreatingAccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final projectTheme = context.watch<AppState>().projectTheme;
     return PopScope(
       canPop: false,
       child: LoadingScreen(
-        widget.projectTheme.primaryColor,
-        widget.projectTheme.activeColor,
+        projectTheme.primaryColor,
+        projectTheme.activeColor,
         child: const Text('Creating account...'),
       )
     );
@@ -319,7 +308,7 @@ class CreatingAccountPage extends StatelessWidget {
 
 Future<CreationState> createAccount(String name, String email, String password) {
   return httpPostSecure(
-    Global.createAccountUrl,
+    API.createAccount,
     {
       'name': name,
       'email': email,

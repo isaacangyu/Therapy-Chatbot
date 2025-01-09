@@ -1,34 +1,38 @@
-import 'package:drift/drift.dart' as drift;
+import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '/util/persistence.dart';
 
-class Global {
-  static const appVersion = '1.0.0+1';
+class API {
+  static late String initBaseUrl;
+  static String? baseUrl;
+
+  static const forgotPasswordInfo = 'api/forgot_password_info.json';
+  static const latestAppVersion = 'api/latest_app_version.json';
+  static const backendBase = 'api/base_url.json';
+  static const publicKey = 'cert/${kDebugMode ? 'test' : 'prod'}/public/public.pem';
   
-  static const appTitle = kDebugMode ? 'DEBUG | Therapy Chatbot' : 'Therapy Chatbot';
+  static const createAccount = 'account/create';
+  static const resetPassword = 'account/reset_password';
+}
+
+class Global {
+  static late String appVersion;
+  
+  static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   
   static final defaultSeedColor = const Color.fromARGB(255, 100, 149, 237).value;
   static final defaultBasePreferences = PreferencesCompanion(
-    name: const drift.Value('default'),
-    seedColor: drift.Value(defaultSeedColor),
+    name: const Value('default'),
+    seedColor: Value(defaultSeedColor),
   );
   static final defaultUserPreferences = PreferencesCompanion(
-    name: const drift.Value('user'),
-    seedColor: drift.Value(defaultSeedColor),
+    name: const Value('user'),
+    seedColor: Value(defaultSeedColor),
   );
-  
-  // static const initBaseUrl = 'https://raw.githubusercontent.com/isaacangyu/Therapy-Chatbot/refs/heads/staging/api';
-  static const initBaseUrl = 'http://localhost:5000/api';
-  static const forgotPasswordInfoUrl = '$initBaseUrl/forgot_password_info.json';
-  static const latestAppVersionUrl = '$initBaseUrl/latest_app_version.json';
-  static const backendBaseUrl = '$initBaseUrl/base_url.json';
-  
-  static const certBaseUrl = 'http://localhost:5000/cert/${kDebugMode ? 'test' : 'prod'}';
-  static const publicKeyUrl = '$certBaseUrl/public/public.pem';
-  
-  static bool offline(BuildContext context) {
+    
+  static bool offline(BuildContext context, bool online) {
     if (online) {
       return false;
     }
@@ -39,9 +43,4 @@ class Global {
     );
     return true;
   }
-  static late bool online;
-  static String? baseURL;
-  static String? verificationUrl;
-  static String? createAccountUrl;
-  static String? resetPasswordUrl;
 }

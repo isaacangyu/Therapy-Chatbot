@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '/app_state.dart';
 import '/util/global.dart';
@@ -8,13 +11,17 @@ import '/util/network.dart';
 
 /// App Initialization Procedure
 /// 
-/// 1. Retrieve user preferences from app database.
+/// 1. Load configuration data from `config.json`.
+///    Halt initialization on failure.
+/// 2. Retrieve user preferences from app database.
 ///    In the event of an exception, such as in the case of 
 ///    database corruption, halt initialization.
 ///    Normal operation of the app beyond this point 
 ///    may result in further database corruption.
 ///    Otherwise, continue initialization.
-/// 2. (A) Fetch latest app version and (B) backend URL.
+/// 3. Retrieve user session from app database.
+///    Apply the same principle as when loading preferences.
+/// 4. (A) Fetch latest app version and (B) backend URL.
 ///    (Regard network errors and JSON errors to have similar effect.)
 ///    - In the case that A succeeds, regardless of B:
 ///    > If there's an update, halt initialization.
@@ -26,15 +33,29 @@ import '/util/network.dart';
 ///    > If the user is not logged in, halt initialization.
 ///    - In the case that A fails and B succeeds, halt initialization.
 ///      There may be an update required.
-/// 3. If and only if the user will be online, 
+/// 5. If and only if the user will be online, 
 ///    fetch cryptographic keys. Halt initialization on failure.
 /// 
 Future<InitializationState> initializeApp(AppDatabase database, AppState appState) async {
+  appState.preferences.appState = appState;
+  appState.session.appState = appState;
+
   try {
-    var userPreferences = await database.getUserPreferences();
-    appState.preferences.appState = appState;
+    var config = jsonDecode(await rootBundle.loadString('app_assets/config.json'));
+    Global.appVersion = config['app_version'];
+    API.initBaseUrl = config['init_base_url'];
+  } catch (e) {
+    debugPrint(e.toString());
+    return InitializationState(
+      false,
+      message: 'Failed to load app configuration.'
+    );
+  }
+  
+  try {
+    appState.preferences.data = await database.getUserPreferences();
     appState.preferences.colorScheme = ColorScheme.fromSeed(
-      seedColor: Color(userPreferences.seedColor),
+      seedColor: Color(appState.preferences.data.seedColor),
       dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
     );
   } catch (e) {
@@ -42,6 +63,16 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
     return InitializationState(
       false,
       message: 'Failed to load app preferences.'
+    );
+  }
+  
+  try {
+    appState.session.data = await database.getSession();
+  } catch (e) {
+    debugPrint(e.toString());
+    return InitializationState(
+      false,
+      message: 'Failed to load session info.'
     );
   }
   
@@ -53,17 +84,8 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
     );
   }
   
-  try {
-    appState.sessionInfo = await database.getSession();
-  } catch (e) {
-    debugPrint(e.toString());
-    return InitializationState(
-      false,
-      message: 'Failed to load session info.'
-    );
-  }
   var backendBaseUrl = await fetchBackendBaseUrl();
-  if (backendBaseUrl == null && !appState.sessionInfo.loggedIn) {
+  if (backendBaseUrl == null && !appState.session.data.loggedIn) {
     return InitializationState(
       false,
       message: 'Unable to reach online services. Please check your internet connection.'
@@ -79,23 +101,21 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
   
   debugPrint('''
 Default preferences from app database:
-Color Scheme Seed: ${appState.preferences.colorScheme?.primaryContainer}
+Color Scheme Seed: ${appState.preferences.colorScheme.primaryContainer}
 
 Session info:
-Token: ${appState.sessionInfo.token}
-Logged in: ${appState.sessionInfo.loggedIn}
+Token: ${appState.session.data.token}
+Logged in: ${appState.session.data.loggedIn}
 
 Latest App Version: $latestAppVersion
 Current App Version: ${Global.appVersion}
+Initialization Base URL: ${API.initBaseUrl}
 Backend Base URL: $backendBaseUrl
 ''');
   
   if (backendBaseUrl != null) {
-    Global.baseURL = backendBaseUrl;
-    Global.online = true;
-    Global.verificationUrl = '$backendBaseUrl/verify';
-    Global.resetPasswordUrl = '$backendBaseUrl/account/reset_password';
-    Global.createAccountUrl = '$backendBaseUrl/account/create';
+    appState.session.online = true;
+    API.baseUrl = backendBaseUrl;
     
     var keysLoaded = await loadKeys();
     if (!keysLoaded) {
@@ -105,7 +125,7 @@ Backend Base URL: $backendBaseUrl
       );
     }
   } else {
-    Global.online = false;
+    appState.session.online = false;
   }
     
   // Insert some artificial delay.
@@ -119,7 +139,7 @@ Backend Base URL: $backendBaseUrl
 
 Future<String?> fetchLatestAppVersion() {
   return httpGetApi(
-    Global.latestAppVersionUrl,
+    API.latestAppVersion,
     (json) => json['version'],
     () => null,
   );
@@ -127,7 +147,7 @@ Future<String?> fetchLatestAppVersion() {
 
 Future<String?> fetchBackendBaseUrl() {
   return httpGetApi(
-    Global.backendBaseUrl,
+    API.backendBase,
     (json) => json['url'],
     () => null,
   );

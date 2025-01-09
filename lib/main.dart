@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'initialization/splash.dart';
+import '/initialization/splash.dart';
 import '/initialization/notice.dart';
 import '/login/login.dart';
 import '/util/global.dart';
@@ -44,17 +44,7 @@ class App extends StatelessWidget {
                 );
               }
               
-              var themeData = ThemeData(
-                useMaterial3: true,
-                colorScheme: appState.preferences.colorScheme,
-              );
-              themeData = themeData.copyWith(
-                textSelectionTheme: themeData.textSelectionTheme.copyWith(
-                  selectionColor: themeData.colorScheme.inversePrimary,
-                  selectionHandleColor: themeData.colorScheme.inversePrimary,
-                  cursorColor: themeData.colorScheme.onPrimaryContainer,
-                ),
-              );
+              var themeData = calculateThemeData(appState.preferences.colorScheme);
               appState.projectTheme = ProjectTheme(themeData);
               
               debugPrint('Building main app widget tree.');

@@ -18,21 +18,21 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  late Future<String> forgotPasswordInfo;
+  late Future<String> _forgotPasswordInfo;
 
-  final formKey = GlobalKey<FormState>();  
-  final emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();  
+  final _emailController = TextEditingController();
   
   @override
   void dispose() {
-    emailController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
   
   @override
   void initState() {
     super.initState();
-    forgotPasswordInfo = fetchForgotPasswordInfo();
+    _forgotPasswordInfo = fetchForgotPasswordInfo();
   }
   
   @override
@@ -47,7 +47,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         centerTitle: true,
       ),
       body: FutureBuilder(
-        future: forgotPasswordInfo,
+        future: _forgotPasswordInfo,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen(projectTheme.primaryColor, projectTheme.activeColor);
@@ -77,11 +77,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                     const SizedBox(height: 20),
                     Form(
-                      key: formKey,
+                      key: _formKey,
                       child: Column(
                         children: [
                           TextFormField(
-                            controller: emailController,
+                            controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: projectTheme.textFormDecoration.copyWith(
                               prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
@@ -108,8 +108,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               // if (Global.offline(context)) {
                               //   return;
                               // }
-                              if (formKey.currentState!.validate()) {
-                                var success = await requestPasswordReset(emailController.text);
+                              if (_formKey.currentState!.validate()) {
+                                var success = await requestPasswordReset(_emailController.text);
                                 if (success && context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
@@ -142,7 +142,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
 Future<String> fetchForgotPasswordInfo() {
   return httpGetApi(
-    Global.forgotPasswordInfoUrl,
+    API.forgotPasswordInfo,
     (json) => json['message'],
     () => 'There was a problem getting forgot password information. Please check your internet connection and use the form below.',
   );
@@ -150,7 +150,7 @@ Future<String> fetchForgotPasswordInfo() {
 
 Future<bool> requestPasswordReset(String email) {
   return httpPostSecure(
-    Global.resetPasswordUrl,
+    API.resetPassword,
     {
       'email': email,
     },

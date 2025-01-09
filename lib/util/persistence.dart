@@ -108,11 +108,11 @@ class AppDatabase extends _$AppDatabase {
     }
   );
 
-  Future<Preference> getUserPreferences() async {
-    return await (select(preferences)..where((t) => t.name.equals('user'))).getSingle();
+  Future<Preference> getUserPreferences() {
+    return (select(preferences)..where((t) => t.name.equals('user'))).getSingle();
   }
   
-  Future<SessionData> getSession() async {
-    return await (select(session)..where((t) => t.id.equals(1))).getSingle();
+  Future<SessionData> getSession() {
+    return (select(session)..where((t) => t.id.equals(1))).getSingle();
   }
 }

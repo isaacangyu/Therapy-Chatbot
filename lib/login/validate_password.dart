@@ -14,8 +14,8 @@ String? validatePassword(String password) {
 }
 
 class PasswordTest {
+  PasswordTest(this.regexp, this.message);
+  
   final RegExp regexp;
   final String message;
-  
-  PasswordTest(this.regexp, this.message);
 }

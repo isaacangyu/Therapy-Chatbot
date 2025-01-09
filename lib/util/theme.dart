@@ -6,10 +6,10 @@ class ProjectTheme {
   late Color inactiveColor;
   late InputDecoration textFormDecoration;
 
-  ProjectTheme(ThemeData theme) {
-    primaryColor = theme.colorScheme.primaryContainer;
-    activeColor = theme.colorScheme.onPrimaryContainer;
-    inactiveColor = theme.colorScheme.inversePrimary;
+  ProjectTheme(ThemeData themeData) {
+    primaryColor = themeData.colorScheme.primaryContainer;
+    activeColor = themeData.colorScheme.onPrimaryContainer;
+    inactiveColor = themeData.colorScheme.inversePrimary;
     textFormDecoration = InputDecoration(
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: inactiveColor)
@@ -17,12 +17,26 @@ class ProjectTheme {
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: activeColor),
       ),
-      labelStyle: theme.textTheme.bodyLarge!.copyWith(
+      labelStyle: themeData.textTheme.bodyLarge!.copyWith(
         color: activeColor,
       ),
-      hintStyle: theme.textTheme.bodyLarge!.copyWith(
+      hintStyle: themeData.textTheme.bodyLarge!.copyWith(
         color: inactiveColor,
       ),
     );
   }
+}
+
+ThemeData calculateThemeData(ColorScheme colorScheme) {
+  var themeData = ThemeData(
+    useMaterial3: true,
+    colorScheme: colorScheme,
+  );
+  return themeData.copyWith(
+    textSelectionTheme: themeData.textSelectionTheme.copyWith(
+      selectionColor: themeData.colorScheme.inversePrimary,
+      selectionHandleColor: themeData.colorScheme.inversePrimary,
+      cursorColor: themeData.colorScheme.onPrimaryContainer,
+    ),
+  );
 }

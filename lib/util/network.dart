@@ -8,17 +8,17 @@ import 'package:http/http.dart' as http;
 
 import '/util/global.dart';
 
-Encrypter? encrypter;
-Signer? signer;
+late final Encrypter _encrypter;
+late final Signer _signer;
 
 Future<bool> loadKeys() async {
   try {
-    var response = await http.get(Uri.parse(Global.publicKeyUrl));
+    var response = await http.get(Uri.parse(API.initBaseUrl).resolve(API.publicKey));
     if (response.statusCode == 200) {
       var publicKey = RSAKeyParser().parse(response.body) as RSAPublicKey;
       // debugPrint('public key: ${response.body}');
-      encrypter = Encrypter(RSA(publicKey: publicKey, encoding: RSAEncoding.OAEP, digest: RSADigest.SHA256));
-      signer = Signer(RSASigner(RSASignDigest.SHA256, publicKey: publicKey));
+      _encrypter = Encrypter(RSA(publicKey: publicKey, encoding: RSAEncoding.OAEP, digest: RSADigest.SHA256));
+      _signer = Signer(RSASigner(RSASignDigest.SHA256, publicKey: publicKey));
       return true;
     }
     debugPrint('HTTP response code: ${response.statusCode}');
@@ -35,22 +35,22 @@ String verifyData(String data) {
   }
   var bodyBase64 = split[0];
   var signature = split[1];
-  if (!signer!.verify64(bodyBase64, signature)) {
+  if (!_signer.verify64(bodyBase64, signature)) {
     throw Exception('Failed to verify signature.');
   }
   return utf8.decode(base64Decode(bodyBase64));
 }
 
 Future<T> httpPostSecure<T>(
-  String? url,
+  String path,
   Object data,
   T Function(Map<String, dynamic>) onHttpOK,
   T Function() onError,
 ) async {
   try {
-    var cipherText = encrypter!.encrypt(data.toString());
+    var cipherText = _encrypter.encrypt(data.toString());
     var response = await http.post(
-      Uri.parse(url!),
+      Uri.parse(API.baseUrl!).resolve(path),
       body: cipherText.bytes,
     );
     if (response.statusCode == 200) {
@@ -66,13 +66,13 @@ Future<T> httpPostSecure<T>(
 }
 
 Future<T> httpGetSecure<T>(
-  String? url,
+  String path,
   T Function(Map<String, dynamic>) onHttpOK,
   T Function() onError,
 ) async {
   try {
     var response = await http.get(
-      Uri.parse(url!),
+      Uri.parse(API.baseUrl!).resolve(path),
       headers: {
         'Cache-Control': 'no-cache',
       }
@@ -90,13 +90,13 @@ Future<T> httpGetSecure<T>(
 }
 
 Future<T> httpGetApi<T>(
-  String? url,
+  String path,
   T Function(Map<String, dynamic>) onHttpOK,
   T Function() onError,
 ) async {
   try {
     var response = await http.get(
-      Uri.parse(url!),
+      Uri.parse(API.initBaseUrl).resolve(path),
       headers: {
         'Cache-Control': 'no-cache',
       }

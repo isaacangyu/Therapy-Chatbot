@@ -16,8 +16,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  var passwordVisible = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var _passwordVisible = false;
   
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 500),
                   child: Form(
-                    key: formKey,
+                    key: _formKey,
                     child: Column(
                       children: [
                         TextFormField(
@@ -72,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 10),
                         TextFormField(
-                          obscureText: !passwordVisible,
+                          obscureText: !_passwordVisible,
                           enableSuggestions: false,
                           autocorrect: false,
                           decoration: projectTheme.textFormDecoration.copyWith(
@@ -81,12 +81,12 @@ class _LoginPageState extends State<LoginPage> {
                             hintText: 'Enter your password',
                             suffixIcon: IconButton(
                               icon: Icon(
-                                passwordVisible ? Icons.visibility : Icons.visibility_off,
+                                _passwordVisible ? Icons.visibility : Icons.visibility_off,
                                 color: projectTheme.activeColor,
                               ),
                               onPressed: () {
                                 setState(() {
-                                  passwordVisible = !passwordVisible;
+                                  _passwordVisible = !_passwordVisible;
                                 });
                               },
                             ),
@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                         ElevatedButton(
                           child: const Text('Login'),
                           onPressed: () {
-                            if (formKey.currentState!.validate()) {
+                            if (_formKey.currentState!.validate()) {
                             }
                           },
                         ),
