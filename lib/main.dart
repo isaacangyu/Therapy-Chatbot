@@ -21,10 +21,10 @@ class App extends StatefulWidget {
   const App({super.key});
 
   @override
-  State<App> createState() => _AppInit();
+  State<App> createState() => _AppBase();
 }
 
-class _AppInit extends State<App> {
+class _AppBase extends State<App> {
   late final AppDatabase database;
   
   @override

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '/util/navigation.dart';
 import '/util/theme.dart';
+import '/util/global.dart';
 import '/login/forgot_password.dart';
 import '/login/create_account.dart';
 import '/login/validate_password.dart';
@@ -35,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
                 const AppLogo(),
                 const SizedBox(height: 20),
                 Text(
-                  'Login',
+                  Global.appTitle,
                   style: theme.textTheme.headlineLarge!.copyWith(
                     color: projectTheme.activeColor,
                   ),
