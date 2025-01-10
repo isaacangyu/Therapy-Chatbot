@@ -66,15 +66,15 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
     );
   }
   
-  try {
-    appState.session.data = await database.getSession();
-  } catch (e) {
-    debugPrint(e.toString());
-    return InitializationState(
-      false,
-      message: 'Failed to load session info.'
-    );
-  }
+  // try {
+  //   appState.session.data = await database.getSession();
+  // } catch (e) {
+  //   debugPrint(e.toString());
+  //   return InitializationState(
+  //     false,
+  //     message: 'Failed to load session info.'
+  //   );
+  // }
   
   var latestAppVersion = await _fetchLatestAppVersion();
   if (latestAppVersion != null && latestAppVersion != Global.appVersion) {
@@ -85,7 +85,8 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
   }
   
   var backendBaseUrl = await _fetchBackendBaseUrl();
-  if (backendBaseUrl == null && !appState.session.data.loggedIn) {
+  // TODO: Update to use new secure session storage.
+  if (backendBaseUrl == null /*&& !appState.session.data.loggedIn*/) {
     return InitializationState(
       false,
       message: 'Unable to reach online services. Please check your internet connection.'
@@ -102,11 +103,11 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
   debugPrint('''
 Default preferences from app database:
 Color Scheme Seed: ${appState.preferences.colorScheme.primaryContainer}
-
-Session info:
-Token: ${appState.session.data.token}
-Logged in: ${appState.session.data.loggedIn}
-
+'''
+// Session info:
+// Token: ${appState.session.data.token}
+// Logged in: ${appState.session.data.loggedIn}
+'''
 Latest App Version: $latestAppVersion
 Current App Version: ${Global.appVersion}
 Initialization Base URL: ${API.initBaseUrl}
