@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/app_state.dart';
 import '/login/validate_password.dart';
 import '/util/navigation.dart';
 import '/util/global.dart';
@@ -112,15 +111,10 @@ class ConfirmButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final online = context.watch<AppState>().session.online;
-    
     return ElevatedButton.icon(
       icon: const Icon(Icons.check),
       label: const Text('Confirm'),
       onPressed: () async {
-        if (Global.offline(context, online)) {
-          return;
-        }
         if (_formKey.currentState!.validate()) {
           pushRoute(
             context,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/app_state.dart';
 import '/util/global.dart';
 import '/util/network.dart';
 import '/util/theme.dart';
@@ -110,15 +109,10 @@ class SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final online = context.watch<AppState>().session.online;
-    
     return ElevatedButton.icon(
       icon: const Icon(Icons.check),
       label: const Text('Confirm'),
       onPressed: () async {
-        if (Global.offline(context, online)) {
-          return;
-        }
         if (_formKey.currentState!.validate()) {
           var success = await _requestPasswordReset(_emailController.text);
           if (success && context.mounted) {
