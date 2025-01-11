@@ -17,7 +17,7 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  late Future<String> _forgotPasswordInfo;
+  late Future<String?> _forgotPasswordInfo;
   
   @override
   void initState() {
@@ -50,10 +50,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: snapshot.data != null ? [
                     InfoBox(snapshot.data!),
                     const SizedBox(height: 20),
                     const ForgotPasswordForm(),
+                  ] : [
+                    const InfoBox('There was a problem getting forgot password information. Please check your internet connection.'),
                   ],
                 ),
               ),
@@ -134,11 +136,11 @@ class SubmitButton extends StatelessWidget {
   }
 }
 
-Future<String> _fetchForgotPasswordInfo() {
+Future<String?> _fetchForgotPasswordInfo() {
   return httpGetApi(
     API.forgotPasswordInfo,
     (json) => json['message'],
-    () => 'There was a problem getting forgot password information. Please check your internet connection and use the form below.',
+    () => null,
   );
 }
 
