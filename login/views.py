@@ -2,10 +2,19 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sessions.models import Session
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 
-from .models import User
+# from .models import User
 
-print("views running")
+print("login views running")
+
+
+def testPostRequest(request):
+    # if request.method == 'POST':
+    #     data = request.POST
+    #     print('INSIDE')
+    #     print(data)
+    return HttpResponse('Test Post Request working')
 
 
 def register(request):
