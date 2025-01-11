@@ -1,10 +1,11 @@
 import '/app_state.dart';
-// import '/util/persistence.dart';
 
 class Session {
   late final AppState appState;
   late bool online;
-  // late SessionData data;
+  
+  String? token;
+  late bool loggedIn;
   
   void setOnline(bool state) {
     online = state;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '/initialization/splash.dart';
 import '/initialization/notice.dart';
@@ -10,10 +11,17 @@ import '/util/theme.dart';
 import '/app_state.dart';
 
 void main() {
-  runApp(Provider<AppDatabase>(
-    create: (context) => AppDatabase(),
+  runApp(MultiProvider(
+    providers: [
+      Provider<AppDatabase>(
+        create: (_) => AppDatabase(),
+        dispose: (context, db) => db.close(),
+      ),
+      Provider<FlutterSecureStorage>(
+        create: (_) => const FlutterSecureStorage()
+      ),
+    ],
     child: const App(),
-    dispose: (context, db) => db.close(),
   ));
 }
 
@@ -26,18 +34,20 @@ class App extends StatefulWidget {
 
 class _AppBase extends State<App> {
   late final AppDatabase database;
+  late final FlutterSecureStorage secureStorage;
   
   @override
   void initState() {
     super.initState();
     database = context.read<AppDatabase>();
+    secureStorage = context.read<FlutterSecureStorage>();
   }
   
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AppState(database)),
+        ChangeNotifierProvider(create: (_) => AppState(database, secureStorage)),
         ChangeNotifierProvider(create: (_) => ProjectTheme()),
       ],
       child: Consumer2<AppState, ProjectTheme>(

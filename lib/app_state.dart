@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'initialization/initialization.dart';
 import '/util/theme.dart';
@@ -14,8 +15,8 @@ class AppState extends ChangeNotifier {
   final preferences = Preferences();
   final session = Session();
   
-  AppState(AppDatabase database) {
-    initializationComplete = initializeApp(database, this);
+  AppState(AppDatabase database, FlutterSecureStorage secureStorage) {
+    initializationComplete = initializeApp(this, database, secureStorage);
   }
   
   @override

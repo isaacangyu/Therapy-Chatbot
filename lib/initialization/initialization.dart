@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '/app_state.dart';
 import '/util/global.dart';
@@ -36,7 +37,11 @@ import '/util/network.dart';
 /// 5. If and only if the user will be online, 
 ///    fetch cryptographic keys. Halt initialization on failure.
 /// 
-Future<InitializationState> initializeApp(AppDatabase database, AppState appState) async {
+Future<InitializationState> initializeApp(
+  AppState appState,
+  AppDatabase database,
+  FlutterSecureStorage secureStorage
+) async {
   appState.preferences.appState = appState;
   appState.session.appState = appState;
 
@@ -66,15 +71,16 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
     );
   }
   
-  // try {
-  //   appState.session.data = await database.getSession();
-  // } catch (e) {
-  //   debugPrint(e.toString());
-  //   return InitializationState(
-  //     false,
-  //     message: 'Failed to load session info.'
-  //   );
-  // }
+  try {
+    appState.session.token = await secureStorage.read(key: 'token');
+    appState.session.loggedIn = await secureStorage.read(key: 'logged_in') == '1';
+  } catch (e) {
+    debugPrint(e.toString());
+    return InitializationState(
+      false,
+      message: 'Failed to load session info.'
+    );
+  }
   
   var latestAppVersion = await _fetchLatestAppVersion();
   if (latestAppVersion != null && latestAppVersion != Global.appVersion) {
@@ -85,8 +91,7 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
   }
   
   var backendBaseUrl = await _fetchBackendBaseUrl();
-  // TODO: Update to use new secure session storage.
-  if (backendBaseUrl == null /*&& !appState.session.data.loggedIn*/) {
+  if (backendBaseUrl == null && !appState.session.loggedIn) {
     return InitializationState(
       false,
       message: 'Unable to reach online services. Please check your internet connection.'
@@ -103,11 +108,11 @@ Future<InitializationState> initializeApp(AppDatabase database, AppState appStat
   debugPrint('''
 Default preferences from app database:
 Color Scheme Seed: ${appState.preferences.colorScheme.primaryContainer}
-'''
-// Session info:
-// Token: ${appState.session.data.token}
-// Logged in: ${appState.session.data.loggedIn}
-'''
+
+Session info:
+Token: ${appState.session.token}
+Logged in: ${appState.session.loggedIn}
+
 Latest App Version: $latestAppVersion
 Current App Version: ${Global.appVersion}
 Initialization Base URL: ${API.initBaseUrl}
