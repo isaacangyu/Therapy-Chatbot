@@ -3,18 +3,17 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sessions.models import Session
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_protect
 
 # from .models import User
 
-print("login views running")
 
-
+@csrf_protect
 def testPostRequest(request):
-    # if request.method == 'POST':
-    #     data = request.POST
-    #     print('INSIDE')
-    #     print(data)
-    return HttpResponse('Test Post Request working')
+    if request.method == 'POST':
+        data = request.POST
+        print(data)
+        return HttpResponse('Test Post Request working')
 
 
 def register(request):

@@ -18,9 +18,6 @@ Including another URLconf
 from django.urls import path
 from . import views
 
-import os
-print(os.path.realpath(__file__))
-
 urlpatterns = [
-    path("", views.testPostRequest, name='testPostRequest'),
+    path("testPostRequest/", views.testPostRequest, name='testPostRequest'),
 ]
