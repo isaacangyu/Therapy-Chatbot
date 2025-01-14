@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sessions.models import Session
-from django.shortcuts import render, redirect
+# from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_protect
 
@@ -18,14 +18,17 @@ def testPostRequest(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        print(form)
+        post = request.POST
+        print(post)
+        form = UserCreationForm(post)
+        print("Printing form", form)
         if form.is_valid():
             user = form.save()
             login(request, user)
+            print("Created account")
         else:
             form = UserCreationForm()
-        return render(request, 'create_account.dart', {'form': form})
+        return {'form': form}
 
 
 def login_view(request):
@@ -38,9 +41,13 @@ def login_view(request):
             # set user-specific data in the session
             request.session['username'] = username
             request.session.save()
-            return redirect('main')
+            print('LOGGED IN')
+            return {'logged in': 'success'}
         else:
             # handle invalid login
-            print('INVALID LOGIN')
+            return HttpResponse('Invalid Login', status=401)
     else:
-        return render(request, 'login.dart')
+        return {'error': 'Login view did not receive a POST Request'}
+
+# @csrf_protect
+# def forgot_password(request):

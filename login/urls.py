@@ -20,4 +20,6 @@ from . import views
 
 urlpatterns = [
     path("testPostRequest/", views.testPostRequest, name='testPostRequest'),
+    path("login_view/", views.login_view, name='login_view'),
+    path("register/", views.register, name='register')
 ]

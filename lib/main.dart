@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../login/login.dart'; // we use LoginPage
-import '../breathing/breathing.dart'; // we use BreathingPage
-import '../journal/journal.dart'; // we use JournalPage
-import '../profile/profile.dart'; // we use ProfilePage
+
+import '/breathing/breathing.dart'; // we use BreathingPage
+import '/journal/journal.dart'; // we use JournalPage
+import '/login/login.dart'; // we use LoginPage
+import '/profile/profile.dart'; // we use ProfilePage
 
 void main() {
   runApp(const MyApp());

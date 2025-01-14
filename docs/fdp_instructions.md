@@ -30,6 +30,7 @@ The devcontainer is compatible with both GitHub Codespaces and a locally running
 
 ## Tips
 - If you receive an HTTP 401 status code when attempting to access Flutter via port 3000 in Codespaces, try making the forwarded port public (under Ports).
+- To allow the frontend on port 3000 to make requests to the backend, set port 8000 to public as well. 
 - If you are unable to access the Django web interface, try removing port 8000 from VSCode's list of forwarded ports, and then adding it back manually.
 - Use the "Django Migrate" task to automatically apply database migrations.
 - Make sure the first section of `flutter doctor -v` is green. 

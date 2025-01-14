@@ -1,5 +1,22 @@
 import 'package:flutter/material.dart';
-import '../login/forgot_password.dart';
+
+import 'forgot_password.dart';
+
+// Future<Json> login(username, password) async {
+//   final response = await http.post(
+//       Uri.parse('http://localhost:8000/login/login_view/'),
+//       {'username': username, 'password': password});
+
+//   if (response.statusCode == 200) {
+//     // If the server did return a 200 OK response,
+//     // then parse the JSON.
+//     return Album.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+//   } else {
+//     // If the server did not return a 200 OK response,
+//     // then throw an exception.
+//     throw Exception('Failed to load album');
+//   }
+// }
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key}); // back button?

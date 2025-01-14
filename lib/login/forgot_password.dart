@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../login/create_account.dart';
+import 'create_account.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   const ForgotPasswordPage({super.key}); // back button?
