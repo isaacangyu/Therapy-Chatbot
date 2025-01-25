@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'journal_screen.dart';
+// import 'journal_screen.dart';
 
 class JournalPage extends StatelessWidget {
   const JournalPage({super.key});
@@ -12,7 +12,7 @@ class JournalPage extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 45, 221, 98)),
         useMaterial3: true,
       ),
-      home: JournalScreen(),
+      // home: JournalScreen(),
     );
   }
 }
