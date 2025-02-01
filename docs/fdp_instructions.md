@@ -14,13 +14,15 @@ The devcontainer is compatible with both GitHub Codespaces and a locally running
 ### Running the App
 > Use the command palette (<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd>) to search and select "Run Task" to see a list of configured tasks.
 
-#### Local devcontainer
+#### Local devcontainer (faster)
+1. Make sure you have the VS Code Dev Containers extension installed. Create a Dev Container in Remote Explorer and Clone repository in container volume. Set a descriptive name for the volume and keep hitting enter. Your project structure should load. 
 1. Run the "Start Backend" task to start the Django web server.
 2. Navigate to the debug side bar and launch the "Flutter Run Debug" configuration.
 3. Once the Flutter web server has started, open `localhost:3000` in a browser to view the Flutter app.
-4. Activate the Dart Debug extension.
-5. (Optional) Open `localhost:8000` to access Django web interfaces.
+4. Make sure you have the Dart Debug chrome extension installed. Activate (by clicking) the Dart Debug extension and clicking any blank space in the browser. The website should open load. 
+6. (Optional) Open `localhost:8000` to access Django web interfaces.
 - To hot **reload** the Flutter app, press <kbd>CTRL</kbd>+<kbd>S</kbd> (even if autosave is enabled; this can be changed in the VSCode settings).
+7. To close your container, <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd> and "Close Remote Connection". 
 
 #### GitHub Codespace
 1. Run the "Start Servers" task to start both the Flutter and Django web servers (if `flutter` is not found, run `bash scripts/start-all.sh` in the terminal).
