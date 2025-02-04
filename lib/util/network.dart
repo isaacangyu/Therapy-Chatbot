@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:encrypt/encrypt.dart';
-// ignore: depend_on_referenced_packages
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

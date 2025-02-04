@@ -20,7 +20,7 @@ import '/util/network.dart';
 ///    Normal operation of the app beyond this point 
 ///    may result in further database corruption.
 ///    Otherwise, continue initialization.
-/// 3. Retrieve user session from app database.
+/// 3. Retrieve cryptographic information from secure storage.
 ///    Apply the same principle as when loading preferences.
 /// 4. (A) Fetch latest app version and (B) backend URL.
 ///    (Regard network errors and JSON errors to have similar effect.)
@@ -72,8 +72,8 @@ Future<InitializationState> initializeApp(
   }
   
   try {
-    appState.session.token = await secureStorage.read(key: 'token');
-    appState.session.loggedIn = await secureStorage.read(key: 'logged_in') == '1';
+    appState.session.secureStorage = secureStorage;
+    await appState.session.initCrypto();
   } catch (e) {
     debugPrint(e.toString());
     return InitializationState(

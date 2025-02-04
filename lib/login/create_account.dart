@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '/app_state.dart';
 import '/login/validate_password.dart';
 import '/util/navigation.dart';
 import '/util/global.dart';
 import '/util/network.dart';
 import '/util/theme.dart';
+import '/util/crypto.dart';
 import '/widgets/fields/name_large.dart';
 import '/widgets/fields/email_large.dart';
 import '/widgets/fields/password_large.dart';
@@ -120,24 +122,35 @@ class ConfirmButton extends StatelessWidget {
             context,
             const CreatingAccountPage()
           );
-          var creationState = await _createAccount(
-            _nameController.text,
-            _emailController.text,
-            _passwordController.text
-          );
+          // The KDF function used during account creation is computationally expensive.
+          // It seems to momentarily block the UI, despite be async.
+          // This delay is placed intentionally to give the loading screen
+          // a chance to display.
+          await Future.delayed(const Duration(seconds: 2));
+          
           if (context.mounted) {
-            if (creationState.success) {
-              pushRoute(
-                context,
-                const Placeholder()
-              );
-            } else {
-              pushRoute(
-                context,
-                RegistrationFailedPage(
-                  reason: creationState.message ?? '???'
-                )
-              );
+            var appState = context.read<AppState>();
+            var creationState = await _createAccount(
+              _nameController.text,
+              _emailController.text,
+              _passwordController.text,
+              appState,
+            );
+            
+            if (context.mounted) {
+              if (creationState.success) {
+                pushRoute(
+                  context,
+                  const Placeholder()
+                );
+              } else {
+                pushRoute(
+                  context,
+                  RegistrationFailedPage(
+                    reason: creationState.message ?? '???'
+                  )
+                );
+              }
             }
           }
         }
@@ -223,22 +236,54 @@ class CreatingAccountPage extends StatelessWidget {
   }
 }
 
-Future<_CreationState> _createAccount(String name, String email, String password) {
-  return httpPostSecure(
+/// Account Creation Procedure (Client Side)
+/// 
+/// 1. Generate a symmetric encryption key using the raw password and a salt.
+///    This step uses a KDF.
+/// 2. Store the encryption key in secure storage.
+///    This is purposeful as to allow the user to use the app offline
+///    without needing to log in every time.
+/// 3. Generate a digest using the raw password.
+///    This is to entirely avoid transmitting the raw password to the backend.
+/// 4. The user's name, email, digest, and salt are sent for storage in the backend.
+///    Note that the digest will be rehashed upon being received by the server.
+/// 5. Store the session token from the response in secure storage.
+/// 
+Future<_CreationState> _createAccount(
+  String name,
+  String email,
+  String password,
+  AppState appState,
+) async {
+  var keyDetails = kdfKeyDerivation(initialKey: password);
+  appState.session.setEncryptionKey(keyDetails.key);
+  
+  var passwordDigest = sha256Digest(password);
+  var creationState = await httpPostSecure(
     API.createAccount,
     {
       'name': name,
       'email': email,
-      'password': password,
+      'password_digest': passwordDigest,
+      'salt': keyDetails.salt
     },
-    (json) => _CreationState(json['success'], message: json['message']),
+    (json) => _CreationState(
+      json['success'],
+      message: json['message'],
+      token: json['token']
+    ),
     () => _CreationState(false, message: 'Please check your internet connection.'),
   );
+  appState.session.setToken(creationState.token);
+  appState.session.setLoggedIn(creationState.success);
+  
+  return creationState;
 }
 
 class _CreationState {
-  _CreationState(this.success, {this.message});
+  _CreationState(this.success, {this.message, this.token});
   
   bool success;
   String? message;
+  String? token;
 }
