@@ -14,6 +14,6 @@ class Preferences {
       contrastLevel: contrastLevel,
       dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
     );
-    appState.projectTheme.notifyListeners();
+    appState.notifyListeners();
   }
 }

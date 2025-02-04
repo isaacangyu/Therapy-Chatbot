@@ -71,7 +71,6 @@ class _AppBase extends State<App> {
               
               var themeData = calculateThemeData(appState.preferences.colorScheme);
               projectTheme.set(themeData);
-              appState.projectTheme = projectTheme;
               
               debugPrint('Building main app widget tree.');
               
