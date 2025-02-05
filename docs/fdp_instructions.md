@@ -25,9 +25,11 @@ The devcontainer is compatible with both GitHub Codespaces and a locally running
 7. To close your container, <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd> and "Close Remote Connection". 
 
 #### GitHub Codespace
-1. Run the "Start Servers" task to start both the Flutter and Django web servers (if `flutter` is not found, run `bash scripts/start-all.sh` in the terminal).
-2. Once the Flutter web server has started, Open `localhost:3000` in a browser to view the Flutter app.
-3. (Optional) Open `localhost:8000` to access Django web interfaces.
+1. Run the "Apply Codespace Compatibility" task. This will automatically apply edits to make this project work in GitHub Codespaces.  
+Note that Codespaces is intended to help with initial development efforts, but a local setup is recommended.
+2. Run the "Start Servers" task to start both the Flutter and Django web servers (if `flutter` is not found, run `bash scripts/start-all.sh` in the terminal).
+3. Once the Flutter web server has started, Open `localhost:3000` in a browser to view the Flutter app.
+4. (Optional) Open `localhost:8000` to access Django web interfaces.
 - To hot **restart** the Flutter app, press <kbd>r</kbd> in the task terminal.
 
 ## Tips
