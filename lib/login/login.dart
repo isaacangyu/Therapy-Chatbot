@@ -1,130 +1,172 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'forgot_password.dart';
+import '/util/navigation.dart';
+import '/util/theme.dart';
+import '/util/global.dart';
+import '/login/forgot_password.dart';
+import '/login/create_account.dart';
+import '/login/validate_password.dart';
+import '/widgets/fields/email_large.dart';
+import '/widgets/fields/password_large.dart';
+import '/widgets/scroll.dart';
 
-// Future<Json> login(username, password) async {
-//   final response = await http.post(
-//       Uri.parse('http://localhost:8000/login/login_view/'),
-//       {'username': username, 'password': password});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
-//   if (response.statusCode == 200) {
-//     // If the server did return a 200 OK response,
-//     // then parse the JSON.
-//     return Album.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-//   } else {
-//     // If the server did not return a 200 OK response,
-//     // then throw an exception.
-//     throw Exception('Failed to load album');
-//   }
-// }
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key}); // back button?
-
-  // This widget is the root of your application.
+class _LoginPageState extends State<LoginPage> {  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Login Page',
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a purple toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 45, 221, 98)),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(title: const Text('Login Page')),
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text('Login',
-                  style: TextStyle(
-                      fontSize: 35,
-                      color: Colors.teal,
-                      fontWeight: FontWeight.bold)),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-                child: Form(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          hintText: 'Enter email',
-                          prefixIcon: Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                        ),
-                        onChanged: (value) {},
-                        validator: (value) {
-                          return value!.isEmpty ? 'Please enter email' : null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      TextFormField(
-                        keyboardType: TextInputType.visiblePassword,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          hintText: 'Enter password',
-                          prefixIcon: Icon(Icons.password),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                          ),
-                        ),
-                        onChanged: (value) {},
-                        validator: (value) {
-                          return value!.isEmpty
-                              ? 'Please enter password'
-                              : null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        // minWidth: 1000,
-                        // color: Colors.teal,
-                        // textColor: Colors.white,
-                        child: const Text('Login'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ForgotPasswordPage()),
-                          );
-                        },
-                        child: Text('Forgot password?'), // left justify
-                      )
-                    ],
+    final theme = Theme.of(context);
+    final projectTheme = context.watch<ProjectTheme>();
+    
+    return Scaffold(
+      backgroundColor: projectTheme.primaryColor,
+      body: Scroll(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const AppLogo(),
+                const SizedBox(height: 20),
+                Text(
+                  Global.appTitle,
+                  style: theme.textTheme.headlineLarge!.copyWith(
+                    color: projectTheme.activeColor,
                   ),
                 ),
-              )
-            ],
+                const SizedBox(height: 20),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: const LoginForm(),
+                ),
+                const SizedBox(height: 20),
+                const GoToCreateAccountButton(),
+              ],
+            ),
           ),
-        ));
+        ),
+      ),
+    );
+  }
+}
+
+class GoToCreateAccountButton extends StatelessWidget {
+  const GoToCreateAccountButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final projectTheme = context.watch<ProjectTheme>();
+    
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: projectTheme.activeColor,
+        side: BorderSide(color: projectTheme.activeColor),
+      ),
+      child: const Text('Create Account'),
+      onPressed: () {
+        pushRoute(context, const RegistrationPage());
+      },
+    );
+  }
+}
+
+class LoginForm extends StatefulWidget {
+  const LoginForm({super.key});
+
+  @override
+  State<LoginForm> createState() => _LoginFormState();
+}
+
+class _LoginFormState extends State<LoginForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {    
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          EmailFieldLarge(_emailController),
+          const SizedBox(height: 10),
+          PasswordFieldLarge(_passwordController, validatePassword),
+          const SizedBox(height: 20),
+          LoginButton(formKey: _formKey),
+          const SizedBox(height: 10),
+          const GoToForgotPasswordPageButton(),
+        ],
+      ),
+    );
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({
+    super.key,
+    required GlobalKey<FormState> formKey,
+  }) : _formKey = formKey;
+
+  final GlobalKey<FormState> _formKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      child: const Text('Login'),
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+        }
+      },
+    );
+  }
+}
+
+class GoToForgotPasswordPageButton extends StatelessWidget {
+  const GoToForgotPasswordPageButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final projectTheme = context.watch<ProjectTheme>();
+    
+    return TextButton(
+      style: TextButton.styleFrom(
+        foregroundColor: projectTheme.activeColor,
+      ),
+      child: const Text('Forgot password?'),
+      onPressed: () {
+        pushRoute(context, const ForgotPasswordPage());
+      },
+    );
+  }
+}
+
+class AppLogo extends StatelessWidget {
+  const AppLogo({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox(
+      width: 125,
+      height: 125,
+      child: Image(
+        image: AssetImage('app_assets/icon.png'),
+      ),
+    );
   }
 }

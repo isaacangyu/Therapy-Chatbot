@@ -1,81 +1,156 @@
 import 'package:flutter/material.dart';
-import 'create_account.dart';
+import 'package:provider/provider.dart';
 
-class ForgotPasswordPage extends StatelessWidget {
-  const ForgotPasswordPage({super.key}); // back button?
+import '/util/global.dart';
+import '/util/network.dart';
+import '/util/theme.dart';
+import '/widgets/fields/email_large.dart';
+import '/widgets/info_box.dart';
+import '/widgets/loading.dart';
+import '/widgets/scroll.dart';
 
-  // This widget is the root of your application.
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
+  @override
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+}
+
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  late Future<String?> _forgotPasswordInfo;
+  
+  @override
+  void initState() {
+    super.initState();
+    _forgotPasswordInfo = _fetchForgotPasswordInfo();
+  }
+  
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Forgot Password Page',
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // TRY THIS: Try running your application with "flutter run". You'll see
-          // the application has a purple toolbar. Then, without quitting the app,
-          // try changing the seedColor in the colorScheme below to Colors.green
-          // and then invoke "hot reload" (save your changes or press the "hot
-          // reload" button in a Flutter-supported IDE, or press "r" if you used
-          // the command line to start the app).
-          //
-          // Notice that the counter didn't reset back to zero; the application
-          // state is not lost during the reload. To reset the state, use hot
-          // restart instead.
-          //
-          // This works for code too, not just values: Most code changes can be
-          // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 45, 221, 98)),
-          useMaterial3: true,
-        ),
-        home: Scaffold(
-          appBar: AppBar(title: const Text('Forgot Password Page')),
-          body: Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              child: Column(
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Email'),
-                  ),
-                  const SizedBox(
-                    height: 16.0,
-                  ),
-                  ElevatedButton(onPressed: () {}, child: const Text('Submit')),
-                  const SizedBox(
-                    height: 16.0,
-                  ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const CreateAccountPage()),
-                        );
-                      },
-                      child: RichText(
-                        text: const TextSpan(
-                          text: 'Don\'t have an account? ',
-                          style: TextStyle(color: Colors.black),
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: 'Create one',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+    final projectTheme = context.watch<ProjectTheme>();
+    
+    return Scaffold(
+      backgroundColor: projectTheme.primaryColor,
+      appBar: AppBar(
+        title: const Text('Forgot Password'),
+        centerTitle: true,
+      ),
+      body: FutureBuilder(
+        future: _forgotPasswordInfo,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return LoadingScreen(
+              projectTheme.primaryColor, 
+              projectTheme.activeColor
+            );
+          }
+          return Scroll(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: snapshot.data != null ? [
+                    InfoBox(snapshot.data!),
+                    const SizedBox(height: 20),
+                    const ForgotPasswordForm(),
+                  ] : [
+                    const InfoBox('There was a problem getting forgot password information. Please check your internet connection.'),
+                  ],
+                ),
               ),
             ),
-          ),
-        ));
+          );
+        },
+      ),
+    );
   }
+}
+
+class ForgotPasswordForm extends StatefulWidget {
+  const ForgotPasswordForm({super.key});
+
+  @override
+  State<ForgotPasswordForm> createState() => _ForgotPasswordFormState();
+}
+
+class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
+  final _formKey = GlobalKey<FormState>();  
+  final _emailController = TextEditingController();
+  
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          EmailFieldLarge(_emailController),
+          const SizedBox(height: 20),
+          SubmitButton(formKey: _formKey, emailController: _emailController),
+        ]
+      )
+    );
+  }
+}
+
+class SubmitButton extends StatelessWidget {
+  const SubmitButton({
+    super.key,
+    required GlobalKey<FormState> formKey,
+    required TextEditingController emailController,
+  }) : _formKey = formKey, _emailController = emailController;
+
+  final GlobalKey<FormState> _formKey;
+  final TextEditingController _emailController;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: const Icon(Icons.check),
+      label: const Text('Confirm'),
+      onPressed: () async {
+        if (_formKey.currentState!.validate()) {
+          var success = await _requestPasswordReset(_emailController.text);
+          if (success && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Password reset request sent.'),
+              )
+            );
+          } else if (!success && context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Could not send password reset request.'),
+              )
+            );
+          }
+        }
+      }
+    );
+  }
+}
+
+Future<String?> _fetchForgotPasswordInfo() {
+  return httpGetApi(
+    API.forgotPasswordInfo,
+    (json) => json['message'],
+    () => null,
+  );
+}
+
+Future<bool> _requestPasswordReset(String email) {
+  return httpPostSecure(
+    API.resetPassword,
+    {
+      'email': email,
+    },
+    (_) => true,
+    () => false,
+  );
 }
