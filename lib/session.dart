@@ -7,7 +7,6 @@ class Session {
   late bool online;
   
   late FlutterSecureStorage secureStorage;
-  String? encryptionKey;
   String? token;
   late bool loggedIn;
   
@@ -19,11 +18,6 @@ class Session {
   void setOnline(bool state) {
     online = state;
     appState.notifyListeners();
-  }
-  
-  void setEncryptionKey(String? encryptionKey) {
-    this.encryptionKey = encryptionKey;
-    secureStorage.write(key: _SecureStorageKeys.encryptionKey, value: encryptionKey);
   }
   
   void setToken(String? token) {
@@ -38,7 +32,6 @@ class Session {
 }
 
 class _SecureStorageKeys {
-  static const encryptionKey = 'encryption_key';
   static const token = 'token';
   static const loggedIn = 'logged_in';
 }

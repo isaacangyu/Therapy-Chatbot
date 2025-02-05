@@ -256,7 +256,7 @@ Future<_CreationState> _createAccount(
   AppState appState,
 ) async {
   var keyDetails = kdfKeyDerivation(initialKey: password);
-  appState.session.setEncryptionKey(keyDetails.key);
+  initClientSideEncrypter(keyDetails.key);
   
   var passwordDigest = sha256Digest(password);
   var creationState = await httpPostSecure(
