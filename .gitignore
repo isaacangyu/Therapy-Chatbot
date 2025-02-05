@@ -198,3 +198,4 @@ temp/
 # Codespaces Specific
 api/base_url.json
 app_assets/config.json
+scripts/start-api-test-backend.py

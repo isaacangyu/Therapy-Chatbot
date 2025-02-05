@@ -60,6 +60,12 @@
             "type": "shell",
             "command": "./scripts/start-api-test-backend.py",
             "problemMatcher": []
+        },
+        {
+            "label": "Apply Codespace Compatibility",
+            "type": "shell",
+            "command": "./scripts/codespace-env.py",
+            "problemMatcher": []
         }
     ]
 }
