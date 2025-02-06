@@ -15,6 +15,7 @@ The devcontainer is compatible with both GitHub Codespaces and a locally running
 > Use the command palette (<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd>) to search and select "Run Task" to see a list of configured tasks.
 
 #### Local devcontainer (faster)
+**See the [setup guide](./local_setup.md).**
 1. Make sure you have the VS Code Dev Containers extension installed. Create a Dev Container in Remote Explorer and Clone repository in container volume. Set a descriptive name for the volume and keep hitting enter. Your project structure should load. 
 1. Run the "Start Backend" task to start the Django web server.
 2. Navigate to the debug side bar and launch the "Flutter Run Debug" configuration.
