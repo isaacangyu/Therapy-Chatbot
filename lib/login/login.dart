@@ -1,25 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+import '../../main.dart';
 import 'forgot_password.dart';
 
-// Future<Json> login(username, password) async {
-//   final response = await http.post(
-//       Uri.parse('http://localhost:8000/login/login_view/'),
-//       {'username': username, 'password': password});
+class LoginInfo {
+  final bool success;
+  // store session token variable later
 
-//   if (response.statusCode == 200) {
-//     // If the server did return a 200 OK response,
-//     // then parse the JSON.
-//     return Album.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
-//   } else {
-//     // If the server did not return a 200 OK response,
-//     // then throw an exception.
-//     throw Exception('Failed to load album');
-//   }
-// }
+  LoginInfo({required this.success});
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key}); // back button?
+  bool getSuccess() {
+    return success;
+  }
+}
+
+Future<LoginInfo> login(username, password) async {
+  final response = await http.post(
+      Uri.parse('http://localhost:8000/login/login_view/'),
+      body: {'username': username, 'password': password});
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return LoginInfo(success: true);
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    return LoginInfo(success: false);
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  LoginPage({super.key}); // back button?
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  State<LoginPage> createState() => _MyLoginPageState();
+}
+
+class _MyLoginPageState extends State<LoginPage> {
+  // we're not retrieving an initial state
+  // late Future<LoginInfo> login_info;
+
+  // @override
+  // void initState() { // only used to cache login_info
+  //   super.initState();
+  //   login_info = ();
+  // }
 
   // This widget is the root of your application.
   @override
@@ -64,6 +94,7 @@ class LoginPage extends StatelessWidget {
                   child: Column(
                     children: [
                       TextFormField(
+                        controller: widget._usernameController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
                           labelText: 'Email',
@@ -82,6 +113,7 @@ class LoginPage extends StatelessWidget {
                         height: 30,
                       ),
                       TextFormField(
+                        controller: widget._passwordController,
                         keyboardType: TextInputType.visiblePassword,
                         decoration: const InputDecoration(
                           labelText: 'Password',
@@ -102,7 +134,22 @@ class LoginPage extends StatelessWidget {
                         height: 30,
                       ),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          LoginInfo loginInfo = await login(
+                              widget._usernameController.text.trim(),
+                              widget._passwordController.text.trim());
+                          if (loginInfo.getSuccess()) {
+                            Navigator.push(
+                              // .then?
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const MyHomePage(title: 'Welcome!')),
+                            );
+                          } else {
+                            throw Exception('Could not login');
+                          }
+                        },
                         // minWidth: 1000,
                         // color: Colors.teal,
                         // textColor: Colors.white,
