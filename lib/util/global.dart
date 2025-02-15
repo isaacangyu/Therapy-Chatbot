@@ -15,7 +15,8 @@ class API {
   
   static const createAccount = 'account/create';
   static const resetPassword = 'account/reset_password';
-  static const login = 'login';
+  static const loginPassword = 'account/login/password';
+  static const loginToken = 'account/login/token';
 }
 
 class Global {

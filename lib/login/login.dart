@@ -231,7 +231,7 @@ Future<_LoginState> _login(
 ) async {
   var passwordDigest = sha256Digest(password);
   var loginState = await httpPostSecure(
-    API.login,
+    API.loginPassword,
     {
       'email': email,
       'password_digest': passwordDigest,

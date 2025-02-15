@@ -40,6 +40,11 @@ String verifyData(String data) {
   return utf8.decode(base64Decode(bodyBase64));
 }
 
+Object includeToken(String token, Map<String, dynamic> data) {
+  data['token'] = token;
+  return data;
+}
+
 Future<T> httpPostSecure<T>(
   String path,
   Object data,
