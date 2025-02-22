@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sessions.models import Session
 # from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_protect
 
 # from .models import User
@@ -13,7 +13,7 @@ def testPostRequest(request):
     if request.method == 'POST':
         data = request.POST
         print(data)
-        return HttpResponse('Test Post Request working')
+        return JsonResponse('Test Post Request working', safe=False)
 
 
 def register(request):
@@ -28,7 +28,7 @@ def register(request):
             print("Created account")
         else:
             form = UserCreationForm()
-        return {'form': form}
+        return JsonResponse({'form': form})
 
 
 def login_view(request):
@@ -42,12 +42,13 @@ def login_view(request):
             request.session['username'] = username
             request.session.save()
             print('LOGGED IN')
-            return {'logged in': 'success'}
+            session_token = ''
+            return JsonResponse({'success': True, 'session token': session_token})
         else:
             # handle invalid login
-            return HttpResponse('Invalid Login', status=401)
+            return JsonResponse({'success': False}, status=401)
     else:
-        return {'error': 'Login view did not receive a POST Request'}
+        return JsonResponse({'error': 'Login view did not receive a POST Request'})
 
 # @csrf_protect
 # def forgot_password(request):
