@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from core import util
+from core import crypto
 
 class Account(models.Model):
     name = models.CharField(max_length=64)
@@ -16,7 +16,7 @@ class Account(models.Model):
     
     @staticmethod
     def create(name, email, password_digest, kdf_salt):
-        password_hash = util.password_hash(password_digest)
+        password_hash = crypto.password_hash(password_digest)
         return Account(
             name=name, 
             email=email, 
