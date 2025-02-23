@@ -1,11 +1,11 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
+# manually write methods instead of using auth
+# from django.contrib.auth import authenticate, login, logout
+# from django.contrib.auth.forms import UserCreationForm
 from django.contrib.sessions.models import Session
 # from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_protect
-
-# from .models import User
+import models
 
 
 @csrf_protect
@@ -18,17 +18,21 @@ def testPostRequest(request):
 
 def register(request):
     if request.method == 'POST':
-        post = request.POST
-        print(post)
-        form = UserCreationForm(post)
-        print("Printing form", form)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            print("Created account")
-        else:
-            form = UserCreationForm()
-        return JsonResponse({'form': form})
+        # json.dumps/loads, JSON --> dict, test by curling with {}
+        post = dict(request.POST)
+        print(post, type(post))
+        # reference create_account.dart for keys, salt sent to server instead of encryption key for cryptographic reasons
+        name, email, password_digest, salt = post['name'][0], post[
+            'email'][0], post['password_digest'][0], post['salt'][0]
+        # form = UserCreationForm(post)
+        # print("Printing form", form)
+        # if form.is_valid():
+        #     user = form.save()
+        #     login(request, user)
+        #     print("Created account")
+        # else:
+        #     form = UserCreationForm()
+        return JsonResponse({'form': 'post received'})
 
 
 def login_view(request):
@@ -49,6 +53,9 @@ def login_view(request):
             return JsonResponse({'success': False}, status=401)
     else:
         return JsonResponse({'error': 'Login view did not receive a POST Request'})
+
+# token login, find method for secure token generation
+# def login_token_view(request):
 
 # @csrf_protect
 # def forgot_password(request):
