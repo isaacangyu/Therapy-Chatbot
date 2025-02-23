@@ -158,7 +158,10 @@ class LoginButton extends StatelessWidget {
           if (context.mounted) {
             context.loaderOverlay.hide();
             if (loginState.success) {
-              pushRoute(context, const Placeholder());
+              pushRoute(context, const PopScope(
+                canPop: false,
+                child: Placeholder()
+              ));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
