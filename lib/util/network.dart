@@ -33,11 +33,12 @@ String verifyData(String data) {
     throw const FormatException('Invalid data.');
   }
   var bodyBase64 = split[0];
-  var signature = split[1];
-  if (!_signer.verify64(bodyBase64, signature)) {
+  var body = utf8.decode(base64.decode(bodyBase64));
+  var signatureBase64 = split[1];
+  if (!_signer.verify64(body, signatureBase64)) {
     throw Exception('Failed to verify signature.');
   }
-  return utf8.decode(base64Decode(bodyBase64));
+  return body;
 }
 
 Object includeToken(String token, Map<String, dynamic> data) {
@@ -52,7 +53,7 @@ Future<T> httpPostSecure<T>(
   T Function() onError,
 ) async {
   try {
-    var cipherText = _encrypter.encrypt(data.toString());
+    var cipherText = _encrypter.encrypt(jsonEncode(data));
     var response = await http.post(
       Uri.parse(API.baseUrl!).resolve(path),
       body: cipherText.bytes,

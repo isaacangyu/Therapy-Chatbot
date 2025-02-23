@@ -1,3 +1,5 @@
+import secrets
+
 from django.db import models
 from django.utils import timezone
 
@@ -22,5 +24,22 @@ class Account(models.Model):
             email=email, 
             password_hash=password_hash, 
             kdf_salt=kdf_salt, 
+            creation_date=timezone.now()
+        )
+
+class Session(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    token = models.CharField(max_length=64)
+    creation_date = models.DateTimeField()
+    
+    def __str__(self):
+        return f"{self.account} ({self.token})"
+    
+    @staticmethod
+    def create(account):
+        token = secrets.token_urlsafe(0x40)
+        return Session(
+            account=account, 
+            token=token, 
             creation_date=timezone.now()
         )
