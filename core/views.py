@@ -30,3 +30,46 @@ def create_account(request):
         "success": True,
         "token": session.token,
     })
+
+@require_POST
+def login_password(request):
+    raw_data = crypto.asymmetric_decrypt(request.body)
+    form = json.loads(raw_data)
+    
+    try:
+        account = Account.objects.get(email=form["email"])
+    except Account.DoesNotExist:
+        return util.cors_signed_json_response({
+            "success": False,
+            "message": "Account does not exist.",
+        })
+    
+    if not crypto.password_verify(form["password_digest"], account.password_hash):
+        return util.cors_signed_json_response({
+            "success": False,
+            "message": "Incorrect password.",
+        })
+    
+    session = Session.create(account)
+    session.save()
+    return util.cors_signed_json_response({
+        "success": True,
+        "salt": account.kdf_salt,
+        "token": session.token,
+    })
+
+@require_POST
+def login_token(request):
+    raw_data = crypto.asymmetric_decrypt(request.body)
+    form = json.loads(raw_data)
+    
+    try:
+        session = Session.objects.get(token=form["token"])
+    except Session.DoesNotExist:
+        return util.cors_signed_json_response({
+            "valid": False,
+        })
+    
+    return util.cors_signed_json_response({
+        "valid": True,
+    })

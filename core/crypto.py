@@ -1,6 +1,6 @@
 import base64
 
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher, exceptions
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
@@ -15,7 +15,11 @@ def password_hash(password_digest):
     return _hasher.hash(password_digest)
 
 def password_verify(password_digest, password_hash):
-    return _hasher.verify(password_hash, password_digest)
+    try:
+        # `verify` will return True if verification succeeds and raises an exception otherwise.
+        return _hasher.verify(password_hash, password_digest)
+    except exceptions.VerifyMismatchError:
+        return False
 
 def asymmetric_decrypt(ciphertext):
     return _private_key.decrypt(ciphertext, padding.OAEP(
