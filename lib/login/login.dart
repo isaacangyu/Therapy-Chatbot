@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
+import '/app_state.dart';
+import '/util/crypto.dart';
+import '/util/network.dart';
 import '/util/navigation.dart';
 import '/util/theme.dart';
 import '/util/global.dart';
 import '/login/forgot_password.dart';
 import '/login/create_account.dart';
-import '/login/validate_password.dart';
 import '/widgets/fields/email_large.dart';
 import '/widgets/fields/password_large.dart';
 import '/widgets/scroll.dart';
@@ -24,31 +27,33 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
     final projectTheme = context.watch<ProjectTheme>();
     
-    return Scaffold(
-      backgroundColor: projectTheme.primaryColor,
-      body: Scroll(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const AppLogo(),
-                const SizedBox(height: 20),
-                Text(
-                  Global.appTitle,
-                  style: theme.textTheme.headlineLarge!.copyWith(
-                    color: projectTheme.activeColor,
+    return LoaderOverlay(
+      child: Scaffold(
+        backgroundColor: projectTheme.primaryColor,
+        body: Scroll(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const AppLogo(),
+                  const SizedBox(height: 20),
+                  Text(
+                    Global.appTitle,
+                    style: theme.textTheme.headlineLarge!.copyWith(
+                      color: projectTheme.activeColor,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: const LoginForm(),
-                ),
-                const SizedBox(height: 20),
-                const GoToCreateAccountButton(),
-              ],
+                  const SizedBox(height: 20),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: const LoginForm(),
+                  ),
+                  const SizedBox(height: 20),
+                  const GoToCreateAccountButton(),
+                ],
+              ),
             ),
           ),
         ),
@@ -104,9 +109,16 @@ class _LoginFormState extends State<LoginForm> {
         children: [
           EmailFieldLarge(_emailController),
           const SizedBox(height: 10),
-          PasswordFieldLarge(_passwordController, validatePassword),
+          PasswordFieldLarge(
+            _passwordController, 
+            (value) => value.isEmpty ? 'Invalid password.' : null
+          ),
           const SizedBox(height: 20),
-          LoginButton(formKey: _formKey),
+          LoginButton(
+            formKey: _formKey,
+            emailController: _emailController,
+            passwordController: _passwordController
+          ),
           const SizedBox(height: 10),
           const GoToForgotPasswordPageButton(),
         ],
@@ -119,16 +131,51 @@ class LoginButton extends StatelessWidget {
   const LoginButton({
     super.key,
     required GlobalKey<FormState> formKey,
-  }) : _formKey = formKey;
+    required TextEditingController emailController,
+    required TextEditingController passwordController,
+  }) : _formKey = formKey, _emailController = emailController, _passwordController = passwordController;
 
   final GlobalKey<FormState> _formKey;
+  final TextEditingController _emailController;
+  final TextEditingController _passwordController;
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    
     return ElevatedButton(
       child: const Text('Login'),
-      onPressed: () {
+      onPressed: () async {
         if (_formKey.currentState!.validate()) {
+          context.loaderOverlay.show();
+          
+          var appState = context.read<AppState>();
+          var loginState = await _login(
+            _emailController.text,
+            _passwordController.text,
+            appState,
+          );
+          if (context.mounted) {
+            context.loaderOverlay.hide();
+            if (loginState.success) {
+              pushRoute(context, const PopScope(
+                canPop: false,
+                child: Placeholder()
+              ));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    loginState.message ?? 'An unknown error occurred.',
+                    style: theme.textTheme.bodySmall!.copyWith(
+                      color: theme.colorScheme.onErrorContainer
+                    ),
+                  ),
+                  backgroundColor: theme.colorScheme.errorContainer,
+                ),
+              );
+            }
+          }
         }
       },
     );
@@ -169,4 +216,64 @@ class AppLogo extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Login Procedure (Client Side)
+/// 
+/// 1. Generate a digest of the raw password.
+/// 2. Send the email and digest to the server for validation.
+///    The server will return the KDF salt and a session token.
+/// 3. Generate the symmetric encryption key using the raw password and the salt via KDF.
+///    Note: Testing the validity of the encryption key must be performed later.
+/// 4. Store the session token in secure storage.
+/// 
+Future<_LoginState> _login(
+  String email,
+  String password,
+  AppState appState
+) async {
+  var passwordDigest = sha256Digest(password);
+  var loginState = await httpPostSecure(
+    API.loginPassword,
+    {
+      'email': email,
+      'password_digest': passwordDigest,
+    },
+    (json) => _LoginState(
+      json['success'],
+      message: json['message'],
+      salt: json['salt'],
+      token: json['token'],
+    ),
+    () => const _LoginState(
+      false, message: 'Please check your internet connection.'
+    ),
+  );
+  
+  if (
+    !loginState.success 
+    || loginState.salt == null 
+    || loginState.token == null
+  ) {
+    return _LoginState(loginState.success, message: loginState.message);
+  }
+  
+  var keyDetails = kdfKeyDerivation(
+    initialKey: password, salt: loginState.salt
+  );
+  initClientSideEncrypter(keyDetails.key);
+  
+  appState.session.setToken(loginState.token);
+  appState.session.setLoggedIn(true);
+  
+  return loginState;
+}
+
+class _LoginState {
+  const _LoginState(this.success, {this.message, this.salt, this.token});
+
+  final bool success;
+  final String? message;
+  final String? salt;
+  final String? token;
 }

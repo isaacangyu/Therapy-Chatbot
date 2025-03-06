@@ -1,8 +1,13 @@
+argon2-cffi==23.1.0
+argon2-cffi-bindings==21.2.0
 asgiref==3.8.1
+cffi==1.17.1
+cryptography==44.0.1
 Django==5.1.2
 gitdb==4.0.11
 GitPython==3.1.41
 psycopg==3.2.3
+pycparser==2.22
 smmap==5.0.1
 sqlparse==0.5.1
 typing_extensions==4.12.2

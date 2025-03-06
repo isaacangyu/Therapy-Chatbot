@@ -139,10 +139,7 @@ class ConfirmButton extends StatelessWidget {
             
             if (context.mounted) {
               if (creationState.success) {
-                pushRoute(
-                  context,
-                  const Placeholder()
-                );
+                pushRoute(context, const Placeholder());
               } else {
                 pushRoute(
                   context,
@@ -272,7 +269,9 @@ Future<_CreationState> _createAccount(
       message: json['message'],
       token: json['token']
     ),
-    () => _CreationState(false, message: 'Please check your internet connection.'),
+    () => const _CreationState(
+      false, message: 'Please check your internet connection.'
+    ),
   );
   appState.session.setToken(creationState.token);
   appState.session.setLoggedIn(creationState.success);
@@ -281,9 +280,9 @@ Future<_CreationState> _createAccount(
 }
 
 class _CreationState {
-  _CreationState(this.success, {this.message, this.token});
+  const _CreationState(this.success, {this.message, this.token});
   
-  bool success;
-  String? message;
-  String? token;
+  final bool success;
+  final String? message;
+  final String? token;
 }

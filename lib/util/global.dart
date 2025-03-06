@@ -13,8 +13,10 @@ class API {
   static const backendBase = 'api/base_url.json';
   static const publicKey = 'cert/${kDebugMode ? 'test' : 'prod'}/public/public.pem';
   
-  static const createAccount = 'account/create';
-  static const resetPassword = 'account/reset_password';
+  static const createAccount = 'account/create/';
+  static const resetPassword = 'account/reset_password/';
+  static const loginPassword = 'account/login/password/';
+  static const loginToken = 'account/login/token/';
 }
 
 class Global {

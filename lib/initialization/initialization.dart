@@ -36,6 +36,10 @@ import '/util/network.dart';
 ///      There may be an update required.
 /// 5. If and only if the user will be online, 
 ///    fetch cryptographic keys. Halt initialization on failure.
+/// 6. If and only if the user will be online and is already logged in, 
+///    test the validity of the session token via request to 
+///    the main backend. If the session token is invalid, clear it 
+///    and set the user as logged out. Otherwise, do nothing.
 /// 
 Future<InitializationState> initializeApp(
   AppState appState,
@@ -105,20 +109,6 @@ Future<InitializationState> initializeApp(
     );
   }
   
-  debugPrint('''
-Default preferences from app database:
-Color Scheme Seed: ${appState.preferences.colorScheme.primaryContainer}
-
-Session info:
-Token: ${appState.session.token}
-Logged in: ${appState.session.loggedIn}
-
-Latest App Version: $latestAppVersion
-Current App Version: ${Global.appVersion}
-Initialization Base URL: ${API.initBaseUrl}
-Backend Base URL: $backendBaseUrl
-''');
-  
   if (backendBaseUrl != null) {
     appState.session.online = true;
     API.baseUrl = backendBaseUrl;
@@ -133,7 +123,37 @@ Backend Base URL: $backendBaseUrl
   } else {
     appState.session.online = false;
   }
-    
+  
+  if (appState.session.loggedIn) {
+    var tokenValid = await _validateSessionToken(appState.session.token);
+    if (!tokenValid) {
+      try {
+        appState.session.setToken(null);
+        appState.session.setLoggedIn(false);
+      } catch (e) {
+        debugPrint(e.toString());
+        return InitializationState(
+          false,
+          message: 'Failed to automatically log out.'
+        );
+      }
+    }
+  }
+  
+  debugPrint('''
+Default preferences from app database:
+Color Scheme Seed: ${appState.preferences.colorScheme.primaryContainer}
+
+Session info:
+Token: ${appState.session.token}
+Logged in: ${appState.session.loggedIn}
+
+Latest App Version: $latestAppVersion
+Current App Version: ${Global.appVersion}
+Initialization Base URL: ${API.initBaseUrl}
+Backend Base URL: $backendBaseUrl
+''');
+  
   // Insert some artificial delay.
   // Otherwise, the splash screen image is "janky".
   if (!kDebugMode) {
@@ -156,6 +176,19 @@ Future<String?> _fetchBackendBaseUrl() {
     API.backendBase,
     (json) => json['url'],
     () => null,
+  );
+}
+
+Future<bool> _validateSessionToken(String? token) async {
+  if (token == null) {
+    return false;
+  }
+  
+  return httpPostSecure(
+    API.loginToken,
+    includeToken(token, {}),
+    (json) => json['valid'],
+    () => false,
   );
 }
 
