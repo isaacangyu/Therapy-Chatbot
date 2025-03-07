@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -126,7 +127,9 @@ class ConfirmButton extends StatelessWidget {
           // It seems to momentarily block the UI, despite be async.
           // This delay is placed intentionally to give the loading screen
           // a chance to display.
-          await Future.delayed(const Duration(seconds: 2));
+          if (!kDebugMode) {
+            await Future.delayed(const Duration(seconds: 2));
+          }
           
           if (context.mounted) {
             var appState = context.read<AppState>();
@@ -273,8 +276,8 @@ Future<_CreationState> _createAccount(
       false, message: 'Please check your internet connection.'
     ),
   );
-  appState.session.setToken(creationState.token);
-  appState.session.setLoggedIn(creationState.success);
+  await appState.session.setToken(creationState.token);
+  await appState.session.setLoggedIn(creationState.success);
   
   return creationState;
 }

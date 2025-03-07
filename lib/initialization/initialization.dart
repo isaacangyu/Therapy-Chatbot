@@ -82,7 +82,7 @@ Future<InitializationState> initializeApp(
     debugPrint(e.toString());
     return InitializationState(
       false,
-      message: 'Failed to load session info.'
+      message: 'Failed to load session info. Try clearing the app\'s cache.'
     );
   }
   
@@ -128,13 +128,13 @@ Future<InitializationState> initializeApp(
     var tokenValid = await _validateSessionToken(appState.session.token);
     if (!tokenValid) {
       try {
-        appState.session.setToken(null);
-        appState.session.setLoggedIn(false);
+        await appState.session.setToken(null);
+        await appState.session.setLoggedIn(false);
       } catch (e) {
         debugPrint(e.toString());
         return InitializationState(
           false,
-          message: 'Failed to automatically log out.'
+          message: 'Failed to automatically log out. Try clearing the app\'s cache.'
         );
       }
     }
