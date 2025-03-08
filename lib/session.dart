@@ -20,14 +20,14 @@ class Session {
     appState.notifyListeners();
   }
   
-  void setToken(String? token) {
+  Future<void> setToken(String? token) async {
     this.token = token;
-    secureStorage.write(key: _SecureStorageKeys.token, value: token);
+    await secureStorage.write(key: _SecureStorageKeys.token, value: token);
   }
   
-  void setLoggedIn(bool loggedIn) {
+  Future<void> setLoggedIn(bool loggedIn) async {
     this.loggedIn = loggedIn;
-    secureStorage.write(key: _SecureStorageKeys.loggedIn, value: loggedIn ? '1' : '0');
+    await secureStorage.write(key: _SecureStorageKeys.loggedIn, value: loggedIn ? '1' : '0');
   }
 }
 

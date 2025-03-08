@@ -6,16 +6,14 @@ from core import crypto, util
 from core.models import Account, Session
 
 @require_POST
-def create_account(request):
-    raw_data = crypto.asymmetric_decrypt(request.body)
-    form = json.loads(raw_data)
-    
+@util.app_view
+def create_account(request, form):
     # Check if account already exists.
     if Account.objects.filter(email=form["email"]).exists():
-        return util.cors_signed_json_response({
+        return {
             "success": False,
             "message": "Account already exists.",
-        })
+        }
     
     account = Account.create(
         form["name"], 
@@ -26,50 +24,46 @@ def create_account(request):
     session = Session.create(account)
     account.save()
     session.save()
-    return util.cors_signed_json_response({
+    return {
         "success": True,
         "token": session.token,
-    })
+    }
 
 @require_POST
-def login_password(request):
-    raw_data = crypto.asymmetric_decrypt(request.body)
-    form = json.loads(raw_data)
-    
+@util.app_view
+def login_password(request, form):
     try:
         account = Account.objects.get(email=form["email"])
     except Account.DoesNotExist:
-        return util.cors_signed_json_response({
+        return {
             "success": False,
             "message": "Account does not exist.",
-        })
+        }
     
     if not crypto.password_verify(form["password_digest"], account.password_hash):
-        return util.cors_signed_json_response({
+        return {
             "success": False,
             "message": "Incorrect password.",
-        })
+        }
     
     session = Session.create(account)
     session.save()
-    return util.cors_signed_json_response({
+    return {
         "success": True,
         "salt": account.kdf_salt,
         "token": session.token,
-    })
+    }
 
 @require_POST
-def login_token(request):
-    raw_data = crypto.asymmetric_decrypt(request.body)
-    form = json.loads(raw_data)
-    
+@util.app_view
+def login_token(request, form):
     try:
         session = Session.objects.get(token=form["token"])
     except Session.DoesNotExist:
-        return util.cors_signed_json_response({
+        return {
             "valid": False,
-        })
+        }
     
-    return util.cors_signed_json_response({
+    return {
         "valid": True,
-    })
+    }

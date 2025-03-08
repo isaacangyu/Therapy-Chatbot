@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -149,12 +150,23 @@ class LoginButton extends StatelessWidget {
         if (_formKey.currentState!.validate()) {
           context.loaderOverlay.show();
           
-          var appState = context.read<AppState>();
-          var loginState = await _login(
-            _emailController.text,
-            _passwordController.text,
-            appState,
-          );
+          // The KDF function used during login is computationally expensive.
+          // It seems to momentarily block the UI, despite be async.
+          // This delay is placed intentionally to give the overlay
+          // a chance to display.
+          if (!kDebugMode) {
+            await Future.delayed(const Duration(seconds: 2));
+          }
+          
+          late _LoginState loginState;
+          if (context.mounted) {
+            var appState = context.read<AppState>();
+            loginState = await _login(
+              _emailController.text,
+              _passwordController.text,
+              appState,
+            );
+          }
           if (context.mounted) {
             context.loaderOverlay.hide();
             if (loginState.success) {
@@ -263,8 +275,8 @@ Future<_LoginState> _login(
   );
   initClientSideEncrypter(keyDetails.key);
   
-  appState.session.setToken(loginState.token);
-  appState.session.setLoggedIn(true);
+  await appState.session.setToken(loginState.token);
+  await appState.session.setLoggedIn(true);
   
   return loginState;
 }

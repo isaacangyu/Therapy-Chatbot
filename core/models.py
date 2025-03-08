@@ -34,7 +34,7 @@ class Session(models.Model):
     creation_date = models.DateTimeField()
     
     def __str__(self):
-        return f"{self.account} ({self.token})"
+        return f"{self.account} ({self.token[0:8]}...)"
     
     @staticmethod
     def create(account):
