@@ -20,6 +20,8 @@ class Session {
     appState.notifyListeners();
   }
   
+  // Note: Writes may fail if multiple writes are attempted concurrently.
+  
   Future<void> setToken(String? token) async {
     this.token = token;
     await secureStorage.write(key: _SecureStorageKeys.token, value: token);
