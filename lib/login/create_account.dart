@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '/app_state.dart';
 import '/login/validate_password.dart';
+import '/chatbot/chatbot.dart';
 import '/util/navigation.dart';
 import '/util/global.dart';
 import '/util/network.dart';
@@ -142,7 +143,7 @@ class ConfirmButton extends StatelessWidget {
             
             if (context.mounted) {
               if (creationState.success) {
-                pushRoute(context, const Placeholder());
+                pushRoute(context, const ChatbotPage());
               } else {
                 pushRoute(
                   context,

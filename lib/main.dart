@@ -5,6 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '/initialization/splash.dart';
 import '/initialization/notice.dart';
 import '/login/login.dart';
+import '/chatbot/chatbot.dart';
 import '/util/global.dart';
 import '/util/persistence.dart';
 import '/util/theme.dart';
@@ -78,7 +79,7 @@ class _AppBase extends State<App> {
                 title: Global.appTitle,
                 theme: themeData,
                 home: appState.session.loggedIn 
-                  ? const Placeholder() : const LoginPage(),
+                  ? const ChatbotPage() : const LoginPage(),
               );
             },
           );

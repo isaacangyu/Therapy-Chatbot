@@ -11,6 +11,7 @@ import '/util/theme.dart';
 import '/util/global.dart';
 import '/login/forgot_password.dart';
 import '/login/create_account.dart';
+import '/chatbot/chatbot.dart';
 import '/widgets/fields/email_large.dart';
 import '/widgets/fields/password_large.dart';
 import '/widgets/scroll.dart';
@@ -172,7 +173,7 @@ class LoginButton extends StatelessWidget {
             if (loginState.success) {
               pushRoute(context, const PopScope(
                 canPop: false,
-                child: Placeholder()
+                child: ChatbotPage(),
               ));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
