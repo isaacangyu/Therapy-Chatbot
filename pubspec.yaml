@@ -53,6 +53,7 @@ dependencies:
   flutter_secure_storage: 10.0.0-beta.4
   loader_overlay: ^4.0.4+1
   flutter_ai_toolkit: ^0.6.5
+  flutter_markdown: ^0.7.6+2
 
 dev_dependencies:
   flutter_test:
