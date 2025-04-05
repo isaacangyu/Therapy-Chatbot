@@ -52,7 +52,7 @@ Future<InitializationState> initializeApp(
   try {
     var config = jsonDecode(await rootBundle.loadString('app_assets/config.json'));
     Global.appVersion = config['app_version'];
-    API.initBaseUrl = config['init_base_url'];
+    API.initBaseUrl = config['init_base_url${Global.androidDebugMode ? "_debug_android" : ""}'];
   } catch (e) {
     debugPrint(e.toString());
     return InitializationState(
@@ -124,7 +124,7 @@ Future<InitializationState> initializeApp(
     appState.session.online = false;
   }
   
-  if (appState.session.loggedIn) {
+  if (appState.session.online && appState.session.loggedIn) {
     var tokenValid = await _validateSessionToken(appState.session.token);
     if (!tokenValid) {
       try {
