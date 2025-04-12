@@ -2,7 +2,9 @@ import 'package:animated_svg/animated_svg.dart';
 import 'package:blobs/blobs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
+import '/util/theme.dart';
 import '/widgets/scroll.dart';
 
 class BreathingPage extends StatefulWidget {
@@ -15,13 +17,43 @@ class BreathingPage extends StatefulWidget {
 class _BreathingPageState extends State<BreathingPage> {
   // final _blobController = BlobController();
   double _scale = 1.0;
-  
+
   late final SvgController _svgController;
-  
+  late final Blob _blobWidget;
+
   @override
   void initState() {
     super.initState();
     _svgController = AnimatedSvgController();
+
+    var projectTheme = context.read<ProjectTheme>();
+    _blobWidget = Blob.animatedRandom(
+      size: 200,
+      edgesCount: 15,
+      minGrowth: 8,
+      styles: BlobStyles(
+        // color: projectTheme.primaryColor,
+        fillType: BlobFillType.fill,
+        gradient: LinearGradient( // Note: Figure out how these gradient work later.
+          colors: [projectTheme.inactiveColor, projectTheme.activeColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ).createShader(const Rect.fromLTRB(0, 0, 300, 300)),
+      ),
+      loop: true,
+      duration: const Duration(milliseconds: 1000),
+      // controller: _blobController,
+      // Note: You can *probably* put blobs inside of other blobs.
+      child: const Center(
+        child: Text(
+          "This is a blob.",
+          style: TextStyle(
+            color: Colors.blueAccent,
+            backgroundColor: Colors.white
+          )
+        )
+      ),
+    );
   }
 
   @override
@@ -34,8 +66,7 @@ class _BreathingPageState extends State<BreathingPage> {
   @override
   Widget build(BuildContext context) {
     // ProjectTheme projectTheme = context.watch<ProjectTheme>();
-    ThemeData theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Breathing'),
@@ -51,25 +82,7 @@ class _BreathingPageState extends State<BreathingPage> {
                 duration: const Duration(milliseconds: 1000),
                 curve: Curves.easeInOut,
                 scale: _scale,
-                child: Blob.animatedRandom(
-                  size: 200,
-                  edgesCount: 15,
-                  minGrowth: 8,
-                  styles: BlobStyles(
-                    // color: projectTheme.primaryColor,
-                    fillType: BlobFillType.fill,
-                    gradient: LinearGradient( // Note: Figure out how these gradient work later.
-                      colors: [theme.colorScheme.onPrimary, theme.colorScheme.primary],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ).createShader(const Rect.fromLTRB(0, 0, 300, 300)),
-                  ),
-                  loop: true,
-                  duration: const Duration(milliseconds: 1000),
-                  // controller: _blobController,
-                  // Note: You can *probably* put blobs inside of other blobs.
-                  child: const Center(child: Text("This is a blob.")),
-                ),
+                child: _blobWidget,
               ),
               MaterialButton(
                 child: const Text('Press to change blob.'),
@@ -80,6 +93,7 @@ class _BreathingPageState extends State<BreathingPage> {
                   // _blobController.change();
                   
                   // Issue: This animation disrupts the blob's animation.
+                  // unless the blob is isolated from the `_scale` state variable.
                   setState(() {
                     _scale = _scale == 1.0 ? 1.5 : 1.0;
                   });
@@ -123,9 +137,9 @@ class _BreathingPageState extends State<BreathingPage> {
                 },
               )
             ],
-          )
+          ),
         ),
-      )
+      ),
     );
   }
 }
