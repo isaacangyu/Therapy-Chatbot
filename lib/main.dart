@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:therapy_chatbot/breathing/breathing.dart';
 
 import '/initialization/splash.dart';
 import '/initialization/notice.dart';
@@ -78,7 +79,7 @@ class _AppBase extends State<App> {
                 title: Global.appTitle,
                 theme: themeData,
                 home: appState.session.loggedIn 
-                  ? const Placeholder() : const LoginPage(),
+                  ? const BreathingPage() : const LoginPage(),
               );
             },
           );
