@@ -6,6 +6,22 @@ IDX configuration files and environment data (once initialized) can be found und
 > "*Firebase Studio is in Preview, which means that the product is not subject to any SLA or deprecation policy and could change in backwards-incompatible ways.*"
 
 ## Quick Start
+
+<a href="https://studio.firebase.google.com/import?url=https%3A%2F%2Fgithub.com%2Fisaacangyu%2FTherapy-Chatbot">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://cdn.firebasestudio.dev/btn/open_dark_32.svg">
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://cdn.firebasestudio.dev/btn/open_light_32.svg">
+    <img
+      height="32"
+      alt="Open in Firebase Studio"
+      src="https://cdn.firebasestudio.dev/btn/open_blue_32.svg">
+  </picture>
+</a>
+
 1. Go to [firebase.studio](https://firebase.studio/), create an account, and accept Google's terms of service.
 2. Click "Import Repo" and paste the URL of this project. Check the box indicating that this is a Flutter project.
 3. Accept the Android SDK licensing terms.
