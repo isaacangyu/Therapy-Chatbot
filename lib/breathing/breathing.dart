@@ -1,25 +1,83 @@
+import 'package:blobs/blobs.dart';
 import 'package:flutter/material.dart';
 
-class BreathingPage extends StatelessWidget {
+class BreathingPage extends StatefulWidget {
   const BreathingPage({super.key});
 
   @override
+  State<BreathingPage> createState() => _BreathingPageState();
+}
+
+class _BreathingPageState extends State<BreathingPage> {
+  // final _blobController = BlobController();
+  double _scale = 1.0;
+
+  @override
+  void dispose() {
+    // _blobController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // ProjectTheme projectTheme = context.watch<ProjectTheme>();
+    ThemeData theme = Theme.of(context);
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Breathing'),
       ),
       body: Center(
-        child: Container(
-            width: 100.0,
-            height: 100.0, 
-            decoration: const BoxDecoration(
-              color: Colors.yellow, 
-              shape: BoxShape.circle,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("Exhibit 1: The Blob"),
+            AnimatedScale(
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.easeInOut,
+              scale: _scale,
+              child: Blob.animatedRandom(
+                size: 200,
+                edgesCount: 15,
+                minGrowth: 8,
+                styles: BlobStyles(
+                  // color: projectTheme.primaryColor,
+                  fillType: BlobFillType.fill,
+                  gradient: LinearGradient( // Note: Figure out how these gradient work later.
+                    colors: [theme.colorScheme.onPrimary, theme.colorScheme.primary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(const Rect.fromLTRB(0, 0, 300, 300)),
+                ),
+                loop: true,
+                duration: const Duration(milliseconds: 1000),
+                // controller: _blobController,
+                // Note: You can *probably* put blobs inside of other blobs.
+                child: const Center(child: Text("This is a blob.")),
+              ),
             ),
-            child: const Text("Let's work on breathing. As the circle expands take a deep breath in and as the circle retracts let the air out. This can help with calming down.")
+            MaterialButton(
+              child: const Text('Press to change blob.'),
+              onPressed: () {
+                // The blob controller can be used to explicitly 
+                // trigger the blob's animation if the blob is not 
+                // constructed with loop: true.
+                // _blobController.change();
+                
+                // Issue: This animation disrupts the blob's animation.
+                setState(() {
+                  _scale = _scale == 1.0 ? 1.5 : 1.0;
+                });
+              },
+            ),
+            const Divider(
+              thickness: 1,
+              color: Colors.grey,
+            ),
+          ],
         )
-      ),
+      )
     );
   }
 }
+// const Text("Let's work on breathing. As the circle expands take a deep breath in, and as the [thing] contracts let the air out. This can help with calming down.")
