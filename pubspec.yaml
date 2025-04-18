@@ -54,8 +54,6 @@ dependencies:
   loader_overlay: ^4.0.4+1
   flutter_ai_toolkit: ^0.6.5
   blobs: ^2.0.0
-  animated_svg: ^2.1.0
-  flutter_svg: ^2.0.17
 
 dev_dependencies:
   flutter_test:
