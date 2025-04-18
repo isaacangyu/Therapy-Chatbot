@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:blobs/blobs.dart';
@@ -13,99 +15,40 @@ class BreathingPage extends StatefulWidget {
 }
 
 class _BreathingPageState extends State<BreathingPage> {
-  // final _blobController = BlobController();
-  double _scale = 1.0;
 
-  late final Blob _blobWidget;
-
-  @override
-  void initState() {
-    super.initState();
-
-    var projectTheme = context.read<ProjectTheme>();
-    _blobWidget = Blob.animatedRandom(
-      size: 200,
-      edgesCount: 15,
-      minGrowth: 8,
-      styles: BlobStyles(
-        // color: projectTheme.primaryColor,
-        fillType: BlobFillType.fill,
-        gradient: LinearGradient( // Note: Figure out how these gradient work later.
-          colors: [projectTheme.inactiveColor, projectTheme.activeColor],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ).createShader(const Rect.fromLTRB(0, 0, 300, 300)),
-      ),
-      loop: true,
-      duration: const Duration(milliseconds: 1000),
-      // controller: _blobController,
-      // Note: You can *probably* put blobs inside of other blobs.
-      child: const Center(
-        child: Text(
-          "This is a blob.",
-          style: TextStyle(
-            color: Colors.blueAccent,
-            backgroundColor: Colors.white
-          )
-        )
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    // _blobController.dispose();
-    super.dispose();
-  }
+  double _speed = 1.0;
 
   @override
   Widget build(BuildContext context) {
-    // ProjectTheme projectTheme = context.watch<ProjectTheme>();
-
+    final theme = Theme.of(context);
+    final projectTheme = context.watch<ProjectTheme>();
+    
     return Scaffold(
+      backgroundColor: projectTheme.primaryColor,
       appBar: AppBar(
-        title: const Text('Breathing'),
+        title: const Text("Breathing"),
+        centerTitle: true,
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimaryFixed,
       ),
       body: Scroll(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('Exhibit 1: The Blob'),
-              // Docs: https://pub.dev/documentation/blobs/latest/
-              AnimatedScale(
-                duration: const Duration(milliseconds: 1000),
-                curve: Curves.easeInOut,
-                scale: _scale,
-                child: _blobWidget,
+              BreathingAnimation(speed: _speed),
+              const SizedBox(height: 50),
+              Text(
+                "Breathing Speed: ${_speed.toStringAsFixed(1)}",
+                style: theme.textTheme.labelLarge!.copyWith(
+                  color: projectTheme.activeColor,
+                ),
               ),
-              MaterialButton(
-                child: const Text('Press to change blob.'),
-                onPressed: () {
-                  // The blob controller can be used to explicitly 
-                  // trigger the blob's animation if the blob is not 
-                  // constructed with loop: true.
-                  // _blobController.change();
-                  
-                  // Issue: This animation disrupts the blob's animation.
-                  // unless the blob is isolated from the `_scale` state variable.
-                  setState(() {
-                    _scale = _scale == 1.0 ? 1.5 : 1.0;
-                  });
-                },
-              ),
-              const Divider(
-                thickness: 1,
-                color: Colors.grey,
-              ),
-              MaterialButton(
-                child: const Text('Press to change SVG.'),
-                onPressed: () {
-                  setState(() {
-                    _scale = _scale == 1.0 ? 1.5 : 1.0;
-                  });
-                },
-              )
+              Slider(value: _speed, onChanged: (value) {
+                setState(() {
+                  _speed = value;
+                });
+              }),
             ],
           ),
         ),
@@ -113,4 +56,89 @@ class _BreathingPageState extends State<BreathingPage> {
     );
   }
 }
-// const Text("Let's work on breathing. As the circle expands take a deep breath in, and as the [thing] contracts let the air out. This can help with calming down.")
+
+class BreathingAnimation extends StatefulWidget {
+  const BreathingAnimation({super.key, required double speed}) : _speed = speed;
+  
+  final double _speed;
+
+  @override
+  State<BreathingAnimation> createState() => _BreathingAnimationState();
+}
+
+class _BreathingAnimationState extends State<BreathingAnimation> {
+  double _scale = 1.0;
+  late Timer _timer;
+  late int _speed;
+  
+  @override
+  void initState() {
+    super.initState();
+    
+    _speed = newSpeed();
+    _timer = newTimer();
+  }
+
+  int newSpeed() => (((1 - widget._speed) * 5.0 + 0.5) * 1000).toInt();
+  
+  @override
+  void didUpdateWidget(covariant BreathingAnimation oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    if (oldWidget._speed != widget._speed) {
+      _speed = newSpeed();
+      _timer.cancel();
+      _timer = newTimer();
+    }
+  }
+
+  Timer newTimer() {
+    return Timer.periodic(Duration(milliseconds: _speed), (timer) {
+      setState(() {
+        _scale = _scale == 1.0 ? 1.5 : 1.0;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedScale(
+      duration: Duration(milliseconds: _speed),
+      curve: Curves.easeInOut,
+      scale: _scale,
+      child: const BlobIsolated(),
+    );
+  }
+}
+
+class BlobIsolated extends StatelessWidget {
+  const BlobIsolated({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Blob.animatedRandom(
+      size: 200,
+      edgesCount: 15,
+      minGrowth: 9,
+      styles: BlobStyles(
+        fillType: BlobFillType.fill,
+        gradient: const LinearGradient( // Note: Figure out how these gradient work later.
+          colors: [Color.fromARGB(255, 29, 168, 33), Color.fromARGB(255, 19, 91, 21)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ).createShader(const Rect.fromLTRB(0, 0, 300, 300)),
+      ),
+      loop: true,
+      duration: const Duration(milliseconds: 1000),
+    );
+  }
+}
