@@ -29,16 +29,4 @@ class Global {
   static final defaultUserPreferences = PreferencesCompanion(
     seedColor: Value(defaultSeedColor),
   );
-    
-  static bool offline(BuildContext context, bool online) {
-    if (online) {
-      return false;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("This function isn't available offline.")
-      )
-    );
-    return true;
-  }
 }
