@@ -208,12 +208,10 @@ class ReturnToLoginButton extends StatelessWidget {
         foregroundColor: projectTheme.activeColor,
         side: BorderSide(color: projectTheme.activeColor),
       ),
-      label: const Text('Return to Login'),
+      label: const Text('Return to Account Creation'),
       onPressed: () {
-        Navigator.popUntil(
-          context,
-          (route) => route.isFirst
-        );
+        Navigator.pop(context);
+        Navigator.pop(context);
       },
     );
   }
