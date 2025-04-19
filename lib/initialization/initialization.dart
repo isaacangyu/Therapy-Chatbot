@@ -36,6 +36,8 @@ import '/util/network.dart';
 ///      There may be an update required.
 /// 5. If and only if the user will be online, 
 ///    fetch cryptographic keys. Halt initialization on failure.
+///    Also generate a symmetric encryption key to be used 
+///    for decrypting HTTP response data.
 /// 6. If and only if the user will be online and is already logged in, 
 ///    test the validity of the session token via request to 
 ///    the main backend. If the session token is invalid, clear it 

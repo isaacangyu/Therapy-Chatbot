@@ -1,27 +1,39 @@
-import json, functools
+import json, functools, base64
 
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.conf import settings
-from core import crypto, util
 
-def cors_signed_json_response(data):
-    response_data = json.dumps(data)
-    response_data = crypto.asymmetric_sign(response_data.encode())
-    
-    response = HttpResponse(response_data)
-    response["Access-Control-Allow-Origin"] = settings.ACCESS_CONTROL_ALLOW_ORIGIN
-    return response
+from core import crypto
 
 def app_view(view):
     @functools.wraps(view)
     @csrf_exempt
     def wrapper(request, *args, **kwargs):
+        response = HttpResponse()
+        response["Access-Control-Allow-Origin"] = settings.ACCESS_CONTROL_ALLOW_ORIGIN
+        
+        # Get the response key used to encrypt the response body.
+        response_key_encrypted = request.headers.get("X-Custom-Response-Key")
+        if response_key_encrypted is None:
+            response.status_code = 400
+            return response
+        
+        response_key = crypto.asymmetric_decrypt(base64.b64decode(response_key_encrypted))
+        
+        # Decrypt and parse the request body.
         raw_data = crypto.asymmetric_decrypt(request.body)
         form = json.loads(raw_data)
-        response = view(request, form, *args, **kwargs)
-        return util.cors_signed_json_response(response)
+        
+        # Process the request.
+        response_data = view(request, form, *args, **kwargs)
+        response_data = json.dumps(response_data)
+        response_data = crypto.asymmetric_sign(response_data.encode())
+        response_data = crypto.symmetric_encrypt(response_data.encode(), base64.b64decode(response_key))
+        
+        response.content = response_data
+        return response
     return wrapper
 
 def require_POST_OPTIONS(view):
@@ -31,7 +43,7 @@ def require_POST_OPTIONS(view):
             response = HttpResponse()
             response["Access-Control-Allow-Origin"] = settings.ACCESS_CONTROL_ALLOW_ORIGIN
             response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-            # response["Access-Control-Allow-Headers"] = "Cache-Control"
+            response["Access-Control-Allow-Headers"] = "X-Custom-Response-Key"# , Cache-Control"
             return response
         return require_POST(view)(request, *args, **kwargs)
     return wrapper
