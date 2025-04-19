@@ -6,9 +6,10 @@ import 'package:provider/provider.dart';
 import '/util/theme.dart';
 
 class EmailFieldLarge extends StatelessWidget {
-  const EmailFieldLarge(this._emailController, {super.key});
+  const EmailFieldLarge(this._emailController, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _emailController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +35,17 @@ class EmailFieldLarge extends StatelessWidget {
         }
         return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
 }
 
 class EmailConfirmationFieldLarge extends StatelessWidget {
-  const EmailConfirmationFieldLarge(this._emailController, {super.key});
+  const EmailConfirmationFieldLarge(this._emailController, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _emailController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +69,8 @@ class EmailConfirmationFieldLarge extends StatelessWidget {
         }
         return (value != _emailController.text) ? 'Emails do not match.' : null;
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
 }

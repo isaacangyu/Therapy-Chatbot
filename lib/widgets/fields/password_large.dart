@@ -5,10 +5,11 @@ import 'package:provider/provider.dart';
 import '/util/theme.dart';
 
 class PasswordFieldLarge extends StatefulWidget {
-  const PasswordFieldLarge(this._passwordController, this._validator, {super.key});
+  const PasswordFieldLarge(this._passwordController, this._validator, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _passwordController;
   final String? Function(String) _validator;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   State<PasswordFieldLarge> createState() => _PasswordFieldLargeState();
@@ -54,14 +55,17 @@ class _PasswordFieldLargeState extends State<PasswordFieldLarge> {
         }
         return value == null ? 'Invalid password.' : widget._validator(value);
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: widget.onFieldSubmitted,
     );
   }
 }
 
 class PasswordConfirmationFieldLarge extends StatefulWidget {
-  const PasswordConfirmationFieldLarge(this._passwordController, {super.key});
+  const PasswordConfirmationFieldLarge(this._passwordController, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _passwordController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   State<PasswordConfirmationFieldLarge> createState() => _PasswordConfirmationFieldLargeState();
@@ -105,6 +109,8 @@ class _PasswordConfirmationFieldLargeState extends State<PasswordConfirmationFie
         }
         return value != widget._passwordController.text ? 'Passwords do not match' : null;
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: widget.onFieldSubmitted,
     );
   }
 }

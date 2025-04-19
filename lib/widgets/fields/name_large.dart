@@ -5,9 +5,10 @@ import 'package:provider/provider.dart';
 import '/util/theme.dart';
 
 class NameFieldLarge extends StatelessWidget {
-  const NameFieldLarge(this._nameController, {super.key});
+  const NameFieldLarge(this._nameController, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _nameController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,8 @@ class NameFieldLarge extends StatelessWidget {
         }
         return (value == null || value.isEmpty) ? 'Please enter a name.' : null;
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
 }
