@@ -147,46 +147,47 @@ class LoginButton extends StatelessWidget {
     return ElevatedButton(
       child: const Text('Login'),
       onPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          context.loaderOverlay.show();
-          
-          // The KDF function used during login is computationally expensive.
-          // It seems to momentarily block the UI, despite be async.
-          // This delay is placed intentionally to give the overlay
-          // a chance to display.
-          if (!kDebugMode) {
-            await Future.delayed(const Duration(seconds: 2));
-          }
-          
-          late _LoginState loginState;
-          if (context.mounted) {
-            var appState = context.read<AppState>();
-            loginState = await _login(
-              _emailController.text,
-              _passwordController.text,
-              appState,
-            );
-          }
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-            if (loginState.success) {
-              pushRoute(context, const PopScope(
-                canPop: false,
-                child: Placeholder()
-              ));
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    loginState.message ?? 'An unknown error occurred.',
-                    style: theme.textTheme.bodySmall!.copyWith(
-                      color: theme.colorScheme.onErrorContainer
-                    ),
+        if (!_formKey.currentState!.validate()) {
+          return;
+        }
+        context.loaderOverlay.show();
+        
+        // The KDF function used during login is computationally expensive.
+        // It seems to momentarily block the UI, despite be async.
+        // This delay is placed intentionally to give the overlay
+        // a chance to display.
+        if (!kDebugMode) {
+          await Future.delayed(const Duration(seconds: 2));
+        }
+        
+        late _LoginState loginState;
+        if (context.mounted) {
+          var appState = context.read<AppState>();
+          loginState = await _login(
+            _emailController.text,
+            _passwordController.text,
+            appState,
+          );
+        }
+        if (context.mounted) {
+          context.loaderOverlay.hide();
+          if (loginState.success) {
+            pushRoute(context, const PopScope(
+              canPop: false,
+              child: Placeholder()
+            ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  loginState.message ?? 'An unknown error occurred.',
+                  style: theme.textTheme.bodySmall!.copyWith(
+                    color: theme.colorScheme.onErrorContainer
                   ),
-                  backgroundColor: theme.colorScheme.errorContainer,
                 ),
-              );
-            }
+                backgroundColor: theme.colorScheme.errorContainer,
+              ),
+            );
           }
         }
       },

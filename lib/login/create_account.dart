@@ -118,39 +118,40 @@ class ConfirmButton extends StatelessWidget {
       icon: const Icon(Icons.check),
       label: const Text('Confirm'),
       onPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          pushRoute(
-            context,
-            const CreatingAccountPage()
+        if (!_formKey.currentState!.validate()) {
+          return;
+        }
+        pushRoute(
+          context,
+          const CreatingAccountPage()
+        );
+        // The KDF function used during account creation is computationally expensive.
+        // It seems to momentarily block the UI, despite be async.
+        // This delay is placed intentionally to give the loading screen
+        // a chance to display.
+        if (!kDebugMode) {
+          await Future.delayed(const Duration(seconds: 2));
+        }
+        
+        if (context.mounted) {
+          var appState = context.read<AppState>();
+          var creationState = await _createAccount(
+            _nameController.text,
+            _emailController.text,
+            _passwordController.text,
+            appState,
           );
-          // The KDF function used during account creation is computationally expensive.
-          // It seems to momentarily block the UI, despite be async.
-          // This delay is placed intentionally to give the loading screen
-          // a chance to display.
-          if (!kDebugMode) {
-            await Future.delayed(const Duration(seconds: 2));
-          }
           
           if (context.mounted) {
-            var appState = context.read<AppState>();
-            var creationState = await _createAccount(
-              _nameController.text,
-              _emailController.text,
-              _passwordController.text,
-              appState,
-            );
-            
-            if (context.mounted) {
-              if (creationState.success) {
-                pushRoute(context, const Placeholder());
-              } else {
-                pushRoute(
-                  context,
-                  RegistrationFailedPage(
-                    reason: creationState.message ?? '???'
-                  )
-                );
-              }
+            if (creationState.success) {
+              pushRoute(context, const Placeholder());
+            } else {
+              pushRoute(
+                context,
+                RegistrationFailedPage(
+                  reason: creationState.message ?? '???'
+                )
+              );
             }
           }
         }
