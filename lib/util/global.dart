@@ -25,7 +25,7 @@ class Global {
   
   static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   
-  static final defaultSeedColor = const Color.fromARGB(255, 100, 149, 237).value;
+  static final defaultSeedColor = const Color.fromARGB(255, 100, 180, 100).value;
   static final defaultUserPreferences = PreferencesCompanion(
     seedColor: Value(defaultSeedColor),
   );
