@@ -16,7 +16,19 @@ class BreathingPage extends StatefulWidget {
 
 class _BreathingPageState extends State<BreathingPage> {
 
-  double _speed = 1.0;
+  double _speed = 0.5; // between 0 and 1
+  bool _expanding = true;
+  
+  final String breatheInText = "Breathe in";
+  final String breatheOutText = "Breathe out";
+  // final String breathingText =
+  //       "Let's work on breathing. As the circle expands, take a deep breath in. As the circle shrinks, let the breath out. This can help with calming down.";
+
+  void _switchExpanding() {
+    setState(() {
+      _expanding = !_expanding;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,19 +48,25 @@ class _BreathingPageState extends State<BreathingPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              BreathingAnimation(speed: _speed),
+              _expanding ? Text(breatheInText) : Text(breatheOutText),
               const SizedBox(height: 50),
-              Text(
-                "Breathing Speed: ${_speed.toStringAsFixed(1)}",
-                style: theme.textTheme.labelLarge!.copyWith(
-                  color: projectTheme.activeColor,
+              BreathingAnimation(speed: _speed, switchExpanding: _switchExpanding),
+              const SizedBox(height: 50),
+              SliderTheme(
+                data: const SliderThemeData(
+                  showValueIndicator: ShowValueIndicator.always
                 ),
+                child:
+                  Slider(
+                    value: _speed, 
+                    onChanged: (value) {
+                      setState(() {
+                        _speed = value;
+                      });
+                    },
+                    label: "Speed: ${_speed.toStringAsFixed(1)}",
+                  ),
               ),
-              Slider(value: _speed, onChanged: (value) {
-                setState(() {
-                  _speed = value;
-                });
-              }),
             ],
           ),
         ),
@@ -58,31 +76,32 @@ class _BreathingPageState extends State<BreathingPage> {
 }
 
 class BreathingAnimation extends StatefulWidget {
-  const BreathingAnimation({super.key, required double speed}) : _speed = speed;
+  const BreathingAnimation({super.key, required double speed, required Function switchExpanding}) : _speed = speed, _switchExpanding = switchExpanding;
   
   final double _speed;
+  final Function _switchExpanding;
 
   @override
   State<BreathingAnimation> createState() => _BreathingAnimationState();
 }
 
 class _BreathingAnimationState extends State<BreathingAnimation> {
-  double _scale = 1.0;
-  late Timer _timer;
+  double _scale = 1.5;
+  late Timer _timer; // late means initialized later
   late int _speed;
   
   @override
-  void initState() {
+  void initState() { // initializing state
     super.initState();
     
     _speed = newSpeed();
     _timer = newTimer();
   }
 
-  int newSpeed() => (((1 - widget._speed) * 5.0 + 0.5) * 1000).toInt();
+  int newSpeed() => (((1 - widget._speed) * 5.0 + 2.5) * 1000).toInt();
   
   @override
-  void didUpdateWidget(covariant BreathingAnimation oldWidget) {
+  void didUpdateWidget(covariant BreathingAnimation oldWidget) { // initializing new widget
     super.didUpdateWidget(oldWidget);
     
     if (oldWidget._speed != widget._speed) {
@@ -95,7 +114,8 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
   Timer newTimer() {
     return Timer.periodic(Duration(milliseconds: _speed), (timer) {
       setState(() {
-        _scale = _scale == 1.0 ? 1.5 : 1.0;
+        _scale = _scale == 0.5 ? 1.5 : 0.5;
+        widget._switchExpanding();
       });
     });
   }
@@ -112,16 +132,17 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
     return AnimatedScale(
       duration: Duration(milliseconds: _speed),
       curve: Curves.easeInOut,
+      onEnd: () => {
+
+      },
       scale: _scale,
-      child: const BlobIsolated(),
+      child: const BlobIsolated(), // don't pass external state variables
     );
   }
 }
 
 class BlobIsolated extends StatelessWidget {
-  const BlobIsolated({
-    super.key,
-  });
+  const BlobIsolated({ super.key });
 
   @override
   Widget build(BuildContext context) {
