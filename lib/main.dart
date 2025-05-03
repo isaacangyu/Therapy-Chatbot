@@ -51,7 +51,7 @@ class _AppBase extends State<App> {
         ChangeNotifierProvider(create: (_) => CustomAppTheme()),
       ],
       child: Consumer2<AppState, CustomAppTheme>(
-        builder: (context, appState, projectTheme, child) {
+        builder: (context, appState, customTheme, child) {
           return FutureBuilder(
             future: appState.initializationComplete,
             builder: (context, snapshot) {
@@ -70,7 +70,7 @@ class _AppBase extends State<App> {
               }
               
               var themeData = calculateThemeData(appState.preferences.colorScheme);
-              projectTheme.set(themeData);
+              customTheme.set(themeData);
               
               debugPrint('Building main app widget tree.');
               

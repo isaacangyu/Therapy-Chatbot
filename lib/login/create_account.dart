@@ -24,10 +24,10 @@ class RegistrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return Scaffold(
-      backgroundColor: projectTheme.primaryColor,
+      backgroundColor: customTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Create Account'),
         centerTitle: true,
@@ -195,12 +195,12 @@ class RegistrationFailedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: projectTheme.primaryColor,
+        backgroundColor: customTheme.primaryColor,
         body: Scroll(
           child: Center(
             child: Padding(
@@ -226,13 +226,13 @@ class ReturnToAccountCreationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return OutlinedButton.icon(
-      icon: Icon(Icons.arrow_back, color: projectTheme.activeColor),
+      icon: Icon(Icons.arrow_back, color: customTheme.activeColor),
       style: OutlinedButton.styleFrom(
-        foregroundColor: projectTheme.activeColor,
-        side: BorderSide(color: projectTheme.activeColor),
+        foregroundColor: customTheme.activeColor,
+        side: BorderSide(color: customTheme.activeColor),
       ),
       label: const Text('Return to Account Creation'),
       onPressed: () {
@@ -248,12 +248,12 @@ class CreatingAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     return PopScope(
       canPop: false,
       child: LoadingScreen(
-        projectTheme.primaryColor,
-        projectTheme.activeColor,
+        customTheme.primaryColor,
+        customTheme.activeColor,
         child: const Text('Creating account...'),
       )
     );

@@ -13,7 +13,7 @@ class LegalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     // Map `legalType` to the corresponding legal path doc.
     // Defaults to 'license' if `legalType` is invalid.
@@ -25,10 +25,10 @@ class LegalPage extends StatelessWidget {
     
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: projectTheme.primaryColor,
-        foregroundColor: projectTheme.activeColor,
+        backgroundColor: customTheme.primaryColor,
+        foregroundColor: customTheme.activeColor,
       ),
-      backgroundColor: projectTheme.primaryColor,
+      backgroundColor: customTheme.primaryColor,
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: FutureBuilder<String>(
@@ -36,8 +36,8 @@ class LegalPage extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return LoadingScreen(
-                projectTheme.primaryColor, 
-                projectTheme.activeColor
+                customTheme.primaryColor, 
+                customTheme.activeColor
               );
             } else if (snapshot.hasError) {
               debugPrint(snapshot.error.toString());

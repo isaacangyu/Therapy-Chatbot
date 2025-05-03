@@ -13,19 +13,19 @@ class NameFieldLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       controller: _nameController,
       keyboardType: TextInputType.name,
-      decoration: projectTheme.textFormDecoration.copyWith(
-        prefixIcon: Icon(Icons.person, color: projectTheme.activeColor),
+      decoration: customTheme.textFormDecoration.copyWith(
+        prefixIcon: Icon(Icons.person, color: customTheme.activeColor),
         labelText: 'Name',
       ),
       style: theme.textTheme.bodyLarge!.copyWith(
-        color: projectTheme.activeColor,
+        color: customTheme.activeColor,
       ),
-      cursorColor: projectTheme.activeColor,
+      cursorColor: customTheme.activeColor,
       autovalidateMode: AutovalidateMode.onUnfocus,
       validator: (value) {
         if (kDebugMode) {

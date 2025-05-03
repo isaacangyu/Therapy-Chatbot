@@ -21,21 +21,21 @@ class _PasswordFieldLargeState extends State<PasswordFieldLarge> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       controller: widget._passwordController,
       obscureText: !_passwordVisible,
       enableSuggestions: false,
       autocorrect: false,
-      decoration: projectTheme.textFormDecoration.copyWith(
-        prefixIcon: Icon(Icons.password, color: projectTheme.activeColor),
+      decoration: customTheme.textFormDecoration.copyWith(
+        prefixIcon: Icon(Icons.password, color: customTheme.activeColor),
         labelText: 'Password',
         hintText: 'Enter your password',
         suffixIcon: IconButton(
           icon: Icon(
             _passwordVisible ? Icons.visibility : Icons.visibility_off,
-            color: projectTheme.activeColor,
+            color: customTheme.activeColor,
           ),
           onPressed: () {
             setState(() {
@@ -45,9 +45,9 @@ class _PasswordFieldLargeState extends State<PasswordFieldLarge> {
         )
       ),
       style: theme.textTheme.bodyLarge!.copyWith(
-        color: projectTheme.activeColor,
+        color: customTheme.activeColor,
       ),
-      cursorColor: projectTheme.activeColor,
+      cursorColor: customTheme.activeColor,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         if (kDebugMode) {
@@ -77,19 +77,19 @@ class _PasswordConfirmationFieldLargeState extends State<PasswordConfirmationFie
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       obscureText: !_passwordVisible,
       enableSuggestions: false,
       autocorrect: false,
-      decoration: projectTheme.textFormDecoration.copyWith(
-        prefixIcon: Icon(Icons.password, color: projectTheme.activeColor),
+      decoration: customTheme.textFormDecoration.copyWith(
+        prefixIcon: Icon(Icons.password, color: customTheme.activeColor),
         labelText: 'Confirm Password',
         suffixIcon: IconButton(
           icon: Icon(
             _passwordVisible ? Icons.visibility : Icons.visibility_off,
-            color: projectTheme.activeColor,
+            color: customTheme.activeColor,
           ),
           onPressed: () {
             setState(() {
@@ -99,9 +99,9 @@ class _PasswordConfirmationFieldLargeState extends State<PasswordConfirmationFie
         ),
       ),
       style: theme.textTheme.bodyLarge!.copyWith(
-        color: projectTheme.activeColor,
+        color: customTheme.activeColor,
       ),
-      cursorColor: projectTheme.activeColor,
+      cursorColor: customTheme.activeColor,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) {
         if (kDebugMode) {

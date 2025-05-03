@@ -26,11 +26,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return LoaderOverlay(
       child: Scaffold(
-        backgroundColor: projectTheme.primaryColor,
+        backgroundColor: customTheme.primaryColor,
         body: Scroll(
           child: Center(
             child: Padding(
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     Global.appTitle,
                     style: theme.textTheme.headlineLarge!.copyWith(
-                      color: projectTheme.activeColor,
+                      color: customTheme.activeColor,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -68,12 +68,12 @@ class GoToCreateAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-        foregroundColor: projectTheme.activeColor,
-        side: BorderSide(color: projectTheme.activeColor),
+        foregroundColor: customTheme.activeColor,
+        side: BorderSide(color: customTheme.activeColor),
       ),
       child: const Text('Create Account'),
       onPressed: () {
@@ -159,11 +159,11 @@ class GoToForgotPasswordPageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return TextButton(
       style: TextButton.styleFrom(
-        foregroundColor: projectTheme.activeColor,
+        foregroundColor: customTheme.activeColor,
       ),
       child: const Text('Forgot password?'),
       onPressed: () {
