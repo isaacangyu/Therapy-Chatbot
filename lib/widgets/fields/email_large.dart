@@ -14,7 +14,7 @@ class EmailFieldLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       controller: _emailController,
@@ -50,7 +50,7 @@ class EmailConfirmationFieldLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       keyboardType: TextInputType.emailAddress,

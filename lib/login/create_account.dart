@@ -21,7 +21,7 @@ class RegistrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return Scaffold(
       backgroundColor: projectTheme.primaryColor,
@@ -139,7 +139,7 @@ class RegistrationFailedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return PopScope(
       canPop: false,
@@ -170,7 +170,7 @@ class ReturnToLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return OutlinedButton.icon(
       icon: Icon(Icons.arrow_back, color: projectTheme.activeColor),
@@ -192,7 +192,7 @@ class CreatingAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     return PopScope(
       canPop: false,
       child: LoadingScreen(

@@ -21,7 +21,7 @@ class _PasswordFieldLargeState extends State<PasswordFieldLarge> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       controller: widget._passwordController,
@@ -77,7 +77,7 @@ class _PasswordConfirmationFieldLargeState extends State<PasswordConfirmationFie
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       obscureText: !_passwordVisible,
