@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return LoaderOverlay(
       child: Scaffold(
@@ -68,7 +68,7 @@ class GoToCreateAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
@@ -112,7 +112,10 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 10),
           PasswordFieldLarge(
             _passwordController, 
-            (value) => value.isEmpty ? 'Invalid password.' : null
+            (value) => value.isEmpty ? 'Invalid password.' : null,
+            onFieldSubmitted: (_) => _loginAction(
+              context, _formKey, _emailController, _passwordController
+            ),
           ),
           const SizedBox(height: 20),
           LoginButton(
@@ -142,54 +145,11 @@ class LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
-    
     return ElevatedButton(
       child: const Text('Login'),
-      onPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          context.loaderOverlay.show();
-          
-          // The KDF function used during login is computationally expensive.
-          // It seems to momentarily block the UI, despite be async.
-          // This delay is placed intentionally to give the overlay
-          // a chance to display.
-          if (!kDebugMode) {
-            await Future.delayed(const Duration(seconds: 2));
-          }
-          
-          late _LoginState loginState;
-          if (context.mounted) {
-            var appState = context.read<AppState>();
-            loginState = await _login(
-              _emailController.text,
-              _passwordController.text,
-              appState,
-            );
-          }
-          if (context.mounted) {
-            context.loaderOverlay.hide();
-            if (loginState.success) {
-              pushRoute(context, const PopScope(
-                canPop: false,
-                child: Placeholder()
-              ));
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    loginState.message ?? 'An unknown error occurred.',
-                    style: theme.textTheme.bodySmall!.copyWith(
-                      color: theme.colorScheme.onErrorContainer
-                    ),
-                  ),
-                  backgroundColor: theme.colorScheme.errorContainer,
-                ),
-              );
-            }
-          }
-        }
-      },
+      onPressed: () => _loginAction(
+        context, _formKey, _emailController, _passwordController
+      ),
     );
   }
 }
@@ -199,7 +159,7 @@ class GoToForgotPasswordPageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextButton(
       style: TextButton.styleFrom(
@@ -227,6 +187,59 @@ class AppLogo extends StatelessWidget {
         image: AssetImage('app_assets/icon.png'),
       ),
     );
+  }
+}
+
+Future<void> _loginAction(
+  BuildContext context,
+  GlobalKey<FormState> formKey,
+  TextEditingController emailController,
+  TextEditingController passwordController
+) async {
+  final theme = Theme.of(context);
+  
+  if (!formKey.currentState!.validate()) {
+    return;
+  }
+  context.loaderOverlay.show();
+  
+  // The KDF function used during login is computationally expensive.
+  // It seems to momentarily block the UI, despite be async.
+  // This delay is placed intentionally to give the overlay
+  // a chance to display.
+  if (!kDebugMode) {
+    await Future.delayed(const Duration(seconds: 2));
+  }
+  
+  late _LoginState loginState;
+  if (context.mounted) {
+    var appState = context.read<AppState>();
+    loginState = await _login(
+      emailController.text,
+      passwordController.text,
+      appState,
+    );
+  }
+  if (context.mounted) {
+    context.loaderOverlay.hide();
+    if (loginState.success) {
+      pushRoute(context, const PopScope(
+        canPop: false,
+        child: Placeholder()
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            loginState.message ?? 'An unknown error occurred.',
+            style: theme.textTheme.bodySmall!.copyWith(
+              color: theme.colorScheme.onErrorContainer
+            ),
+          ),
+          backgroundColor: theme.colorScheme.errorContainer,
+        ),
+      );
+    }
   }
 }
 

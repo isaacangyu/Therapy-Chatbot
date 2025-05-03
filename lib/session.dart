@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '/app_state.dart';
@@ -28,6 +29,18 @@ class Session {
   Future<void> setLoggedIn(bool loggedIn) async {
     this.loggedIn = loggedIn;
     await secureStorage.write(key: _SecureStorageKeys.loggedIn, value: loggedIn ? '1' : '0');
+  }
+  
+  bool offline(BuildContext context) {
+    if (online) {
+      return false;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("This function isn't available offline.")
+      )
+    );
+    return true;
   }
 }
 

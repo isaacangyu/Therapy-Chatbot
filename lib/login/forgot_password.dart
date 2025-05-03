@@ -27,7 +27,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return Scaffold(
       backgroundColor: projectTheme.primaryColor,

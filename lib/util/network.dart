@@ -1,23 +1,43 @@
 import 'dart:convert';
 
-import 'package:encrypt/encrypt.dart';
-import 'package:pointycastle/asymmetric/api.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:pointycastle/export.dart' as pc;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '/util/global.dart';
+import '/util/crypto.dart';
 
-late final Encrypter _encrypter;
-late final Signer _signer;
+/// `_encrypter` is used to encrypt data before sending it to the backend.
+/// `_responseDecrypter` is used to decrypt responses from the backend.
+/// `_responseKeyEncrypted` is the key sent to the backend that the backend uses to encrypt its responses.
+/// The backend uses its private key to decrypt the response key first.
+/// `_signer` is used to validate response data from the backend.
+late final encrypt.Encrypter _encrypter, _responseDecrypter;
+late final String _responseKeyEncrypted;
+late final encrypt.Signer _signer;
 
 Future<bool> loadKeys() async {
-  try {
+  try {    
     var response = await http.get(Uri.parse(API.initBaseUrl).resolve(API.publicKey));
     if (response.statusCode == 200) {
-      var publicKey = RSAKeyParser().parse(response.body) as RSAPublicKey;
+      var publicKey = encrypt.RSAKeyParser().parse(response.body) as pc.RSAPublicKey;
       // debugPrint('public key: ${response.body}');
-      _encrypter = Encrypter(RSA(publicKey: publicKey, encoding: RSAEncoding.OAEP, digest: RSADigest.SHA256));
-      _signer = Signer(RSASigner(RSASignDigest.SHA256, publicKey: publicKey));
+      _encrypter = encrypt.Encrypter(
+        encrypt.RSA(
+          publicKey: publicKey, 
+          encoding: encrypt.RSAEncoding.OAEP, 
+          digest: encrypt.RSADigest.SHA256
+        )
+      );
+      _signer = encrypt.Signer(encrypt.RSASigner(encrypt.RSASignDigest.SHA256, publicKey: publicKey));
+      
+      var responseKey = encrypt.SecureRandom(0x10).base64;
+      _responseKeyEncrypted = _encrypter.encrypt(responseKey).base64;
+      _responseDecrypter = encrypt.Encrypter(encrypt.AES(
+          encrypt.Key.fromBase64(responseKey),
+          mode: encrypt.AESMode.gcm // Must use an authenticated mode like GCM!
+      ));
       return true;
     }
     debugPrint('HTTP response code: ${response.statusCode}');
@@ -56,10 +76,14 @@ Future<T> httpPostSecure<T>(
     var cipherText = _encrypter.encrypt(jsonEncode(data));
     var response = await http.post(
       Uri.parse(API.baseUrl!).resolve(path),
+      headers: {
+        // 'Cache-Control': 'no-cache',
+        'X-Custom-Response-Key': _responseKeyEncrypted,
+      },
       body: cipherText.bytes,
     );
     if (response.statusCode == 200) {
-      var body = verifyData(response.body);
+      var body = verifyData(symmetricDecrypt(response.body, _responseDecrypter));
       var json = jsonDecode(body) as Map<String, dynamic>;
       return onHttpOK(json);
     }
@@ -80,10 +104,11 @@ Future<T> httpGetSecure<T>(
       Uri.parse(API.baseUrl!).resolve(path),
       headers: {
         'Cache-Control': 'no-cache',
+        'X-Custom-Response-Key': _responseKeyEncrypted,
       }
     );
     if (response.statusCode == 200) {
-      var body = verifyData(response.body);
+      var body = verifyData(symmetricDecrypt(response.body, _responseDecrypter));
       var json = jsonDecode(body) as Map<String, dynamic>;
       return onHttpOK(json);
     }

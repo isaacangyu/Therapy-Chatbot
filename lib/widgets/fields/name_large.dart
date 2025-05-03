@@ -5,14 +5,15 @@ import 'package:provider/provider.dart';
 import '/util/theme.dart';
 
 class NameFieldLarge extends StatelessWidget {
-  const NameFieldLarge(this._nameController, {super.key});
+  const NameFieldLarge(this._nameController, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _nameController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       controller: _nameController,
@@ -30,8 +31,16 @@ class NameFieldLarge extends StatelessWidget {
         if (kDebugMode) {
           return null;
         }
-        return (value == null || value.isEmpty) ? 'Please enter a name.' : null;
+        if (value == null || value.isEmpty) {
+          return 'Please enter a name.';
+        }
+        if (value.length > 64) {
+          return 'Name is too long.';
+        }
+        return null;
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
 }

@@ -49,9 +49,9 @@ class _AppBase extends State<App> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState(database, secureStorage)),
-        ChangeNotifierProvider(create: (_) => ProjectTheme()),
+        ChangeNotifierProvider(create: (_) => CustomAppTheme()),
       ],
-      child: Consumer2<AppState, ProjectTheme>(
+      child: Consumer2<AppState, CustomAppTheme>(
         builder: (context, appState, projectTheme, child) {
           return FutureBuilder(
             future: appState.initializationComplete,

@@ -25,20 +25,8 @@ class Global {
   
   static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   
-  static final defaultSeedColor = const Color.fromARGB(255, 100, 149, 237).value;
+  static final defaultSeedColor = const Color.fromARGB(255, 100, 180, 100).value;
   static final defaultUserPreferences = PreferencesCompanion(
     seedColor: Value(defaultSeedColor),
   );
-    
-  static bool offline(BuildContext context, bool online) {
-    if (online) {
-      return false;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("This function isn't available offline.")
-      )
-    );
-    return true;
-  }
 }

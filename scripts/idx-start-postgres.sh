@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This directory may be automatically removed by the environment, sometimes.
+mkdir /run/postgresql &> /dev/null
+
 MAX_ITERATIONS=5
 ITERATION=0
 

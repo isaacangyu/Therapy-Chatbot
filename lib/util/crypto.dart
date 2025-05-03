@@ -29,10 +29,10 @@ String sha256Digest(String value) {
   return base64.encode(digest);
 }
 
-encrypt.Encrypter? _clientEncrypter;
+encrypt.Encrypter? clientEncrypter;
 
 void initClientSideEncrypter(String encryptionKeyBase64) {
-  _clientEncrypter = encrypt.Encrypter(encrypt.AES(
+  clientEncrypter = encrypt.Encrypter(encrypt.AES(
     encrypt.Key.fromBase64(encryptionKeyBase64),
     mode: encrypt.AESMode.gcm // Must use an authenticated mode like GCM!
   ));
@@ -42,11 +42,11 @@ String symmetricEncrypt(String plainText) {
   // A minimum initalization vector of 96 bits is recommended for GCM mode.
   // Here, we're using 128 bits.
   var initializationVector = encrypt.IV.fromLength(0x10);
-  var cipherText = _clientEncrypter!.encrypt(plainText, iv: initializationVector);
+  var cipherText = clientEncrypter!.encrypt(plainText, iv: initializationVector);
   return '${cipherText.base64}:${initializationVector.base64}';
 }
 
-String symmetricDecrypt(String cipherTextIvBase64) {
+String symmetricDecrypt(String cipherTextIvBase64, encrypt.Encrypter decrypter) {
   var split = cipherTextIvBase64.split(':');
   if (split.length != 2) {
     throw const FormatException('Invalid data.');
@@ -55,5 +55,5 @@ String symmetricDecrypt(String cipherTextIvBase64) {
   var initializationVectorBase64 = split[1];
   var initializationVector = encrypt.IV.fromBase64(initializationVectorBase64);
   var cipherText = encrypt.Encrypted.fromBase64(cipherTextBase64);
-  return _clientEncrypter!.decrypt(cipherText, iv: initializationVector);
+  return decrypter.decrypt(cipherText, iv: initializationVector);
 }

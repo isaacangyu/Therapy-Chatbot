@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +29,10 @@ SECRET_KEY = "django-insecure-i7n98_=ykj*z#f4fx@olkhje$6%a^b)*-$vqc^rrpz_vpcrqwt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["10.0.2.2", "localhost", "127.0.0.1"] if DEBUG else []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2"] if DEBUG else os.environ["ALLOWED_HOSTS"].split(", ")
+if not DEBUG or os.environ.get("IDX_CHANNEL") != None:
+    CSRF_TRUSTED_ORIGINS = os.environ["CSRF_TRUSTED_ORIGINS"].split(", ")
+ACCESS_CONTROL_ALLOW_ORIGIN = "*" if DEBUG else os.environ["ACCESS_CONTROL_ALLOW_ORIGIN"]
 
 # Application definition
 

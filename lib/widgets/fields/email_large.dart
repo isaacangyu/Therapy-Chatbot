@@ -6,14 +6,15 @@ import 'package:provider/provider.dart';
 import '/util/theme.dart';
 
 class EmailFieldLarge extends StatelessWidget {
-  const EmailFieldLarge(this._emailController, {super.key});
+  const EmailFieldLarge(this._emailController, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _emailController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       controller: _emailController,
@@ -32,21 +33,30 @@ class EmailFieldLarge extends StatelessWidget {
         if (kDebugMode) {
           return null;
         }
-        return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
+        if (value == null || !EmailValidator.validate(value)) {
+          return 'Invalid email address.';
+        }
+        if (value.length > 64) {
+          return 'Email address is too long.';
+        }
+        return null;
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
 }
 
 class EmailConfirmationFieldLarge extends StatelessWidget {
-  const EmailConfirmationFieldLarge(this._emailController, {super.key});
+  const EmailConfirmationFieldLarge(this._emailController, {super.key, this.onFieldSubmitted});
 
   final TextEditingController _emailController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
@@ -65,6 +75,8 @@ class EmailConfirmationFieldLarge extends StatelessWidget {
         }
         return (value != _emailController.text) ? 'Emails do not match.' : null;
       },
+      textInputAction: TextInputAction.next,
+      onFieldSubmitted: onFieldSubmitted,
     );
   }
 }

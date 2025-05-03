@@ -39,3 +39,4 @@ If you do not see the Android emulator panel, use the command pallette (<kbd>CTR
 ## Tips
 - Go to the output panel and view the log "IDX" to see messages from the app and other vital development info.
 - Firebase Studio / IDX comes with Gemini AI assistance built-in.
+- Before trying to access Django site administration, you'll need to update the CSRF trusted origins. Copy `.env.example` to `.env` and add the scheme + hostname (e.g. `https://8000-idx-xxx.cluster-xxx.cloudworkstations.dev`) to `CSRF_TRUSTED_ORIGINS`.
