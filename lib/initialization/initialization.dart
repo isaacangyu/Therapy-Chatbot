@@ -54,6 +54,7 @@ Future<InitializationState> initializeApp(
   try {
     var config = jsonDecode(await rootBundle.loadString('app_assets/config.json'));
     Global.appVersion = config['app_version'];
+    Global.showLegal = config['show_legal'];
     API.initBaseUrl = config['init_base_url${Global.androidDebugMode ? "_debug_android" : ""}'];
   } catch (e) {
     debugPrint(e.toString());

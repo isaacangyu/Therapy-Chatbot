@@ -22,6 +22,7 @@ class API {
 class Global {
   static late String appVersion;
   static var androidDebugMode = kDebugMode && defaultTargetPlatform == TargetPlatform.android;
+  static late bool showLegal;
   
   static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   
