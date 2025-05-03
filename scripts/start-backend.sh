@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./manage.py runserver
+poetry run ./manage.py runserver

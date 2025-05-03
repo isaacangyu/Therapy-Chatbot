@@ -1,9 +1,7 @@
 #!/bin/bash
 
 echo 'export PATH="$PATH:/usr/local/flutter/bin"' >> ~/.bashrc
-pip3 install --user -r requirements.txt
 
-/usr/local/flutter/bin/flutter create .
-django-admin startproject $(basename "$PWD") .
+pipx install poetry && poetry install
 
 clear && echo "devcontainer configuration complete."

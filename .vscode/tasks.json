@@ -60,6 +60,30 @@
             "type": "shell",
             "command": "./scripts/start-api-test-backend.py",
             "problemMatcher": []
+        },
+        {
+            "label": "IDX: Initialize Database",
+            "type": "shell",
+            "command": "./scripts/idx-initdb.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Start Postgres",
+            "type": "shell",
+            "command": "./scripts/idx-start-postgres.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Stop Postgres",
+            "type": "shell",
+            "command": "./scripts/idx-stop-postgres.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Delete Database",
+            "type": "shell",
+            "command": "./scripts/idx-deletedb.sh",
+            "problemMatcher": []
         }
     ]
 }
