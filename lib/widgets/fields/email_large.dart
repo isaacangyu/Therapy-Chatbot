@@ -33,7 +33,13 @@ class EmailFieldLarge extends StatelessWidget {
         if (kDebugMode) {
           return null;
         }
-        return (value == null || !EmailValidator.validate(value)) ? 'Invalid email address.' : null;
+        if (value == null || !EmailValidator.validate(value)) {
+          return 'Invalid email address.';
+        }
+        if (value.length > 64) {
+          return 'Email address is too long.';
+        }
+        return null;
       },
       textInputAction: TextInputAction.next,
       onFieldSubmitted: onFieldSubmitted,

@@ -53,7 +53,13 @@ class _PasswordFieldLargeState extends State<PasswordFieldLarge> {
         if (kDebugMode) {
           return null;
         }
-        return value == null ? 'Invalid password.' : widget._validator(value);
+        if (value == null) {
+          return 'Invalid password.';
+        }
+        if (value.length > 128) {
+          return 'Password is too long.';
+        }
+        return widget._validator(value);
       },
       textInputAction: TextInputAction.next,
       onFieldSubmitted: widget.onFieldSubmitted,

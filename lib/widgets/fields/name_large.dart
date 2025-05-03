@@ -31,7 +31,13 @@ class NameFieldLarge extends StatelessWidget {
         if (kDebugMode) {
           return null;
         }
-        return (value == null || value.isEmpty) ? 'Please enter a name.' : null;
+        if (value == null || value.isEmpty) {
+          return 'Please enter a name.';
+        }
+        if (value.length > 64) {
+          return 'Name is too long.';
+        }
+        return null;
       },
       textInputAction: TextInputAction.next,
       onFieldSubmitted: onFieldSubmitted,

@@ -13,9 +13,13 @@ with open(f"./cert/{'test' if settings.DEBUG else 'prod'}/private/private.pem", 
     _private_key = serialization.load_pem_private_key(key_file.read(), password=None)
 
 def password_hash(password_digest):
+    if len(password_digest) > 256:
+        raise ValueError("Password digest is too long.")
     return _hasher.hash(password_digest)
 
 def password_verify(password_digest, password_hash):
+    if len(password_digest) > 256:
+        raise ValueError("Password digest is too long.")
     try:
         # `verify` will return True if verification succeeds and raises an exception otherwise.
         return _hasher.verify(password_hash, password_digest)
