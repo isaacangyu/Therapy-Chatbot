@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:blobs/blobs.dart';
+import 'package:flutter/material.dart';
+import 'package:number_inc_dec/number_inc_dec.dart';
+import 'package:provider/provider.dart';
 
 import '/util/theme.dart';
 import '/widgets/scroll.dart';
@@ -15,12 +16,12 @@ class BreathingPage extends StatefulWidget {
 }
 
 class _BreathingPageState extends State<BreathingPage> {
-
   double _speed = 0.5; // between 0 and 1
   bool _expanding = true;
-  
+
   final String breatheInText = "Breathe in";
   final String breatheOutText = "Breathe out";
+  final _timeController = TextEditingController();
   // final String breathingText =
   //       "Let's work on breathing. As the circle expands, take a deep breath in. As the circle shrinks, let the breath out. This can help with calming down.";
 
@@ -33,11 +34,12 @@ class _BreathingPageState extends State<BreathingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
-    
+    final projectTheme = context.watch<CustomAppTheme>();
+
     return Scaffold(
       backgroundColor: projectTheme.primaryColor,
       appBar: AppBar(
+        // back button should automatically appear once home page goes to this page, if not set 'leading'
         title: const Text("Breathing"),
         centerTitle: true,
         backgroundColor: theme.colorScheme.primary,
@@ -48,24 +50,45 @@ class _BreathingPageState extends State<BreathingPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _expanding ? Text(breatheInText) : Text(breatheOutText),
+              Padding(
+                padding: EdgeInsets.only(left: MediaQuery.sizeOf(context).width / 2),
+                child: NumberInputWithIncrementDecrement(
+                  controller: _timeController,
+                  scaleWidth: 0.3,
+                  scaleHeight: 0.5,
+                  incDecBgColor: Colors.amber,
+                  initialValue: 2,
+                  max: 10,
+                  onIncrement: (num newlyIncrementedValue) {
+                    print('Newly incremented value is $newlyIncrementedValue');
+                  },
+                ),
+              ),
+              _expanding
+                  ? AnimatedOpacity(
+                      opacity: _expanding ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 500),
+                      child: Text(breatheInText))
+                  : AnimatedOpacity(
+                      opacity: !_expanding ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 500),
+                      child: Text(breatheOutText)),
               const SizedBox(height: 50),
-              BreathingAnimation(speed: _speed, switchExpanding: _switchExpanding),
+              BreathingAnimation(
+                  speed: _speed, switchExpanding: _switchExpanding),
               const SizedBox(height: 50),
               SliderTheme(
                 data: const SliderThemeData(
-                  showValueIndicator: ShowValueIndicator.always
+                    showValueIndicator: ShowValueIndicator.always),
+                child: Slider(
+                  value: _speed,
+                  onChanged: (value) {
+                    setState(() {
+                      _speed = value;
+                    });
+                  },
+                  label: "Speed: ${_speed.toStringAsFixed(1)}",
                 ),
-                child:
-                  Slider(
-                    value: _speed, 
-                    onChanged: (value) {
-                      setState(() {
-                        _speed = value;
-                      });
-                    },
-                    label: "Speed: ${_speed.toStringAsFixed(1)}",
-                  ),
               ),
             ],
           ),
@@ -76,8 +99,11 @@ class _BreathingPageState extends State<BreathingPage> {
 }
 
 class BreathingAnimation extends StatefulWidget {
-  const BreathingAnimation({super.key, required double speed, required Function switchExpanding}) : _speed = speed, _switchExpanding = switchExpanding;
-  
+  const BreathingAnimation(
+      {super.key, required double speed, required Function switchExpanding})
+      : _speed = speed,
+        _switchExpanding = switchExpanding;
+
   final double _speed;
   final Function _switchExpanding;
 
@@ -89,21 +115,23 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
   double _scale = 1.5;
   late Timer _timer; // late means initialized later
   late int _speed;
-  
+
   @override
-  void initState() { // initializing state
+  void initState() {
+    // initializing state
     super.initState();
-    
+
     _speed = newSpeed();
     _timer = newTimer();
   }
 
   int newSpeed() => (((1 - widget._speed) * 5.0 + 2.5) * 1000).toInt();
-  
+
   @override
-  void didUpdateWidget(covariant BreathingAnimation oldWidget) { // initializing new widget
+  void didUpdateWidget(covariant BreathingAnimation oldWidget) {
+    // initializing new widget
     super.didUpdateWidget(oldWidget);
-    
+
     if (oldWidget._speed != widget._speed) {
       _speed = newSpeed();
       _timer.cancel();
@@ -123,7 +151,7 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
   @override
   void dispose() {
     _timer.cancel();
-    
+
     super.dispose();
   }
 
@@ -132,9 +160,7 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
     return AnimatedScale(
       duration: Duration(milliseconds: _speed),
       curve: Curves.easeInOut,
-      onEnd: () => {
-
-      },
+      onEnd: () => {},
       scale: _scale,
       child: const BlobIsolated(), // don't pass external state variables
     );
@@ -142,7 +168,7 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
 }
 
 class BlobIsolated extends StatelessWidget {
-  const BlobIsolated({ super.key });
+  const BlobIsolated({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -152,8 +178,12 @@ class BlobIsolated extends StatelessWidget {
       minGrowth: 9,
       styles: BlobStyles(
         fillType: BlobFillType.fill,
-        gradient: const LinearGradient( // Note: Figure out how these gradient work later.
-          colors: [Color.fromARGB(255, 29, 168, 33), Color.fromARGB(255, 19, 91, 21)],
+        gradient: const LinearGradient(
+          // Note: Figure out how these gradient work later.
+          colors: [
+            Color.fromARGB(255, 29, 168, 33),
+            Color.fromARGB(255, 19, 91, 21)
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ).createShader(const Rect.fromLTRB(0, 0, 300, 300)),
