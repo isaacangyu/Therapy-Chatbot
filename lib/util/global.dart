@@ -10,7 +10,7 @@ class API {
 
   static const forgotPasswordInfo = 'api/forgot_password_info.json';
   static const latestAppVersion = 'api/latest_app_version.json';
-  static const backendBase = 'api/base_url.json';
+  static var backendBase = 'api/base_url${Global.androidDebugMode ? "_debug_android" : ""}.json';
   static const publicKey = 'cert/${kDebugMode ? 'test' : 'prod'}/public/public.pem';
   
   static const createAccount = 'account/create/';
@@ -21,23 +21,12 @@ class API {
 
 class Global {
   static late String appVersion;
+  static var androidDebugMode = kDebugMode && defaultTargetPlatform == TargetPlatform.android;
   
   static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   
-  static final defaultSeedColor = const Color.fromARGB(255, 100, 149, 237).value;
+  static final defaultSeedColor = const Color.fromARGB(255, 100, 180, 100).value;
   static final defaultUserPreferences = PreferencesCompanion(
     seedColor: Value(defaultSeedColor),
   );
-    
-  static bool offline(BuildContext context, bool online) {
-    if (online) {
-      return false;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("This function isn't available offline.")
-      )
-    );
-    return true;
-  }
 }

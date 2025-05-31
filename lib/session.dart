@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '/app_state.dart';
@@ -7,12 +8,13 @@ class Session {
   late bool online;
   
   late FlutterSecureStorage secureStorage;
-  String? token;
-  late bool loggedIn;
+  String? _email, _token;
+  late bool _loggedIn;
   
   Future<void> initCrypto() async {
-    token = await secureStorage.read(key: _SecureStorageKeys.token);
-    loggedIn = await secureStorage.read(key: _SecureStorageKeys.loggedIn) == '1';
+    _email = await secureStorage.read(key: _SecureStorageKeys.email);
+    _token = await secureStorage.read(key: _SecureStorageKeys.token);
+    _loggedIn = await secureStorage.read(key: _SecureStorageKeys.loggedIn) == '1';
   }
   
   void setOnline(bool state) {
@@ -22,18 +24,45 @@ class Session {
   
   // Note: Writes may fail if multiple writes are attempted concurrently.
   
+  String? getEmail() {
+    return _email;
+  }
+  Future<void> setEmail(String? email) async {
+    _email = email;
+    await secureStorage.write(key: _SecureStorageKeys.email, value: email);
+  }
+  
+  String? getToken() {
+    return _token;
+  }
   Future<void> setToken(String? token) async {
-    this.token = token;
+    _token = token;
     await secureStorage.write(key: _SecureStorageKeys.token, value: token);
   }
   
+  bool getLoggedIn() {
+    return _loggedIn;
+  }
   Future<void> setLoggedIn(bool loggedIn) async {
-    this.loggedIn = loggedIn;
+    _loggedIn = loggedIn;
     await secureStorage.write(key: _SecureStorageKeys.loggedIn, value: loggedIn ? '1' : '0');
+  }
+  
+  bool offline(BuildContext context) {
+    if (online) {
+      return false;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("This function isn't available offline.")
+      )
+    );
+    return true;
   }
 }
 
 class _SecureStorageKeys {
+  static const email = 'email';
   static const token = 'token';
   static const loggedIn = 'logged_in';
 }

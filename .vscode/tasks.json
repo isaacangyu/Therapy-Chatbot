@@ -3,62 +3,142 @@
     "tasks": [
         {
             "label": "Start Servers",
+            "icon": {
+                "id": "server-process",
+                "color": "terminal.ansiYellow"
+            },
             "type": "shell",
             "command": "./scripts/start-all.sh",
             "problemMatcher": []
         },
         {
             "label": "Start Frontend",
+            "icon": {
+                "id": "browser",
+                "color": "terminal.ansiCyan"
+            },
             "type": "shell",
             "command": "./scripts/start-frontend.sh",
             "problemMatcher": []
         },
         {
             "label": "Start Backend",
+            "icon": {
+                "id": "server-process",
+                "color": "terminal.ansiGreen"
+            },
             "type": "shell",
             "command": "./scripts/start-backend.sh",
             "problemMatcher": []
         },
         {
             "label": "Django Migrate",
+            "icon": {
+                "id": "diff-single",
+                "color": "terminal.ansiGreen"
+            },
             "type": "shell",
             "command": "./scripts/django-migrate.sh",
             "problemMatcher": []
         },
         {
             "label": "Flutter Analyze",
+            "icon": {
+                "id": "search",
+                "color": "terminal.ansiCyan"
+            },
             "type": "shell",
             "command": "./scripts/flutter-analyze.sh",
             "problemMatcher": []
         },
         {
             "label": "Drift build_runner build",
+            "icon": {
+                "id": "tools",
+                "color": "terminal.ansiMagenta"
+            },
             "type": "shell",
             "command": "./scripts/drift-build_runner-build.sh",
             "problemMatcher": []
         },
         {
             "label": "Drift build_runner watch",
+            "icon": {
+                "id": "eye",
+                "color": "terminal.ansiMagenta"
+            },
             "type": "shell",
             "command": "./scripts/drift-build_runner-watch.sh",
             "problemMatcher": []
         },
         {
             "label": "Drift drift_dev make-migrations",
+            "icon": {
+                "id": "diff-single",
+                "color": "terminal.ansiMagenta"
+            },
             "type": "shell",
             "command": "./scripts/drift-drift_dev-make-migrations.sh",
             "problemMatcher": []
         },
         {
             "label": "Flutter Test",
+            "icon": {
+                "id": "beaker",
+                "color": "terminal.ansiCyan"
+            },
             "type": "shell",
             "command": "./scripts/flutter-test.sh",
             "problemMatcher": []
         },
         {
             "label": "Start API Test Backend",
+            "icon": {
+                "id": "cloud-download",
+                "color": "terminal.ansiBlue"
+            },
             "type": "shell",
             "command": "./scripts/start-api-test-backend.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Initialize Database",
+            "icon": {
+                "id": "fold-up",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-initdb.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Start Postgres",
+            "icon": {
+                "id": "database",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-start-postgres.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Stop Postgres",
+            "icon": {
+                "id": "stop",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-stop-postgres.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Delete Database",
+            "icon": {
+                "id": "trash",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-deletedb.sh",
             "problemMatcher": []
         }
     ]

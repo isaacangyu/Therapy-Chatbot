@@ -22,7 +22,7 @@ class RegistrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return Scaffold(
       backgroundColor: projectTheme.primaryColor,
@@ -72,7 +72,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
   }
   
   @override
-  Widget build(BuildContext context) {    
+  Widget build(BuildContext context) {
     return Form(
       key: _formKey,
       child: Column(
@@ -85,7 +85,12 @@ class _RegistrationFormState extends State<RegistrationForm> {
           const SizedBox(height: 10),
           PasswordFieldLarge(_passwordController, validatePassword),
           const SizedBox(height: 10),
-          PasswordConfirmationFieldLarge(_passwordController),
+          PasswordConfirmationFieldLarge(
+            _passwordController,
+            onFieldSubmitted: (_) => _createAccountAction(
+              context, _formKey, _nameController, _emailController, _passwordController
+            ),
+          ),
           const SizedBox(height: 20),
           ConfirmButton(
             formKey: _formKey,
@@ -118,44 +123,9 @@ class ConfirmButton extends StatelessWidget {
     return ElevatedButton.icon(
       icon: const Icon(Icons.check),
       label: const Text('Confirm'),
-      onPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          pushRoute(
-            context,
-            const CreatingAccountPage()
-          );
-          // The KDF function used during account creation is computationally expensive.
-          // It seems to momentarily block the UI, despite be async.
-          // This delay is placed intentionally to give the loading screen
-          // a chance to display.
-          if (!kDebugMode) {
-            await Future.delayed(const Duration(seconds: 2));
-          }
-          
-          if (context.mounted) {
-            var appState = context.read<AppState>();
-            var creationState = await _createAccount(
-              _nameController.text,
-              _emailController.text,
-              _passwordController.text,
-              appState,
-            );
-            
-            if (context.mounted) {
-              if (creationState.success) {
-                pushRoute(context, const ChatbotPage());
-              } else {
-                pushRoute(
-                  context,
-                  RegistrationFailedPage(
-                    reason: creationState.message ?? '???'
-                  )
-                );
-              }
-            }
-          }
-        }
-      },
+      onPressed: () => _createAccountAction(
+        context, _formKey, _nameController, _emailController, _passwordController
+      ),
     );
   }
 }
@@ -170,7 +140,7 @@ class RegistrationFailedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return PopScope(
       canPop: false,
@@ -201,7 +171,7 @@ class ReturnToLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     
     return OutlinedButton.icon(
       icon: Icon(Icons.arrow_back, color: projectTheme.activeColor),
@@ -209,12 +179,10 @@ class ReturnToLoginButton extends StatelessWidget {
         foregroundColor: projectTheme.activeColor,
         side: BorderSide(color: projectTheme.activeColor),
       ),
-      label: const Text('Return to Login'),
+      label: const Text('Return to Account Creation'),
       onPressed: () {
-        Navigator.popUntil(
-          context,
-          (route) => route.isFirst
-        );
+        Navigator.pop(context);
+        Navigator.pop(context);
       },
     );
   }
@@ -225,7 +193,7 @@ class CreatingAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<ProjectTheme>();
+    final projectTheme = context.watch<CustomAppTheme>();
     return PopScope(
       canPop: false,
       child: LoadingScreen(
@@ -234,6 +202,52 @@ class CreatingAccountPage extends StatelessWidget {
         child: const Text('Creating account...'),
       )
     );
+  }
+}
+
+Future<void> _createAccountAction(
+  BuildContext context,
+  GlobalKey<FormState> formKey,
+  TextEditingController nameController,
+  TextEditingController emailController,
+  TextEditingController passwordController,
+) async {
+  if (!formKey.currentState!.validate()) {
+    return;
+  }
+  pushRoute(
+    context,
+    const CreatingAccountPage()
+  );
+  // The KDF function used during account creation is computationally expensive.
+  // It seems to momentarily block the UI, despite be async.
+  // This delay is placed intentionally to give the loading screen
+  // a chance to display.
+  if (!kDebugMode) {
+    await Future.delayed(const Duration(seconds: 2));
+  }
+  
+  if (context.mounted) {
+    var appState = context.read<AppState>();
+    var creationState = await _createAccount(
+      nameController.text,
+      emailController.text,
+      passwordController.text,
+      appState,
+    );
+    
+    if (context.mounted) {
+      if (creationState.success) {
+        pushRoute(context, const ChatbotPage());
+      } else {
+        pushRoute(
+          context,
+          RegistrationFailedPage(
+            reason: creationState.message ?? '???'
+          )
+        );
+      }
+    }
   }
 }
 
@@ -277,6 +291,7 @@ Future<_CreationState> _createAccount(
       false, message: 'Please check your internet connection.'
     ),
   );
+  await appState.session.setEmail(email);
   await appState.session.setToken(creationState.token);
   await appState.session.setLoggedIn(creationState.success);
   

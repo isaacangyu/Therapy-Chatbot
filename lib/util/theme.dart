@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ProjectTheme extends ChangeNotifier {
+class CustomAppTheme extends ChangeNotifier {
   late Color primaryColor;
   late Color activeColor;
   late Color inactiveColor;
