@@ -12,16 +12,16 @@ class ChatbotPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<ProjectTheme>();
-        
+    final customTheme = context.watch<CustomAppTheme>();
+
     return Scaffold(
       appBar: AppBar(title: const Text("Chat Test")),
       body: LlmChatView(
         provider: ChatbotProvider(),
         welcomeMessage: 'Welcome!',
         style: LlmChatViewStyle(
-          backgroundColor: projectTheme.primaryColor,
-          progressIndicatorColor: projectTheme.activeColor,
+          backgroundColor: customTheme.primaryColor,
+          progressIndicatorColor: customTheme.activeColor,
           userMessageStyle: UserMessageStyle(
             textStyle: theme.textTheme.bodyMedium!.copyWith(
               color: theme.colorScheme.onSecondaryFixed,
@@ -38,7 +38,7 @@ class ChatbotPage extends StatelessWidget {
             ),
             decoration: (LlmMessageStyle.defaultStyle().decoration as BoxDecoration).copyWith(
               color: theme.colorScheme.secondaryContainer,
-              border: Border.all(color: projectTheme.inactiveColor),
+              border: Border.all(color: customTheme.inactiveColor),
             ),
             // We may have to update this in the future if using additional markdown syntax.
             markdownStyle: MarkdownStyleSheet(
@@ -55,10 +55,10 @@ class ChatbotPage extends StatelessWidget {
               color: theme.colorScheme.surface,
             ),
             hintText: 'Type a message...',
-            backgroundColor: projectTheme.primaryColor,
+            backgroundColor: customTheme.primaryColor,
             decoration: (ChatInputStyle.defaultStyle().decoration as BoxDecoration).copyWith(
               color: theme.colorScheme.secondaryContainer,
-              border: Border.all(color: projectTheme.inactiveColor),
+              border: Border.all(color: customTheme.inactiveColor),
             ),
           ),
           addButtonStyle: ActionButtonStyle(
