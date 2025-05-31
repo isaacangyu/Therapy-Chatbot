@@ -288,6 +288,7 @@ Future<_LoginState> _login(
   );
   initClientSideEncrypter(keyDetails.key);
   
+  await appState.session.setEmail(email);
   await appState.session.setToken(loginState.token);
   await appState.session.setLoggedIn(true);
   

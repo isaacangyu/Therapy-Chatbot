@@ -290,6 +290,7 @@ Future<_CreationState> _createAccount(
       false, message: 'Please check your internet connection.'
     ),
   );
+  await appState.session.setEmail(email);
   await appState.session.setToken(creationState.token);
   await appState.session.setLoggedIn(creationState.success);
   

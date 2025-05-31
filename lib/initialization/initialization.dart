@@ -97,7 +97,7 @@ Future<InitializationState> initializeApp(
   }
   
   var backendBaseUrl = await _fetchBackendBaseUrl();
-  if (backendBaseUrl == null && !appState.session.loggedIn) {
+  if (backendBaseUrl == null && !appState.session.getLoggedIn()) {
     return InitializationState(
       false,
       message: 'Unable to reach online services. Please check your internet connection.'
@@ -126,10 +126,13 @@ Future<InitializationState> initializeApp(
     appState.session.online = false;
   }
   
-  if (appState.session.online && appState.session.loggedIn) {
-    var tokenValid = await _validateSessionToken(appState.session.token);
+  if (appState.session.online && appState.session.getLoggedIn()) {
+    var tokenValid = await _validateSessionToken(
+      appState.session.getEmail(), appState.session.getToken()
+    );
     if (!tokenValid) {
       try {
+        await appState.session.setEmail(null);
         await appState.session.setToken(null);
         await appState.session.setLoggedIn(false);
       } catch (e) {
@@ -147,8 +150,9 @@ Default preferences from app database:
 Color Scheme Seed: ${appState.preferences.colorScheme.primaryContainer}
 
 Session info:
-Token: ${appState.session.token}
-Logged in: ${appState.session.loggedIn}
+Email: ${appState.session.getEmail()}
+Token: ${appState.session.getToken()}
+Logged in: ${appState.session.getLoggedIn()}
 
 Latest App Version: $latestAppVersion
 Current App Version: ${Global.appVersion}
@@ -181,14 +185,14 @@ Future<String?> _fetchBackendBaseUrl() {
   );
 }
 
-Future<bool> _validateSessionToken(String? token) async {
-  if (token == null) {
+Future<bool> _validateSessionToken(String? email, String? token) async {
+  if (email == null || token == null) {
     return false;
   }
   
   return httpPostSecure(
     API.loginToken,
-    includeToken(token, {}),
+    includeToken(email, token, {}),
     (json) => json['valid'],
     () => false,
   );

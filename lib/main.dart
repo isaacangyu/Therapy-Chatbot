@@ -77,7 +77,7 @@ class _AppBase extends State<App> {
               return MaterialApp(
                 title: Global.appTitle,
                 theme: themeData,
-                home: appState.session.loggedIn 
+                home: appState.session.getLoggedIn() 
                   ? const Placeholder() : const LoginPage(),
               );
             },

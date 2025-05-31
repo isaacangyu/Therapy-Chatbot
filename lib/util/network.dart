@@ -61,8 +61,9 @@ String verifyData(String data) {
   return body;
 }
 
-Object includeToken(String token, Map<String, dynamic> data) {
-  data['token'] = token;
+Object includeToken(String email, String token, Map<String, dynamic> data) {
+  data['_email'] = email;
+  data['_token'] = token;
   return data;
 }
 

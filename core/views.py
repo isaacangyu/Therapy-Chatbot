@@ -54,12 +54,8 @@ def login_password(request, form):
 @util.app_view
 def login_token(request, form):
     try:
-        Session.objects.get(token=form["token"])
-    except Session.DoesNotExist:
-        return {
-            "valid": False,
-        }
-    
-    return {
-        "valid": True,
-    }
+        account = Account.objects.get(email=form.get("_email"))
+        session = Session.objects.get(token=form.get("_token"))
+        return {"valid": True} if account == session.account else {"valid": False}
+    except (Session.DoesNotExist, Account.DoesNotExist):
+        return {"valid": False}
