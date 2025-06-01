@@ -29,7 +29,7 @@ def create_account(request, form):
 @util.app_view
 def login_password(request, form):
     try:
-        account = Account.objects.get(email=form["email"])
+        account = Account.objects.get(email=form.get("email"))
     except Account.DoesNotExist:
         return {
             "success": False,
