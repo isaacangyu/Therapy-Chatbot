@@ -1,9 +1,11 @@
 import math, secrets
 
 from django.db import models
+from django.db.utils import IntegrityError
 from django.utils import timezone
 
 from core import crypto
+from core.util import UnprocessableRequestError
 
 SESSION_TOKEN_BYTES = 0x40
 
@@ -27,6 +29,12 @@ class Account(models.Model):
             kdf_salt=kdf_salt, 
             creation_date=timezone.now()
         )
+    
+    def save(self):
+        try:
+            super().save()
+        except IntegrityError:
+            raise UnprocessableRequestError()
 
 class Session(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)

@@ -194,7 +194,7 @@ Future<bool> _validateSessionToken(String? email, String? token) async {
     API.loginToken,
     includeToken(email, token, {}),
     (json) => json['valid'],
-    () => false,
+    (_) => false,
   );
 }
 

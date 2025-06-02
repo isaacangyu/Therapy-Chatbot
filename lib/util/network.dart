@@ -71,8 +71,10 @@ Future<T> httpPostSecure<T>(
   String path,
   Object data,
   T Function(Map<String, dynamic>) onHttpOK,
-  T Function() onError,
+  T Function(int) onError,
 ) async {
+  int statusCode = -1;
+  
   try {
     var cipherText = _encrypter.encrypt(jsonEncode(data));
     var response = await http.post(
@@ -88,11 +90,12 @@ Future<T> httpPostSecure<T>(
       var json = jsonDecode(body) as Map<String, dynamic>;
       return onHttpOK(json);
     }
+    statusCode = response.statusCode;
     debugPrint('HTTP response code: ${response.statusCode}');
   } catch (e) {
     debugPrint('Request exception: $e');
   }
-  return onError();
+  return onError(statusCode);
 }
 
 Future<T> httpGetSecure<T>(

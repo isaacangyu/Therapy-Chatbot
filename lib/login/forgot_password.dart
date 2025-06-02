@@ -151,6 +151,6 @@ Future<bool> _requestPasswordReset(String email) {
       'email': email,
     },
     (_) => true,
-    () => false,
+    (_) => false,
   );
 }
