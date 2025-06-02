@@ -3,6 +3,7 @@ from core.models import Account, Session
 
 @util.require_POST_OPTIONS
 @util.app_view
+@util.decrypt_body
 def create_account(request, form):
     # Check if account already exists.
     if Account.objects.filter(email=form["email"]).exists():
@@ -27,6 +28,7 @@ def create_account(request, form):
 
 @util.require_POST_OPTIONS
 @util.app_view
+@util.decrypt_body
 def login_password(request, form):
     try:
         account = Account.objects.get(email=form.get("email"))
@@ -52,6 +54,7 @@ def login_password(request, form):
 
 @util.require_POST_OPTIONS
 @util.app_view
+@util.decrypt_body
 def login_token(request, form):
     try:
         account = Account.objects.get(email=form.get("_email"))
