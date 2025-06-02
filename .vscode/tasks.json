@@ -140,6 +140,16 @@
             "type": "shell",
             "command": "./scripts/idx-deletedb.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Open Django Shell",
+            "icon": {
+                "id": "terminal",
+                "color": "terminal.ansiGreen"
+            },
+            "type": "shell",
+            "command": "./scripts/django-shell.sh",
+            "problemMatcher": []
         }
     ]
 }

@@ -271,8 +271,12 @@ Future<_LoginState> _login(
       salt: json['salt'],
       token: json['token'],
     ),
-    () => const _LoginState(
-      false, message: 'Please check your internet connection.'
+    (status) => _LoginState(
+      false, message: {
+        -1: 'Please check your internet connection.',
+        400: 'Invalid request.',
+        422: 'Unprocessable request. Please check your field inputs.'
+      }[status]
     ),
   );
   

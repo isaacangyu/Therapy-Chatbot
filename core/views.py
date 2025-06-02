@@ -3,19 +3,20 @@ from core.models import Account, Session
 
 @util.require_POST_OPTIONS
 @util.app_view
+@util.decrypt_body
 def create_account(request, form):
     # Check if account already exists.
-    if Account.objects.filter(email=form["email"]).exists():
+    if Account.objects.filter(email=form.get("email")).exists():
         return {
             "success": False,
             "message": "Account already exists.",
         }
     
     account = Account.create(
-        form["name"], 
-        form["email"], 
-        form["password_digest"], 
-        form["salt"]
+        form.get("name"), 
+        form.get("email"), 
+        form.get("password_digest"), 
+        form.get("salt")
     )
     session = Session.create(account)
     account.save()
@@ -27,6 +28,7 @@ def create_account(request, form):
 
 @util.require_POST_OPTIONS
 @util.app_view
+@util.decrypt_body
 def login_password(request, form):
     try:
         account = Account.objects.get(email=form.get("email"))
@@ -36,7 +38,7 @@ def login_password(request, form):
             "message": "Account does not exist.",
         }
     
-    if not crypto.password_verify(form["password_digest"], account.password_hash):
+    if not crypto.password_verify(form.get("password_digest"), account.password_hash):
         return {
             "success": False,
             "message": "Incorrect password.",
@@ -52,6 +54,7 @@ def login_password(request, form):
 
 @util.require_POST_OPTIONS
 @util.app_view
+@util.decrypt_body
 def login_token(request, form):
     try:
         account = Account.objects.get(email=form.get("_email"))

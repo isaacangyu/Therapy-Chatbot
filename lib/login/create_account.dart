@@ -287,8 +287,12 @@ Future<_CreationState> _createAccount(
       message: json['message'],
       token: json['token']
     ),
-    () => const _CreationState(
-      false, message: 'Please check your internet connection.'
+    (status) => _CreationState(
+      false, message: {
+        -1: 'Please check your internet connection.',
+        400: 'Invalid request.',
+        422: 'Unprocessable request. Please check your field inputs.'
+      }[status]
     ),
   );
   await appState.session.setEmail(email);
