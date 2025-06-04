@@ -150,6 +150,16 @@
             "type": "shell",
             "command": "./scripts/django-shell.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "IDX: Initialize Neo4j",
+            "icon": {
+                "id": "type-hierarchy",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-init-neo4j.sh",
+            "problemMatcher": []
         }
     ]
 }

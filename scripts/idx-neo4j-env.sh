@@ -1,0 +1,3 @@
+NEO4J_HOME=".idx/neo4j"
+NEO4J_CONF="$NEO4J_HOME/conf"
+NEO4J_DATA="$NEO4J_HOME/data"
