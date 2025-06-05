@@ -6,6 +6,7 @@
     pkgs.python3Full
     pkgs.poetry
     pkgs.postgresql
+    pkgs.neo4j
   ];
   idx.extensions = [
     "Dart-Code.dart-code"

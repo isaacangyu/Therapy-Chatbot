@@ -150,6 +150,66 @@
             "type": "shell",
             "command": "./scripts/django-shell.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "IDX: Initialize Neo4j",
+            "icon": {
+                "id": "type-hierarchy",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-init-neo4j.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Start Neo4j",
+            "icon": {
+                "id": "coffee",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-start-neo4j.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Stop Neo4j",
+            "icon": {
+                "id": "x",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-stop-neo4j.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Delete Neo4j Data",
+            "icon": {
+                "id": "warning",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-delete-neo4j-data.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start All Backends",
+            "icon": {
+                "id": "server-environment",
+                "color": "terminal.ansiYellow"
+            },
+            "type": "shell",
+            "command": "./scripts/start-all-backends.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Flutter Get Packages (Enforce Lockfile)",
+            "icon": {
+                "id": "lock",
+                "color": "terminal.ansiCyan"
+            },
+            "type": "shell",
+            "command": "./scripts/flutter-enforce-lockfile.sh",
+            "problemMatcher": []
         }
     ]
 }

@@ -23,4 +23,5 @@ if psql --dbname=postgres -U postgres -c '\q'; then
     echo "Database started successfully."
 else
     echo "Database is listening on port 5432, but did not start successfully."
+    exit 1
 fi
