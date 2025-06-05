@@ -160,6 +160,36 @@
             "type": "shell",
             "command": "./scripts/idx-init-neo4j.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "IDX: Start Neo4j",
+            "icon": {
+                "id": "coffee",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-start-neo4j.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Stop Neo4j",
+            "icon": {
+                "id": "x",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-stop-neo4j.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Delete Neo4j Data",
+            "icon": {
+                "id": "warning",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-delete-neo4j-data.sh",
+            "problemMatcher": []
         }
     ]
 }

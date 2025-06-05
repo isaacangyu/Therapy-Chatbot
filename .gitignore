@@ -195,6 +195,8 @@ cython_debug/
 # Custom
 .idx/.data/
 .idx/postgres/
+.idx/neo4j/*
+!.idx/neo4j/conf/
 .idx/logfile
 cert/prod/
 temp/
