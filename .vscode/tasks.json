@@ -190,6 +190,16 @@
             "type": "shell",
             "command": "./scripts/idx-delete-neo4j-data.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Start All Backends",
+            "icon": {
+                "id": "server-environment",
+                "color": "terminal.ansiYellow"
+            },
+            "type": "shell",
+            "command": "./scripts/start-all-backends.sh",
+            "problemMatcher": []
         }
     ]
 }
