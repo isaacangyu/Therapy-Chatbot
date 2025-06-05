@@ -200,6 +200,16 @@
             "type": "shell",
             "command": "./scripts/start-all-backends.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Flutter Get Packages (Enforce Lockfile)",
+            "icon": {
+                "id": "lock",
+                "color": "terminal.ansiCyan"
+            },
+            "type": "shell",
+            "command": "./scripts/flutter-enforce-lockfile.sh",
+            "problemMatcher": []
         }
     ]
 }
