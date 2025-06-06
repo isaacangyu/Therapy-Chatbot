@@ -37,6 +37,8 @@ ACCESS_CONTROL_ALLOW_ORIGIN = "*" if DEBUG else os.environ["ACCESS_CONTROL_ALLOW
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne", # Overrides the `runserver` command to an ASGI version.
+    "channels", # Provides the `runworker` command, which may be useful.
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -76,7 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "therapy_chatbot.wsgi.application"
-
+ASGI_APPLICATION = "therapy_chatbot.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
