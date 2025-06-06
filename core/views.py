@@ -1,9 +1,9 @@
-from core import crypto, util
+from core import crypto, utils
 from core.models import Account, Session
 
-@util.require_POST_OPTIONS
-@util.app_view
-@util.decrypt_body
+@utils.require_POST_OPTIONS
+@utils.app_view
+@utils.decrypt_body
 def create_account(request, form):
     # Check if account already exists.
     if Account.objects.filter(email=form.get("email")).exists():
@@ -26,9 +26,9 @@ def create_account(request, form):
         "token": session.token,
     }
 
-@util.require_POST_OPTIONS
-@util.app_view
-@util.decrypt_body
+@utils.require_POST_OPTIONS
+@utils.app_view
+@utils.decrypt_body
 def login_password(request, form):
     try:
         account = Account.objects.get(email=form.get("email"))
@@ -52,9 +52,9 @@ def login_password(request, form):
         "token": session.token,
     }
 
-@util.require_POST_OPTIONS
-@util.app_view
-@util.decrypt_body
+@utils.require_POST_OPTIONS
+@utils.app_view
+@utils.decrypt_body
 def login_token(request, form):
     try:
         account = Account.objects.get(email=form.get("_email"))

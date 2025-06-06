@@ -4,7 +4,7 @@ from django.db import models
 from django.db.utils import IntegrityError
 
 from core import crypto
-from core.util import UnprocessableRequestError
+from core.utils import UnprocessableRequestError
 
 SESSION_TOKEN_BYTES = 0x40
 
