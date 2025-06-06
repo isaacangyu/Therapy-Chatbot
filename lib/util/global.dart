@@ -29,4 +29,8 @@ class Global {
   static final defaultUserPreferences = PreferencesCompanion(
     seedColor: Value(defaultSeedColor),
   );
+  
+  static const largeScreenThreshold = 960.0;
+  static const mediumScreenThreshold = 640.0;
+  static const navigationRailExtendedThreshold = 800.0;
 }

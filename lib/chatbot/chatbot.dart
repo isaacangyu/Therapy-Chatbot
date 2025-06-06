@@ -5,8 +5,9 @@ import 'package:provider/provider.dart';
 
 import '/chatbot/chatbot_provider.dart';
 import '/util/theme.dart';
+import '/navigation.dart';
 
-class ChatbotPage extends StatelessWidget {
+class ChatbotPage extends StatelessWidget implements SwitchActions {
   const ChatbotPage({super.key});
 
   @override
@@ -15,7 +16,13 @@ class ChatbotPage extends StatelessWidget {
     final customTheme = context.watch<CustomAppTheme>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Chat Test")),
+      appBar: AppBar(
+        title: Text(
+          "Chatbot",
+          style: theme.textTheme.titleLarge!.copyWith(color: customTheme.inactiveColor)
+        ), 
+        backgroundColor: theme.colorScheme.primary
+      ),
       body: LlmChatView(
         provider: ChatbotProvider(),
         welcomeMessage: 'Welcome!',
@@ -74,5 +81,15 @@ class ChatbotPage extends StatelessWidget {
         ),
       ),
     );
+  }
+  
+  @override
+  void onFocus() {
+    debugPrint('Focusing');
+  }
+  
+  @override
+  void onExitFocus() {
+    debugPrint('not focusing');
   }
 }

@@ -5,11 +5,11 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '/initialization/splash.dart';
 import '/initialization/notice.dart';
 import '/login/login.dart';
-import '/chatbot/chatbot.dart';
 import '/util/global.dart';
 import '/util/persistence.dart';
 import '/util/theme.dart';
 import '/app_state.dart';
+import '/navigation.dart';
 
 void main() {
   runApp(MultiProvider(
@@ -79,7 +79,7 @@ class _AppBase extends State<App> {
                 title: Global.appTitle,
                 theme: themeData,
                 home: appState.session.getLoggedIn() 
-                  ? const ChatbotPage() : const LoginPage(),
+                  ? const Navigation() : const LoginPage(),
               );
             },
           );
