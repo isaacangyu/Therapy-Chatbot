@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '/navigation.dart';
 import '/app_state.dart';
 import '/login/validate_password.dart';
-import '/chatbot/chatbot.dart';
 import '/util/navigation.dart';
 import '/util/global.dart';
 import '/util/network.dart';
@@ -238,7 +238,7 @@ Future<void> _createAccountAction(
     
     if (context.mounted) {
       if (creationState.success) {
-        pushRoute(context, const ChatbotPage());
+        pushRoute(context, const Navigation());
       } else {
         pushRoute(
           context,

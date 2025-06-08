@@ -7,6 +7,10 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from django.conf import settings
 
+RSA_KEY_SIZE_BITS = 3072
+RSA_KEY_SIZE_BYTES = RSA_KEY_SIZE_BITS // 8
+SESSION_TOKEN_BYTES = 0x40
+
 _hasher = PasswordHasher(time_cost=3, memory_cost=11719, parallelism=1, encoding="utf-8")
 
 with open(f"./cert/{'test' if settings.DEBUG else 'prod'}/private/private.pem", "rb") as key_file:
@@ -27,11 +31,16 @@ def password_verify(password_digest, password_hash):
         return False
 
 def asymmetric_decrypt(ciphertext):
-    return _private_key.decrypt(ciphertext, padding.OAEP(
-        mgf=padding.MGF1(hashes.SHA256()),
-        algorithm=hashes.SHA256(),
-        label=None
-    ))
+    return b"".join(
+        _private_key.decrypt(
+            ciphertext[inp_off:inp_off + RSA_KEY_SIZE_BYTES],
+            padding.OAEP(
+                mgf=padding.MGF1(hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        ) for inp_off in range(0, len(ciphertext), RSA_KEY_SIZE_BYTES)
+    )
 
 def asymmetric_sign(data):
     # We would use OAEP padding, but it's not easily supported on the client's side.
@@ -47,3 +56,6 @@ def symmetric_encrypt(data, key):
     ivBase64 = base64.b64encode(iv).decode()
     ciphertextBase64 = base64.b64encode(ciphertext).decode()
     return f"{ciphertextBase64}:{ivBase64}"
+
+def generate_generic_session_token():
+    return secrets.token_urlsafe(SESSION_TOKEN_BYTES)

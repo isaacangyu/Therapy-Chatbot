@@ -54,6 +54,7 @@ dependencies:
   loader_overlay: ^4.0.4+1
   flutter_ai_toolkit: ^0.6.5
   flutter_markdown: ^0.7.6+2
+  web_socket_channel: ^3.0.3
 
 dev_dependencies:
   flutter_test:

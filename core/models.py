@@ -1,12 +1,10 @@
-import math, secrets
+import math
 
 from django.db import models
 from django.db.utils import IntegrityError
 
 from core import crypto
 from core.utils import UnprocessableRequestError
-
-SESSION_TOKEN_BYTES = 0x40
 
 class Account(models.Model):
     name          = models.CharField(max_length=64)
@@ -36,7 +34,7 @@ class Account(models.Model):
 
 class Session(models.Model):
     account       = models.ForeignKey(Account, on_delete=models.CASCADE, related_name="sessions")
-    token         = models.CharField(max_length=math.ceil(SESSION_TOKEN_BYTES * 8 / 6))
+    token         = models.CharField(max_length=math.ceil(crypto.SESSION_TOKEN_BYTES * 8 / 6))
     creation_date = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
@@ -44,7 +42,7 @@ class Session(models.Model):
     
     @staticmethod
     def create(account):
-        token = secrets.token_urlsafe(SESSION_TOKEN_BYTES)
+        token = crypto.generate_generic_session_token()
         return Session(
             account=account, 
             token=token

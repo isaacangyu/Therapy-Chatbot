@@ -6,7 +6,7 @@ import '/util/persistence.dart';
 
 class API {
   static late String initBaseUrl;
-  static String? baseUrl;
+  static String? baseUrl, wsBaseUrl;
 
   static const forgotPasswordInfo = 'api/forgot_password_info.json';
   static const latestAppVersion = 'api/latest_app_version.json';
@@ -17,11 +17,15 @@ class API {
   static const resetPassword = 'account/reset_password/';
   static const loginPassword = 'account/login/password/';
   static const loginToken = 'account/login/token/';
+  
+  static const wsChatbot = 'ws/chatbot/';
 }
 
 class Global {
   static late String appVersion;
   static var androidDebugMode = kDebugMode && defaultTargetPlatform == TargetPlatform.android;
+  static const rsaKeySizeBits = 3072;
+  static const rsaKeySizeBytes = rsaKeySizeBits ~/ 8;
   
   static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   

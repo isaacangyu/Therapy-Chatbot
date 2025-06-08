@@ -18,14 +18,19 @@ class _NavigationState extends State<Navigation> {
     const ChatbotPage(),
     const BreathingPage(),
   ];
+  
+  @override
+  void initState() {
+    var initialPage = pages[pageIndex];
+    if (initialPage is SwitchActions) {
+      (initialPage as SwitchActions).onFocus(context);
+    }
+    
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var initialPage = pages[pageIndex];
-    if (initialPage is SwitchActions) {
-      (initialPage as SwitchActions).onFocus();
-    }
-    
     return AdaptiveScaffold(
       title: const Column(
         children: [
@@ -55,14 +60,14 @@ class _NavigationState extends State<Navigation> {
         setState(() {
           var currentPage = pages[pageIndex];
           if (currentPage is SwitchActions) {
-            (currentPage as SwitchActions).onExitFocus();
+            (currentPage as SwitchActions).onExitFocus(context);
           }
           
           pageIndex = value;
           
           var nextPage = pages[pageIndex];
           if (nextPage is SwitchActions) {
-            (nextPage as SwitchActions).onFocus();
+            (nextPage as SwitchActions).onFocus(context);
           }
         });
       },
@@ -75,6 +80,6 @@ class _NavigationState extends State<Navigation> {
 }
 
 abstract class SwitchActions {
-  void onFocus();
-  void onExitFocus();
+  void onFocus(BuildContext context);
+  void onExitFocus(BuildContext context);
 }

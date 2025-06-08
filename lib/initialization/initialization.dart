@@ -96,24 +96,25 @@ Future<InitializationState> initializeApp(
     );
   }
   
-  var backendBaseUrl = await _fetchBackendBaseUrl();
-  if (backendBaseUrl == null && !appState.session.getLoggedIn()) {
+  var backendBaseUrls = await _fetchBackendBaseUrl();
+  if (backendBaseUrls == null && !appState.session.getLoggedIn()) {
     return InitializationState(
       false,
       message: 'Unable to reach online services. Please check your internet connection.'
     );
   }
   
-  if (latestAppVersion == null && backendBaseUrl != null) {
+  if (latestAppVersion == null && backendBaseUrls != null) {
     return InitializationState(
       false,
       message: 'Unable to resolve conflicting information.'
     );
   }
   
-  if (backendBaseUrl != null) {
+  if (backendBaseUrls != null) {
     appState.session.online = true;
-    API.baseUrl = backendBaseUrl;
+    API.baseUrl = backendBaseUrls.baseUrl;
+    API.wsBaseUrl = backendBaseUrls.wsBaseUrl;
     
     var keysLoaded = await loadKeys();
     if (!keysLoaded) {
@@ -157,7 +158,8 @@ Logged in: ${appState.session.getLoggedIn()}
 Latest App Version: $latestAppVersion
 Current App Version: ${Global.appVersion}
 Initialization Base URL: ${API.initBaseUrl}
-Backend Base URL: $backendBaseUrl
+Backend Base URL: ${backendBaseUrls?.baseUrl}
+WebSocket Backend Base URL: ${backendBaseUrls?.wsBaseUrl}
 ''');
   
   // Insert some artificial delay.
@@ -177,10 +179,16 @@ Future<String?> _fetchLatestAppVersion() {
   );
 }
 
-Future<String?> _fetchBackendBaseUrl() {
+class _BaseUrls {
+  _BaseUrls(this.baseUrl, this.wsBaseUrl);
+  
+  String baseUrl;
+  String wsBaseUrl;
+}
+Future<_BaseUrls?> _fetchBackendBaseUrl() {
   return httpGetApi(
     API.backendBase,
-    (json) => json['url'],
+    (json) => _BaseUrls(json['url'], json['ws_url']),
     () => null,
   );
 }

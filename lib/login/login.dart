@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
+import '/navigation.dart';
 import '/app_state.dart';
 import '/util/crypto.dart';
 import '/util/network.dart';
@@ -11,7 +12,6 @@ import '/util/theme.dart';
 import '/util/global.dart';
 import '/login/forgot_password.dart';
 import '/login/create_account.dart';
-import '/chatbot/chatbot.dart';
 import '/widgets/fields/email_large.dart';
 import '/widgets/fields/password_large.dart';
 import '/widgets/scroll.dart';
@@ -226,7 +226,7 @@ Future<void> _loginAction(
     if (loginState.success) {
       pushRoute(context, const PopScope(
         canPop: false,
-        child: ChatbotPage()
+        child: Navigation()
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

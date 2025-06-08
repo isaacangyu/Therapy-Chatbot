@@ -1,11 +1,20 @@
-// Forked from: https://github.com/flutter/ai/blob/main/lib/src/providers/implementations/echo_provider.dart
-
 // Copyright 2024 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Forked from: https://github.com/flutter/ai/blob/main/lib/src/providers/implementations/echo_provider.dart
+
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ai_toolkit/flutter_ai_toolkit.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+import '/util/network.dart';
+import '/util/crypto.dart';
+
+WebSocketChannel? channel;
+Stream<dynamic>? broadcast;
 
 class ChatbotProvider extends LlmProvider with ChangeNotifier {
   ChatbotProvider({Iterable<ChatMessage>? history})
@@ -18,23 +27,30 @@ class ChatbotProvider extends LlmProvider with ChangeNotifier {
     String prompt, {
     Iterable<Attachment> attachments = const [],
   }) async* {
-    if (prompt == 'FAILFAST') debugPrint('Failing fast!');
-
-    await Future.delayed(const Duration(milliseconds: 1000));
-    yield '# Echo\n';
-
-    switch (prompt) {
-      case 'CANCEL':
-        debugPrint("Cancelled!");
-        break;
-      case 'FAIL':
-        debugPrint('User requested failure!');
+    if (channel == null || channel?.sink == null || broadcast == null) {
+      yield 'You are offline. Try restarting the app.';
+      return;
     }
-
-    await Future.delayed(const Duration(milliseconds: 1000));
-    yield prompt;
-
-    yield '\n\n# Attachments\n${attachments.map((a) => a.toString())}';
+    
+    websocketAddFrame(channel!, {
+      "type": "message",
+      "message": prompt,
+    });
+    await for (var response in broadcast!) {
+      var chatbotResponse = jsonDecode(
+        verifyData(symmetricDecrypt(response, responseDecrypter))
+      ) as Map<String, dynamic>;
+      if (!chatbotResponse.containsKey('status') || chatbotResponse['status'] is! int) {
+        yield 'SYSTEM: Sorry! A problem occurred.';
+        break;
+      }
+      yield {
+        0: chatbotResponse['response'], // Success.
+        2: 'SYSTEM: ???', // No prompt received.
+        3: 'SYSTEM: Sorry, something went wrong.' // Invalid type.
+      }[chatbotResponse['status']];
+      break;
+    }
   }
 
   @override
