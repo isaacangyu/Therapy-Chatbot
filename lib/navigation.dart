@@ -12,7 +12,7 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
-  var pageIndex = 0;
+  var _pageIndex = 0;
 
   final pages = <Widget>[
     const ChatbotPage(),
@@ -21,7 +21,7 @@ class _NavigationState extends State<Navigation> {
   
   @override
   void initState() {
-    var initialPage = pages[pageIndex];
+    var initialPage = pages[_pageIndex];
     if (initialPage is SwitchActions) {
       (initialPage as SwitchActions).onFocus(context);
     }
@@ -55,24 +55,24 @@ class _NavigationState extends State<Navigation> {
           icon: Icons.cloud,
         ),
       ],
-      currentIndex: pageIndex,
+      currentIndex: _pageIndex,
       onNavigationIndexChange: (value) {
         setState(() {
-          var currentPage = pages[pageIndex];
+          var currentPage = pages[_pageIndex];
           if (currentPage is SwitchActions) {
             (currentPage as SwitchActions).onExitFocus(context);
           }
           
-          pageIndex = value;
+          _pageIndex = value;
           
-          var nextPage = pages[pageIndex];
+          var nextPage = pages[_pageIndex];
           if (nextPage is SwitchActions) {
             (nextPage as SwitchActions).onFocus(context);
           }
         });
       },
       body: IndexedStack(
-        index: pageIndex,
+        index: _pageIndex,
         children: pages,
       ),
     );
