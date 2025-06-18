@@ -18,6 +18,7 @@ class BreathingPage extends StatefulWidget {
 class _BreathingPageState extends State<BreathingPage> {
   double _speed = 0.5; // between 0 and 1
   bool _expanding = true;
+  bool _playing = false;
 
   final String breatheInText = "Breathe in";
   final String breatheOutText = "Breathe out";
@@ -28,6 +29,12 @@ class _BreathingPageState extends State<BreathingPage> {
   void _switchExpanding() {
     setState(() {
       _expanding = !_expanding;
+    });
+  }
+
+  void _switchPlaying() {
+    setState(() {
+      _playing = !_playing;
     });
   }
 
@@ -47,47 +54,77 @@ class _BreathingPageState extends State<BreathingPage> {
       ),
       body: Scroll(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
+            alignment: Alignment.center,
             children: [
-              Padding(
-                padding: EdgeInsets.only(left: MediaQuery.sizeOf(context).width / 2),
-                child: NumberInputWithIncrementDecrement(
-                  controller: _timeController,
-                  scaleWidth: 0.3,
-                  scaleHeight: 0.5,
-                  incDecBgColor: Colors.amber,
-                  initialValue: 2,
-                  max: 10,
-                  onIncrement: (num newlyIncrementedValue) {
-                    print('Newly incremented value is $newlyIncrementedValue');
-                  },
+              AnimatedOpacity(
+                opacity: _playing ? 0.0 : 1.0,
+                duration: const Duration(milliseconds: 500),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: MediaQuery.sizeOf(context).width / 2 - 400),
+                      child: NumberInputWithIncrementDecrement(
+                        controller: _timeController,
+                        scaleWidth: 0.7,
+                        scaleHeight: 0.7,
+                        incDecBgColor: const Color.fromARGB(255, 131, 221, 246),
+                        initialValue: 2,
+                        min: 1,
+                        max: 10,
+                        onIncrement: (num newlyIncrementedValue) {
+                          print(
+                              'Newly incremented value is $newlyIncrementedValue');
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(50),
+                      child: ElevatedButton.icon(
+                        onPressed: _switchPlaying,
+                        label: const Icon(Icons.play_arrow),
+                        style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(), iconSize: 75.0),
+                      ),
+                    ),
+                    SliderTheme(
+                      data: const SliderThemeData(
+                          trackHeight: 5.0,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0, horizontal: 500),
+                          showValueIndicator: ShowValueIndicator.always),
+                      child: Slider(
+                        value: _speed,
+                        onChanged: (value) {
+                          setState(() {
+                            _speed = value;
+                          });
+                        },
+                        label: "Speed: ${_speed.toStringAsFixed(1)}",
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              _expanding
-                  ? AnimatedOpacity(
-                      opacity: _expanding ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 500),
-                      child: Text(breatheInText))
-                  : AnimatedOpacity(
-                      opacity: !_expanding ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 500),
-                      child: Text(breatheOutText)),
-              const SizedBox(height: 50),
-              BreathingAnimation(
-                  speed: _speed, switchExpanding: _switchExpanding),
-              const SizedBox(height: 50),
-              SliderTheme(
-                data: const SliderThemeData(
-                    showValueIndicator: ShowValueIndicator.always),
-                child: Slider(
-                  value: _speed,
-                  onChanged: (value) {
-                    setState(() {
-                      _speed = value;
-                    });
-                  },
-                  label: "Speed: ${_speed.toStringAsFixed(1)}",
+              AnimatedOpacity(
+                opacity: _playing ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 500),
+                child: Column(
+                  children: [
+                    _expanding
+                        ? AnimatedOpacity(
+                            opacity: _expanding ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 500),
+                            child: Text(breatheInText))
+                        : AnimatedOpacity(
+                            opacity: !_expanding ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 500),
+                            child: Text(breatheOutText)),
+                    const SizedBox(height: 50),
+                    BreathingAnimation(
+                        speed: _speed, switchExpanding: _switchExpanding)
+                  ],
                 ),
               ),
             ],
