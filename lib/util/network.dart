@@ -106,7 +106,10 @@ Object includeToken(String email, String token, Map<String, dynamic> data) {
   return data;
 }
 
-Future<T> httpPostSecure<T>(
+enum HttpRequestType {post, delete}
+
+Future<T> httpDataSecure<T>(
+  HttpRequestType type,
   String path,
   Object data,
   T Function(Map<String, dynamic>) onHttpOK,
@@ -116,7 +119,13 @@ Future<T> httpPostSecure<T>(
   
   try {
     var cipherText = _incrementalEncrypt(jsonEncode(data));
-    var response = await http.post(
+    
+    var httpFunc = switch (type) {
+      HttpRequestType.post => http.post,
+      HttpRequestType.delete => http.delete
+    };
+    
+    var response = await httpFunc(
       Uri.parse(API.baseUrl!).resolve(path),
       headers: {
         // 'Cache-Control': 'no-cache',
@@ -135,6 +144,24 @@ Future<T> httpPostSecure<T>(
     debugPrint('Request exception: $e');
   }
   return onError(statusCode);
+}
+
+Future<T> httpPostSecure<T>(
+  String path,
+  Object data,
+  T Function(Map<String, dynamic>) onHttpOK,
+  T Function(int) onError,
+) async {
+  return httpDataSecure(HttpRequestType.post, path, data, onHttpOK, onError);
+}
+
+Future<T> httpDeleteSecure<T>(
+  String path,
+  Object data,
+  T Function(Map<String, dynamic>) onHttpOK,
+  T Function(int) onError,
+) async {
+  return httpDataSecure(HttpRequestType.delete, path, data, onHttpOK, onError);
 }
 
 Future<T> httpGetSecure<T>(
