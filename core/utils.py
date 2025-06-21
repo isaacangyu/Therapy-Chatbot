@@ -84,7 +84,9 @@ def app_ws_in(consumer_receive):
             
             if not hasattr(self, "response_key"):
                 response_key_encrypted = json_data["custom_response_key"]
-                self.response_key = crypto.asymmetric_decrypt(base64.b64decode(response_key_encrypted))
+                self.response_key = crypto.asymmetric_decrypt(
+                    base64.b64decode(response_key_encrypted)
+                )
             consumer_receive(self, json_data)
         except (json.decoder.JSONDecodeError, ValueError, KeyError) as e:
             self.close(code=4000)

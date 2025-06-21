@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +8,7 @@ import '/app_state.dart';
 import '/util/network.dart';
 import '/util/global.dart';
 import '/util/theme.dart';
+import '/util/crypto.dart';
 
 class ChatbotPage extends StatefulWidget {
   const ChatbotPage({super.key});
@@ -16,7 +19,15 @@ class ChatbotPage extends StatefulWidget {
 
 class _ChatbotPageState extends State<ChatbotPage> {
   final TextEditingController _controller = TextEditingController();
-  late WebSocketStatus? _socketStatus;
+  WebSocketStatus? _socketStatus;
+  final _messageLog = <Widget>[];
+  
+  void _sendMessage(String message) {
+    websocketAddFrame(_socketStatus!.channel!, {
+      "type": "message",
+      "message": message,
+    });
+  }
   
   @override
   void initState() {
@@ -34,7 +45,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
       }
     )).then((status) {
       if (status.ok) {
-        _socketStatus = status;
+        setState(() {
+          _socketStatus = status;
+        });
       } else if (context.mounted) {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,186 +82,84 @@ class _ChatbotPageState extends State<ChatbotPage> {
         ), 
         backgroundColor: theme.colorScheme.primary
       ),
-      body: appState.session.online ? Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                BubbleNormal(
-                  text: 'bubble normal with tail',
-                  isSender: false,
-                  color: Color(0xFF1B97F3),
-                  tail: true,
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                ),
-                BubbleNormal(
-                  text: 'bubble normal with tail',
-                  isSender: true,
-                  color: Color(0xFFE8E8EE),
-                  tail: true,
-                  sent: true,
-                ),
-                // DateChip(
-                //   date: new DateTime(now.year, now.month, now.day - 2),
-                // ),
-                BubbleNormal(
-                  text: 'bubble normal without tail',
-                  isSender: false,
-                  color: Color(0xFF1B97F3),
-                  tail: false,
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                ),
-                BubbleNormal(
-                  text: 'bubble normal without tail',
-                  color: Color(0xFFE8E8EE),
-                  tail: false,
-                  sent: true,
-                  seen: true,
-                  delivered: true,
-                ),
-                BubbleSpecialOne(
-                  text: 'bubble special one with tail',
-                  isSender: false,
-                  color: Color(0xFF1B97F3),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
-                ),
-                // DateChip(
-                //   date: new DateTime(now.year, now.month, now.day - 1),
-                // ),
-                BubbleSpecialOne(
-                  text: 'bubble special one with tail',
-                  color: Color(0xFFE8E8EE),
-                  seen: true,
-                ),
-                BubbleSpecialOne(
-                  text: 'bubble special one without tail',
-                  isSender: false,
-                  tail: false,
-                  color: Color(0xFF1B97F3),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-                ),
-                BubbleSpecialOne(
-                  text: 'bubble special one without tail',
-                  tail: false,
-                  color: Color(0xFFE8E8EE),
-                  sent: true,
-                ),
-                BubbleSpecialTwo(
-                  text: 'bubble special tow with tail',
-                  isSender: false,
-                  color: Color(0xFF1B97F3),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-                ),
-                // DateChip(
-                //   date: now,
-                // ),
-                BubbleSpecialTwo(
-                  text: 'bubble special tow with tail',
-                  isSender: true,
-                  color: Color(0xFFE8E8EE),
-                  sent: true,
-                ),
-                BubbleSpecialTwo(
-                  text: 'bubble special tow without tail',
-                  isSender: false,
-                  tail: false,
-                  color: Color(0xFF1B97F3),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                  ),
-                ),
-                BubbleSpecialTwo(
-                  text: 'bubble special tow without tail',
-                  tail: false,
-                  color: Color(0xFFE8E8EE),
-                  delivered: true,
-                ),
-                BubbleSpecialThree(
-                  text: 'bubble special three without tail',
-                  color: Color(0xFF1B97F3),
-                  tail: false,
-                  textStyle: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                BubbleSpecialThree(
-                  text: 'bubble special three with tail',
-                  color: Color(0xFF1B97F3),
-                  tail: true,
-                  textStyle: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                BubbleSpecialThree(
-                  text: "bubble special three without tail",
-                  color: Color(0xFFE8E8EE),
-                  tail: false,
-                  isSender: false,
-                ),
-                BubbleSpecialThree(
-                  text: "bubble special three with tail",
-                  color: Color(0xFFE8E8EE),
-                  tail: true,
-                  isSender: false,
-                ),
-                SizedBox(
-                  height: 100,
-                )
-              ],
+      body: appState.session.online ? (_socketStatus == null 
+        ? const Center(child: CircularProgressIndicator()) 
+        : Stack(
+          children: [
+            SingleChildScrollView(
+              child: StreamBuilder(
+                stream: _socketStatus!.broadcast,
+                // initialData: ,
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    debugPrint(snapshot.error.toString());
+                    _messageLog.add(const BubbleSpecialThree(
+                      text: 'SYSTEM: Sorry! Unknown error.',
+                      isSender: false,
+                    ));
+                  } else if (snapshot.hasData) {
+                    var response = snapshot.data;
+                    
+                    var chatbotResponse = jsonDecode(
+                      verifyData(symmetricDecrypt(response, responseDecrypter))
+                    ) as Map<String, dynamic>;
+                    
+                    if (!chatbotResponse.containsKey('status') || chatbotResponse['status'] is! int) {
+                      _messageLog.add(const BubbleSpecialThree(
+                        text: 'SYSTEM: Sorry! A problem occurred.',
+                        isSender: false,
+                      ));
+                    } else {
+                      try {
+                        var responseCode = chatbotResponse['status'];
+                        switch (responseCode) {
+                          case 0:
+                            var message = chatbotResponse['response'];
+                            _messageLog.add(BubbleSpecialThree(
+                              text: message["user"],
+                              isSender: true,
+                            ));
+                            _messageLog.add(BubbleSpecialThree(
+                              text: message["chatbot"],
+                              isSender: false,
+                            ));
+                            break;
+                          case 2:
+                            _messageLog.add(const BubbleSpecialThree(
+                              text: 'SYSTEM: ???', // No prompt received.
+                              isSender: false,
+                            ));
+                            break;
+                          case 3:
+                            _messageLog.add(const BubbleSpecialThree(
+                              text: 'SYSTEM: Sorry, something went wrong.', // Invalid type.
+                              isSender: false,
+                            ));
+                            break;
+                        }
+                      } catch (e) {
+                        debugPrint(e.toString());
+                        _messageLog.add(const BubbleSpecialThree(
+                          text: 'SYSTEM: There was a problem while receiving messages.',
+                          isSender: false,
+                        ));
+                      }
+                    }
+                  }
+                  return Column(
+                    children: _messageLog,
+                  );
+                },
+              ),
             ),
-          ),
-          MessageBar(
-            onSend: (_) => print(_),
-            actions: [
-              // InkWell(
-              //   child: Icon(
-              //     Icons.add,
-              //     color: Colors.black,
-              //     size: 24,
-              //   ),
-              //   onTap: () {},
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.only(left: 8, right: 8),
-              //   child: InkWell(
-              //     child: Icon(
-              //       Icons.camera_alt,
-              //       color: Colors.green,
-              //       size: 24,
-              //     ),
-              //     onTap: () {},
-              //   ),
-              // ),
-            ],
-          ),
-        ],
+            MessageBar(
+              onSend: (message) => _sendMessage(message),
+              // actions: [
+              // ],
+            ),
+          ],
+        )
       ) : const Center(child: Text('Chatbot not available offline ☹️.')),
     );
   }
-
-  void _sendMessage() {
-    // if (_controller.text.isNotEmpty) {
-    //   _channel.sink.add(_controller.text);
-    // }
-  }
 }
-
-            // StreamBuilder(
-            //   stream: _channel.stream,
-            //   builder: (context, snapshot) {
-            //     return Text(snapshot.hasData ? '${snapshot.data}' : '');
-            //   },
-            // ),
-

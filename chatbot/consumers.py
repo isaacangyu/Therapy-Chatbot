@@ -42,7 +42,10 @@ class ChatbotConsumer(WebsocketConsumer):
             # Get response from Graphiti + others here.
             
             async_to_sync(self.channel_layer.group_send)(
-                self.user_email, {"type": "chatbot.response", "response": message}
+                self.user_email, {
+                    "type": "chatbot.response", 
+                    "response": {"user": message, "chatbot": f"Echo: {message}"}
+                }
             )
         else:
             ws_process_out(self, {"status": 3})
