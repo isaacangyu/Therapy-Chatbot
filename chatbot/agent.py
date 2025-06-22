@@ -1,6 +1,6 @@
 # NOTE: This module uses Gemini for now, until we can get the fine-tuned model.
 
-import asyncio, logging, os, sys, uuid
+import asyncio, logging, os
 from datetime import datetime, timezone
 from typing import Annotated
 from typing_extensions import TypedDict
@@ -20,6 +20,7 @@ from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import END, START, StateGraph, add_messages
 from langgraph.prebuilt import ToolNode
+from langgraph.checkpoint.redis import AsyncRedisSaver
 
 from therapy_chatbot import settings
 
@@ -30,9 +31,15 @@ Other enhancements to look into:
 - More custom entity types
 - Building and periodically refreshing graph communities
 - Optimized search recipe(s)
+- This implementation is tied to a single Redis database
+    - Langgraph checkpoints may not be clear properly at the moment.
 """
 
 NODE_SEARCH_LIMIT = 5
+
+redis_checkpointer_url = os.environ.get("REDIS_URL")
+if not redis_checkpointer_url:
+    raise ValueError("REDIS_URL environment variable must be set.")
 
 neo4j_uri = os.environ.get('NEO4J_URI', 'bolt://localhost:7687')
 neo4j_user = os.environ.get('NEO4J_USER', 'neo4j')
@@ -63,13 +70,13 @@ graphiti = Graphiti(
 )
 
 def setup_logging():
-    logger = logging.getLogger("chatbot")
+    logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG if settings.DEBUG else logging.ERROR)
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    # console_handler = logging.StreamHandler(sys.stdout)
+    # console_handler.setLevel(logging.DEBUG)
+    # formatter = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
+    # console_handler.setFormatter(formatter)
+    # logger.addHandler(console_handler)
     return logger
 
 logger = setup_logging()
@@ -79,17 +86,19 @@ logger = setup_logging()
 node_search_config = COMBINED_HYBRID_SEARCH_MMR.model_copy(deep=True)
 node_search_config.limit = NODE_SEARCH_LIMIT
 
+# Must have docstring.
 @tool
 async def get_latest_journal_entry():
+    """Tool currently unavailable. Do not use."""
     raise NotImplementedError()
 
 tools = [get_latest_journal_entry]
 tool_node = ToolNode(tools)
 
-llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0).bind_tools(tools)
+llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)#.bind_tools(tools)
 
 class User(BaseModel):
-    name: str | None = Field(..., description="The name of the user.")
+    real_name: str | None = Field(..., description="The name of the user.")
     account_uuid: str | None = Field(..., description="The user's account UUID.")
 
 entity_types = {"User": User}
@@ -110,10 +119,10 @@ async def create_user(name, user_account_uuid):
 
 async def get_user_node(name, account_uuid):
     return (await graphiti._search(
-        f"{name} {account_uuid}", 
-        NODE_HYBRID_SEARCH_EPISODE_MENTIONS, 
+        query=f"{name} {account_uuid}", 
+        config=NODE_HYBRID_SEARCH_EPISODE_MENTIONS, 
         group_ids=[augment_account_uuid(account_uuid)]
-    ))[0].uuid
+    )).nodes[0].uuid
 
 def edges_to_facts_string(entities: list[EntityEdge]):
     return '-' + '\n- '.join([edge.fact for edge in entities])
@@ -128,18 +137,16 @@ async def chatbot(state: State):
     facts_string = None
     if len(state['messages']) > 0:
         last_message = state['messages'][-1]
-        graphiti_query = f'{"Chatbot" 
-                            if isinstance(last_message, AIMessage) 
-                            else state["user_name"]}: {last_message.content}'
+        graphiti_query = f'{"Chatbot" if isinstance(last_message, AIMessage) else state["user_name"]}: {last_message.content}'
 
         # Search graphiti using the user's node UUID as the center node.
         # Graph edges (facts) further from the user node will be ranked lower.
-        edge_results = await graphiti._search(
+        edge_results = (await graphiti._search(
             query=graphiti_query, 
             center_node_uuid=state['user_node_uuid'], 
             config=node_search_config,
             group_ids=[augment_account_uuid(state['user_account_uuid'])]
-        )
+        )).edges
         facts_string = edges_to_facts_string(edge_results)
 
     system_message = SystemMessage(
@@ -170,7 +177,7 @@ Facts about the user and their conversation:
     return {'messages': [response]}
 
 graph_builder = StateGraph(State)
-memory = 
+# Memory will be initialized in main.
 
 # Define the function that determines whether to continue or not.
 # async def should_continue(state, config):
@@ -187,7 +194,7 @@ graph_builder.add_node('agent', chatbot)
 graph_builder.add_edge(START, 'agent')
 # graph_builder.add_conditional_edges('agent', should_continue, {'continue': 'tools', 'end': END})
 # graph_builder.add_edge('tools', 'agent')
-graph = graph_builder.compile(checkpointer=memory)
+graph = None # Set in main.
 
 async def process_input(user_state: State, user_input: str):
     graph_state = {
@@ -212,13 +219,18 @@ async def process_input(user_state: State, user_input: str):
                     ):
                         return last_message.content
     except Exception as e:
-        logger.error(f'{e}')
+        logger.error(f'CRITICAL ERROR DETAILS: {e}')
+        return "SYSTEM: The chatbot experienced a critical error."
 
-# For async operations which take place during initialization.
+# For async operations which take place during initialization and possibly persist.
 async def main():
-    logger.info("Building Graphiti indices and contraints.")
-    # Can take a while according to documentation.
-    await graphiti.build_indices_and_contraints()
-    logger.info("Finished building.")
+    global graph
+    async with AsyncRedisSaver.from_conn_string(redis_checkpointer_url) as checkpointer:
+        graph = graph_builder.compile(checkpointer=checkpointer)
+    logger.info("Agent initialized.")
+    # logger.info("Building Graphiti indices and contraints.")
+    # # Can take a while according to documentation.
+    # await graphiti.build_indices_and_constraints()
+    # logger.info("Finished building.")
 
 asyncio.run(main())

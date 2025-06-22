@@ -147,7 +147,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
                     }
                   }
                   return Column(
-                    children: _messageLog,
+                    children: [
+                      Column(
+                        children: _messageLog,
+                      ),
+                      const SizedBox(height: 100)
+                    ],
                   );
                 },
               ),

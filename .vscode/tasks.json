@@ -210,6 +210,26 @@
             "type": "shell",
             "command": "./scripts/flutter-enforce-lockfile.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Clear Graphiti Data",
+            "icon": {
+                "id": "clear-all",
+                "color": "terminal.ansiMagenta"
+            },
+            "type": "shell",
+            "command": "./scripts/clear-graphiti-data.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Initialize Graphiti",
+            "icon": {
+                "id": "circle-large",
+                "color": "terminal.ansiMagenta"
+            },
+            "type": "shell",
+            "command": "./scripts/init-graphiti.py",
+            "problemMatcher": []
         }
     ]
 }

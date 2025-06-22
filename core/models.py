@@ -1,4 +1,4 @@
-import math
+import math, uuid
 
 from django.db import models
 from django.db.utils import IntegrityError
@@ -7,6 +7,7 @@ from core import crypto
 from core.utils import UnprocessableRequestError
 
 class Account(models.Model):
+    id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name          = models.CharField(max_length=64)
     email         = models.EmailField(max_length=64)
     password_hash = models.CharField()

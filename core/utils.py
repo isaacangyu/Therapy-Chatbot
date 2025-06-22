@@ -77,7 +77,7 @@ class UnprocessableRequestError(CoreError):
 
 def app_ws_in(consumer_receive):
     @functools.wraps(consumer_receive)
-    def wrapper(self, text_data=None, bytes_data=None):
+    async def wrapper(self, text_data=None, bytes_data=None):
         try:
             raw_data = crypto.asymmetric_decrypt(bytes_data)
             json_data = json.loads(raw_data)
@@ -87,15 +87,15 @@ def app_ws_in(consumer_receive):
                 self.response_key = crypto.asymmetric_decrypt(
                     base64.b64decode(response_key_encrypted)
                 )
-            consumer_receive(self, json_data)
-        except (json.decoder.JSONDecodeError, ValueError, KeyError) as e:
-            self.close(code=4000)
+            await consumer_receive(self, json_data)
+        except (json.decoder.JSONDecodeError, ValueError, KeyError):
+            await self.close(code=4000)
     return wrapper
 
-def ws_process_out(consumer, data_dict):
+async def ws_process_out(consumer, data_dict):
     response_data = json.dumps(data_dict)
     response_data = crypto.asymmetric_sign(response_data.encode())
     response_data = crypto.symmetric_encrypt(
         response_data.encode(), base64.b64decode(consumer.response_key)
     )
-    consumer.send(text_data=response_data)
+    await consumer.send(text_data=response_data)
