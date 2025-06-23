@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S poetry run python
 
 import os, asyncio
 
 from dotenv import load_dotenv
+
 from graphiti_core import Graphiti
 from graphiti_core.utils.maintenance.graph_data_operations import clear_data
 from graphiti_core.llm_client.gemini_client import GeminiClient, LLMConfig

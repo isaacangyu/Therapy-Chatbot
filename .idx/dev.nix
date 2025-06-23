@@ -1,5 +1,5 @@
 {pkgs}: {
-  channel = "stable-24.05";
+  channel = "stable-25.05";
   packages = [
     pkgs.jdk17
     pkgs.unzip

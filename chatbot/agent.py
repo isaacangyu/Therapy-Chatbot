@@ -21,6 +21,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import END, START, StateGraph, add_messages
 from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.redis import AsyncRedisSaver
+from langgraph.checkpoint.memory import MemorySaver
 
 from therapy_chatbot import settings
 
@@ -305,10 +306,15 @@ async def process_input(user_state: State, user_input: str):
 # For async operations which take place during initialization and possibly persist.
 async def main():
     global graph
-    async with AsyncRedisSaver.from_conn_string(
-        redis_checkpointer_url, ttl=TTL_CONFIG
-    ) as checkpointer:
+    
+    if os.environ.get("USE_IN_MEMORY_SAVER") or os.environ.get("IDX_CHANNEL"):
+        checkpointer = MemorySaver()
         graph = graph_builder.compile(checkpointer=checkpointer)
+    else:
+        async with AsyncRedisSaver.from_conn_string(
+            redis_checkpointer_url, ttl=TTL_CONFIG
+        ) as checkpointer:
+            graph = graph_builder.compile(checkpointer=checkpointer)
     logger.info("Agent initialized.")
 
 asyncio.run(main())
