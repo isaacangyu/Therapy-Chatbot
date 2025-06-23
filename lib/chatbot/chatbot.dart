@@ -67,6 +67,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
       }
     )).then((status) {
       // Disposed states should not be set in the case where a rebuild of the widget tree occurs.
+      // Todo: This doesn't fully resolve the issue yet.
       if (status.ok && context.mounted) {
         setState(() {
           _socketStatus = status;
@@ -233,6 +234,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
               onSend: (message) => _sendMessage(message),
               // actions: [
               // ],
+              sendButtonColor: customTheme.activeColor,
+              messageBarColor: theme.colorScheme.secondaryFixedDim,
+              textFieldTextStyle: theme.textTheme.bodyLarge!.copyWith(
+                color: theme.colorScheme.onSecondaryFixed,
+              ),
             ),
           ],
         )
