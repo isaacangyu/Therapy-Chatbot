@@ -27,15 +27,30 @@ from therapy_chatbot import settings
 load_dotenv()
 
 """
+Current Problems:
+- Tool execution never occurs successfully. When the chatbot does get the schema correct, 
+  it causes some kind of API error because it sends content='' in the AIMessage during invocation.
+- For some reason, it knows the user's UUID, but can't get the 
+  user's name despite both pieces of information being stored and served in the same way.
+
 Other enhancements to look into:
 - More custom entity types
 - Building and periodically refreshing graph communities
 - Optimized search recipe(s)
 - This implementation is tied to a single Redis database
     - Langgraph checkpoints may not be clear properly at the moment.
+- Not grabbing user node as soon as the first nodes are created.
+  Possibly related to the latter problem above.
+    - Define tools with more descriptive schemas.
 """
 
 NODE_SEARCH_LIMIT = 5
+
+# Configure time-to-live for checkpoint savers.
+TTL_CONFIG = {
+    "default_ttl": 1440, # Default TTL in minutes (1440 min = 24 hr).
+    "refresh_on_read": True, # Refresh TTL when checkpoint is read.
+}
 
 redis_checkpointer_url = os.environ.get("REDIS_URL")
 if not redis_checkpointer_url:
@@ -86,16 +101,62 @@ logger = setup_logging()
 node_search_config = COMBINED_HYBRID_SEARCH_MMR.model_copy(deep=True)
 node_search_config.limit = NODE_SEARCH_LIMIT
 
-# Must have docstring.
+# Tools must have docstrings.
+
+# @tool
+# async def test_tool():
+#     """A test tool."""
+#     logger.info("THIS IS AN INVOCATION OF THE TEST TOOL.")
+
+# @tool
+# async def echo_tool(value: str) -> str:
+#     """Echoes `value` verbatim."""
+#     logger.info("THIS IS AN INVOCATION OF THE ECHO TOOL.")
+#     return value
+
 @tool
 async def get_latest_journal_entry():
     """Tool currently unavailable. Do not use."""
     raise NotImplementedError()
 
-tools = [get_latest_journal_entry]
-tool_node = ToolNode(tools)
+@tool
+async def search_conversation(query: str) -> str:
+    """Search for information relevant to the conversation, where `query` contains keywords."""
+    # `user_account_uuid` will be injected by the wrapper.
+    raise NotImplementedError("This tool must be wrapped to inject `user_account_uuid`.")
 
-llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)#.bind_tools(tools)
+async def search_conversation_with_context(query, state):
+    user_account_uuid = state['user_account_uuid']
+    edge_results = (await graphiti.search_(
+        query=query,
+        config=node_search_config,
+        group_ids=[augment_account_uuid(user_account_uuid)]
+    )).edges
+    return edges_to_facts_string(edge_results)
+
+# Custom ToolNode that injects state.
+class ToolNodeWithContext(ToolNode):
+    async def ainvoke(self, state, *args, **kwargs):
+        last_message = state['messages'][-1]
+        
+        logger.debug(f"Tools invoked: {last_message.tool_calls}")
+        
+        results = []
+        if last_message.tool_calls:
+            for call in last_message.tool_calls:
+                match call['name']:
+                    case 'search_conversation':
+                        query = call['args']['query']
+                        result = await search_conversation_with_context(query, state)
+                        results.append(AIMessage(content=result))
+        return {'messages': results}
+
+# tools = [test_tool, echo_tool]
+# tool_node = ToolNode(tools)
+tools = [search_conversation]
+tool_node = ToolNodeWithContext(tools)
+
+llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0).bind_tools(tools)
 
 class User(BaseModel):
     real_name: str | None = Field(..., description="The name of the user.")
@@ -118,11 +179,15 @@ async def create_user(name, user_account_uuid):
     )
 
 async def get_user_node(name, account_uuid):
-    return (await graphiti._search(
-        query=f"{name} {account_uuid}", 
-        config=NODE_HYBRID_SEARCH_EPISODE_MENTIONS, 
-        group_ids=[augment_account_uuid(account_uuid)]
-    )).nodes[0].uuid
+    try:
+        return (await graphiti.search_(
+            query=f"Real Name: {name}, Account UUID: {account_uuid}", 
+            config=NODE_HYBRID_SEARCH_EPISODE_MENTIONS, 
+            group_ids=[augment_account_uuid(account_uuid)]
+        )).nodes[0].uuid
+    except Exception as e:
+        logger.error(f"MINOR ERROR DETAILS: {e}")
+        return "no uuid found"
 
 def edges_to_facts_string(entities: list[EntityEdge]):
     return '-' + '\n- '.join([edge.fact for edge in entities])
@@ -137,11 +202,14 @@ async def chatbot(state: State):
     facts_string = None
     if len(state['messages']) > 0:
         last_message = state['messages'][-1]
+        
+        logger.debug(f"User Sent: {last_message}")
+        
         graphiti_query = f'{"Chatbot" if isinstance(last_message, AIMessage) else state["user_name"]}: {last_message.content}'
 
         # Search graphiti using the user's node UUID as the center node.
         # Graph edges (facts) further from the user node will be ranked lower.
-        edge_results = (await graphiti._search(
+        edge_results = (await graphiti.search_(
             query=graphiti_query, 
             center_node_uuid=state['user_node_uuid'], 
             config=node_search_config,
@@ -150,11 +218,17 @@ async def chatbot(state: State):
         facts_string = edges_to_facts_string(edge_results)
 
     system_message = SystemMessage(
-        content=f"""You are a casual chatbot that talks to users about whatever. Review information about the user and their prior conversation below and respond accordingly.
-Keep responses short and concise. And remember, always be a friend.
+#         content=f"""You are a casual chatbot that talks to users about whatever. Review information about the user and their prior conversation below and respond accordingly.
+# Keep responses short and concise. Always be a friend. NEVER REPLY WITH NO CONTENT, a thumbs up is the minimum.
 
-Facts about the user and their conversation:
-{facts_string or 'No facts about the user and their conversation yet.'}"""
+# Facts about the user and their conversation:
+# {facts_string or 'No facts about the user and their conversation yet.'}"""
+        content=f"""You are a chatbot currently under development. Only developers will be talking with you.
+Review information about the prior conversation below and respond accordingly.
+Keep responses short and concise. NEVER REPLY WITH NO CONTENT, a thumbs up is the minimum.
+
+Facts about the conversation:
+{facts_string or 'No facts about the conversation yet.'}"""
     )
 
     messages = [system_message] + state['messages']
@@ -179,21 +253,21 @@ Facts about the user and their conversation:
 graph_builder = StateGraph(State)
 # Memory will be initialized in main.
 
-# Define the function that determines whether to continue or not.
-# async def should_continue(state, config):
-#     messages = state['messages']
-#     last_message = messages[-1]
-#     # If there is no function call, then we finish.
-#     if not last_message.tool_calls:
-#         return "end"
-#     # Otherwise if there is, we continue.
-#     else:
-#         return "continue"
+# Define the function that determines whether or not to continue.
+async def should_continue(state, config):
+    messages = state['messages']
+    last_message = messages[-1]
+    # If there is no function call, then we finish.
+    if not last_message.tool_calls:
+        return "end"
+    # Otherwise if there is, we continue.
+    else:
+        return "continue"
 graph_builder.add_node('agent', chatbot)
-# graph_builder.add_node('tools', tool_node)
+graph_builder.add_node('tools', tool_node)
 graph_builder.add_edge(START, 'agent')
-# graph_builder.add_conditional_edges('agent', should_continue, {'continue': 'tools', 'end': END})
-# graph_builder.add_edge('tools', 'agent')
+graph_builder.add_conditional_edges('agent', should_continue, {'continue': 'tools', 'end': END})
+graph_builder.add_edge('tools', 'agent')
 graph = None # Set in main.
 
 async def process_input(user_state: State, user_input: str):
@@ -212,8 +286,14 @@ async def process_input(user_state: State, user_input: str):
             config=config,
         ):
             for value in event.values():
+                
+                logger.debug(f"Event Value: {value}")
+                
                 if 'messages' in value:
                     last_message = value['messages'][-1]
+                    
+                    logger.debug(f"Chatbot Response: {last_message}")
+                    
                     if isinstance(last_message, AIMessage) and isinstance(
                         last_message.content, str
                     ):
@@ -225,12 +305,10 @@ async def process_input(user_state: State, user_input: str):
 # For async operations which take place during initialization and possibly persist.
 async def main():
     global graph
-    async with AsyncRedisSaver.from_conn_string(redis_checkpointer_url) as checkpointer:
+    async with AsyncRedisSaver.from_conn_string(
+        redis_checkpointer_url, ttl=TTL_CONFIG
+    ) as checkpointer:
         graph = graph_builder.compile(checkpointer=checkpointer)
     logger.info("Agent initialized.")
-    # logger.info("Building Graphiti indices and contraints.")
-    # # Can take a while according to documentation.
-    # await graphiti.build_indices_and_constraints()
-    # logger.info("Finished building.")
 
 asyncio.run(main())
