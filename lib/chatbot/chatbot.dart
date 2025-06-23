@@ -106,8 +106,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
         ), 
         backgroundColor: theme.colorScheme.primary
       ),
+      backgroundColor: customTheme.primaryColor,
       body: appState.session.online ? (_socketStatus == null 
-        ? const Center(child: CircularProgressIndicator()) 
+        ? Center(child: CircularProgressIndicator(color: customTheme.activeColor)) 
         : Stack(
           children: [
             SingleChildScrollView(
@@ -120,9 +121,13 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   if (snapshot.hasError) {
                     messageAdded = true;
                     debugPrint(snapshot.error.toString());
-                    _messageLog.add(const BubbleSpecialThree(
+                    _messageLog.add(BubbleSpecialThree(
                       text: 'SYSTEM: Sorry! Unknown error.',
                       isSender: false,
+                      color: theme.colorScheme.secondaryFixedDim,
+                      textStyle: theme.textTheme.bodyMedium!.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
                     ));
                   } else if (snapshot.hasData) {
                     messageAdded = true;
@@ -133,9 +138,13 @@ class _ChatbotPageState extends State<ChatbotPage> {
                     ) as Map<String, dynamic>;
                     
                     if (!chatbotResponse.containsKey('status') || chatbotResponse['status'] is! int) {
-                      _messageLog.add(const BubbleSpecialThree(
+                      _messageLog.add(BubbleSpecialThree(
                         text: 'SYSTEM: Sorry! A problem occurred.',
                         isSender: false,
+                        color: theme.colorScheme.secondaryFixedDim,
+                        textStyle: theme.textTheme.bodyMedium!.copyWith(
+                          color: theme.colorScheme.error,
+                        ),
                       ));
                     } else {
                       try {
@@ -146,36 +155,60 @@ class _ChatbotPageState extends State<ChatbotPage> {
                             _messageLog.add(BubbleSpecialThree(
                               text: message["user"],
                               isSender: true,
+                              color: theme.colorScheme.secondaryFixedDim,
+                              textStyle: theme.textTheme.bodyMedium!.copyWith(
+                                color: theme.colorScheme.onSecondaryFixed,
+                              ),
                             ));
                             _messageLog.add(BubbleSpecialThree(
                               text: message["chatbot"],
                               isSender: false,
+                              color: theme.colorScheme.secondaryFixedDim,
+                              textStyle: theme.textTheme.bodyMedium!.copyWith(
+                                color: theme.colorScheme.onSecondaryFixed,
+                              ),
                             ));
                             break;
                           case 2:
-                            _messageLog.add(const BubbleSpecialThree(
+                            _messageLog.add(BubbleSpecialThree(
                               text: 'SYSTEM: ???', // No prompt received.
                               isSender: false,
+                              color: theme.colorScheme.secondaryFixedDim,
+                              textStyle: theme.textTheme.bodyMedium!.copyWith(
+                                color: theme.colorScheme.error,
+                              ),
                             ));
                             break;
                           case 3:
-                            _messageLog.add(const BubbleSpecialThree(
+                            _messageLog.add(BubbleSpecialThree(
                               text: 'SYSTEM: Sorry, something went wrong.', // Invalid type.
                               isSender: false,
+                              color: theme.colorScheme.secondaryFixedDim,
+                              textStyle: theme.textTheme.bodyMedium!.copyWith(
+                                color: theme.colorScheme.error,
+                              ),
                             ));
                             break;
                           case _:
                             _messageLog.add(BubbleSpecialThree(
                               text: 'SYSTEM: Unknown response code: $responseCode', // Unknown.
                               isSender: false,
+                              color: theme.colorScheme.secondaryFixedDim,
+                              textStyle: theme.textTheme.bodyMedium!.copyWith(
+                                color: theme.colorScheme.error,
+                              ),
                             ));
                             break;
                         }
                       } catch (e) {
                         debugPrint(e.toString());
-                        _messageLog.add(const BubbleSpecialThree(
+                        _messageLog.add(BubbleSpecialThree(
                           text: 'SYSTEM: There was a problem while receiving messages.',
                           isSender: false,
+                          color: theme.colorScheme.secondaryFixedDim,
+                          textStyle: theme.textTheme.bodyMedium!.copyWith(
+                            color: theme.colorScheme.error,
+                          ),
                         ));
                       }
                     }
