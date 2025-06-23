@@ -230,6 +230,26 @@
             "type": "shell",
             "command": "./scripts/init-graphiti.py",
             "problemMatcher": []
+        },
+        {
+            "label": "IDX: Start Redis",
+            "icon": {
+                "id": "debug-breakpoint-log",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-start-redis.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Stop Redis",
+            "icon": {
+                "id": "debug-breakpoint-log-unverified",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-stop-redis.sh",
+            "problemMatcher": []
         }
     ]
 }
