@@ -21,14 +21,36 @@ class _ChatbotPageState extends State<ChatbotPage> {
   final TextEditingController _controller = TextEditingController();
   WebSocketStatus? _socketStatus;
   final _messageLog = <Widget>[];
-  
+  final ScrollController _scrollController = ScrollController();
+
   void _sendMessage(String message) {
     websocketAddFrame(_socketStatus!.channel!, {
       "type": "message",
       "message": message,
     });
   }
-  
+
+  void _scrollToBottomMaybe() {
+    // If user is at or near the bottom, scroll to bottom after widget update.
+    if (!_scrollController.hasClients) {
+      return;
+    }
+    const threshold = 100.0;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final current = _scrollController.position.pixels;
+    if (maxScroll - current < threshold) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,7 +66,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
         'custom_response_key': responseKeyEncrypted,
       }
     )).then((status) {
-      if (status.ok) {
+      // Disposed states should not be set in the case where a rebuild of the widget tree occurs.
+      if (status.ok && context.mounted) {
         setState(() {
           _socketStatus = status;
         });
@@ -62,6 +85,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.dispose();
     if (_socketStatus != null && _socketStatus!.channel != null) {
       websocketClose(_socketStatus!.channel!);
     }
@@ -87,17 +111,21 @@ class _ChatbotPageState extends State<ChatbotPage> {
         : Stack(
           children: [
             SingleChildScrollView(
+              controller: _scrollController,
               child: StreamBuilder(
                 stream: _socketStatus!.broadcast,
                 // initialData: ,
                 builder: (context, snapshot) {
+                  bool messageAdded = false;
                   if (snapshot.hasError) {
+                    messageAdded = true;
                     debugPrint(snapshot.error.toString());
                     _messageLog.add(const BubbleSpecialThree(
                       text: 'SYSTEM: Sorry! Unknown error.',
                       isSender: false,
                     ));
                   } else if (snapshot.hasData) {
+                    messageAdded = true;
                     var response = snapshot.data;
                     
                     var chatbotResponse = jsonDecode(
@@ -136,6 +164,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
                               isSender: false,
                             ));
                             break;
+                          case _:
+                            _messageLog.add(BubbleSpecialThree(
+                              text: 'SYSTEM: Unknown response code: $responseCode', // Unknown.
+                              isSender: false,
+                            ));
+                            break;
                         }
                       } catch (e) {
                         debugPrint(e.toString());
@@ -145,6 +179,11 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         ));
                       }
                     }
+                  }
+                  if (messageAdded) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToBottomMaybe();
+                    });
                   }
                   return Column(
                     children: [
