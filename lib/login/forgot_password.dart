@@ -27,10 +27,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return Scaffold(
-      backgroundColor: projectTheme.primaryColor,
+      backgroundColor: customTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Forgot Password'),
         centerTitle: true,
@@ -40,8 +40,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen(
-              projectTheme.primaryColor, 
-              projectTheme.activeColor
+              customTheme.primaryColor, 
+              customTheme.activeColor
             );
           }
           return Scroll(

@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '/navigation.dart';
+import '/legal/tos.dart';
+import '/legal/privacy.dart';
 import '/app_state.dart';
 import '/login/validate_password.dart';
 import '/util/navigation.dart';
@@ -22,10 +25,10 @@ class RegistrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return Scaffold(
-      backgroundColor: projectTheme.primaryColor,
+      backgroundColor: customTheme.primaryColor,
       appBar: AppBar(
         title: const Text('Create Account'),
         centerTitle: true,
@@ -62,6 +65,8 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  // Should be accepted if the app does not require legal agreements.
+  var acceptedLegal = !Global.showLegal;
   
   @override
   void dispose() {
@@ -87,19 +92,68 @@ class _RegistrationFormState extends State<RegistrationForm> {
           const SizedBox(height: 10),
           PasswordConfirmationFieldLarge(
             _passwordController,
-            onFieldSubmitted: (_) => _createAccountAction(
+            onFieldSubmitted: acceptedLegal ? (_) => _createAccountAction(
               context, _formKey, _nameController, _emailController, _passwordController
-            ),
+            ) : null,
           ),
+          const SizedBox(height: 10),
+          // Legal documents, if applicable.
+          Global.showLegal ? Legal(acceptedLegal, (value) => setState(() {
+            acceptedLegal = value ?? false;
+          })) : const SizedBox.shrink(),
           const SizedBox(height: 20),
           ConfirmButton(
             formKey: _formKey,
             nameController: _nameController,
             emailController: _emailController,
             passwordController: _passwordController,
+            enabled: acceptedLegal,
           ),
         ],
       ),
+    );
+  }
+}
+
+class Legal extends StatelessWidget {
+  const Legal(this.accepted, this.callback, {super.key});
+
+  final bool accepted;
+  final void Function(bool?) callback;
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Row(
+      children: [
+        Checkbox(
+          value: accepted,
+          onChanged: callback,
+        ),
+        Expanded(
+          child: Text.rich(
+            TextSpan(
+              text: 'I accept the ',
+              children: [
+                TextSpan(
+                  text: 'Terms of Service',
+                  style: const TextStyle(decoration: TextDecoration.underline),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () => pushRoute(context, const TosPage()),
+                ),
+                const TextSpan(text: ' and '),
+                TextSpan(
+                  text: 'Privacy Policy',
+                  style: const TextStyle(decoration: TextDecoration.underline),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () => pushRoute(context, const PrivacyPage()),
+                ),
+                const TextSpan(text: '.'),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -110,22 +164,24 @@ class ConfirmButton extends StatelessWidget {
     required GlobalKey<FormState> formKey,
     required TextEditingController nameController,
     required TextEditingController emailController,
-    required TextEditingController passwordController,
+    required TextEditingController passwordController, 
+    required this.enabled,
   }) : _formKey = formKey, _nameController = nameController, _emailController = emailController, _passwordController = passwordController;
 
   final GlobalKey<FormState> _formKey;
   final TextEditingController _nameController;
   final TextEditingController _emailController;
   final TextEditingController _passwordController;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
       icon: const Icon(Icons.check),
       label: const Text('Confirm'),
-      onPressed: () => _createAccountAction(
+      onPressed: enabled ? () => _createAccountAction(
         context, _formKey, _nameController, _emailController, _passwordController
-      ),
+      ) : null,
     );
   }
 }
@@ -140,12 +196,12 @@ class RegistrationFailedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: projectTheme.primaryColor,
+        backgroundColor: customTheme.primaryColor,
         body: Scroll(
           child: Center(
             child: Padding(
@@ -155,7 +211,7 @@ class RegistrationFailedPage extends StatelessWidget {
                 children: [
                   InfoBox('Failed to create account:<br>$reason'),
                   const SizedBox(height: 20),
-                  const ReturnToLoginButton()
+                  const ReturnToAccountCreationButton()
                 ],
               ),
             )
@@ -166,18 +222,18 @@ class RegistrationFailedPage extends StatelessWidget {
   }
 }
 
-class ReturnToLoginButton extends StatelessWidget {
-  const ReturnToLoginButton({super.key});
+class ReturnToAccountCreationButton extends StatelessWidget {
+  const ReturnToAccountCreationButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return OutlinedButton.icon(
-      icon: Icon(Icons.arrow_back, color: projectTheme.activeColor),
+      icon: Icon(Icons.arrow_back, color: customTheme.activeColor),
       style: OutlinedButton.styleFrom(
-        foregroundColor: projectTheme.activeColor,
-        side: BorderSide(color: projectTheme.activeColor),
+        foregroundColor: customTheme.activeColor,
+        side: BorderSide(color: customTheme.activeColor),
       ),
       label: const Text('Return to Account Creation'),
       onPressed: () {
@@ -193,12 +249,12 @@ class CreatingAccountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     return PopScope(
       canPop: false,
       child: LoadingScreen(
-        projectTheme.primaryColor,
-        projectTheme.activeColor,
+        customTheme.primaryColor,
+        customTheme.activeColor,
         child: const Text('Creating account...'),
       )
     );

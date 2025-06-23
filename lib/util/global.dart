@@ -26,6 +26,7 @@ class Global {
   static var androidDebugMode = kDebugMode && defaultTargetPlatform == TargetPlatform.android;
   static const rsaKeySizeBits = 3072;
   static const rsaKeySizeBytes = rsaKeySizeBits ~/ 8;
+  static late bool showLegal;
   
   static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   

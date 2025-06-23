@@ -14,20 +14,20 @@ class EmailFieldLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       controller: _emailController,
       keyboardType: TextInputType.emailAddress,
-      decoration: projectTheme.textFormDecoration.copyWith(
-        prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
+      decoration: customTheme.textFormDecoration.copyWith(
+        prefixIcon: Icon(Icons.email, color: customTheme.activeColor),
         labelText: 'Email',
         hintText: 'user@example.com',
       ),
       style: theme.textTheme.bodyLarge!.copyWith(
-        color: projectTheme.activeColor,
+        color: customTheme.activeColor,
       ),
-      cursorColor: projectTheme.activeColor,
+      cursorColor: customTheme.activeColor,
       autovalidateMode: AutovalidateMode.onUnfocus,
       validator: (value) {
         if (kDebugMode) {
@@ -56,18 +56,18 @@ class EmailConfirmationFieldLarge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
-      decoration: projectTheme.textFormDecoration.copyWith(
-        prefixIcon: Icon(Icons.email, color: projectTheme.activeColor),
+      decoration: customTheme.textFormDecoration.copyWith(
+        prefixIcon: Icon(Icons.email, color: customTheme.activeColor),
         labelText: 'Confirm Email',
       ),
       style: theme.textTheme.bodyLarge!.copyWith(
-        color: projectTheme.activeColor,
+        color: customTheme.activeColor,
       ),
-      cursorColor: projectTheme.activeColor,
+      cursorColor: customTheme.activeColor,
       autovalidateMode: AutovalidateMode.onUnfocus,
       validator: (value) {
         if (kDebugMode) {
