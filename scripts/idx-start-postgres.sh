@@ -7,6 +7,8 @@ MAX_ITERATIONS=5
 ITERATION=0
 
 pg_ctl -D .idx/postgres -l .idx/logfile start &
+psql --dbname=postgres -c "CREATE ROLE postgres WITH LOGIN PASSWORD 'postgres' SUPERUSER;"
+echo "Initialized Postgres DB"
 
 echo "Waiting to connect to database server..."
 while ! timeout 1 bash -c "echo > /dev/tcp/localhost/5432" &> /dev/null; do

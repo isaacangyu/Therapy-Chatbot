@@ -102,15 +102,35 @@
             "problemMatcher": []
         },
         {
-            "label": "IDX: Initialize Database",
+            "label": "IDX: Initialize Environment",
             "icon": {
-                "id": "fold-up",
+                "id": "issues",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "./scripts/idx-initenv.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "IDX: Build Environment",
+            "icon": {
+                "id": "beaker",
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
             "command": "./scripts/idx-initdb.sh",
             "problemMatcher": []
         },
+        // {
+        //     "label": "IDX: Initialize Database",
+        //     "icon": {
+        //         "id": "fold-up",
+        //         "color": "terminal.ansiRed"
+        //     },
+        //     "type": "shell",
+        //     "command": "./scripts/idx-initdb.sh",
+        //     "problemMatcher": []
+        // },
         {
             "label": "IDX: Start Postgres",
             "icon": {
@@ -132,15 +152,25 @@
             "problemMatcher": []
         },
         {
-            "label": "IDX: Delete Database",
+            "label": "IDX: Clear Environment",
             "icon": {
-                "id": "trash",
+                "id": "beaker-stop",
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
             "command": "./scripts/idx-deletedb.sh",
             "problemMatcher": []
         },
+        // {
+        //     "label": "IDX: Delete Database",
+        //     "icon": {
+        //         "id": "trash",
+        //         "color": "terminal.ansiRed"
+        //     },
+        //     "type": "shell",
+        //     "command": "./scripts/idx-deletedb.sh",
+        //     "problemMatcher": []
+        // },
         {
             "label": "Open Django Shell",
             "icon": {
