@@ -53,7 +53,7 @@ TTL_CONFIG = {
     "refresh_on_read": True, # Refresh TTL when checkpoint is read.
 }
 
-redis_checkpointer_url = os.environ.get("REDIS_URL")
+redis_checkpointer_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
 if not redis_checkpointer_url:
     raise ValueError("REDIS_URL environment variable must be set.")
 
