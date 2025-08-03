@@ -25,7 +25,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from therapy_chatbot import settings
 
-load_dotenv()
+load_dotenv(dotenv_path="../.env")
 
 """
 Current Problems:

@@ -11,7 +11,7 @@ from graphiti_core.embedder.gemini import GeminiEmbedder, GeminiEmbedderConfig
 
 from langgraph.checkpoint.redis import AsyncRedisSaver
 
-load_dotenv(dotenv_path="chatbot/.env")
+load_dotenv()
 
 redis_checkpointer_url = os.environ.get("REDIS_URL")
 if not redis_checkpointer_url:
