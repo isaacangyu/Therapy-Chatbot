@@ -29,8 +29,10 @@ load_dotenv(dotenv_path="../.env")
 
 """
 Current Problems:
-- Tool execution never occurs successfully. When the chatbot does get the schema correct, 
+- Tool execution never occurs successfully.
+  RESOLVED: When the chatbot does get the schema correct, 
   it causes some kind of API error because it sends content='' in the AIMessage during invocation.
+  UNRESOLVED: The tool doesn't work.
 - For some reason, it knows the user's UUID, but can't get the 
   user's name despite both pieces of information being stored and served in the same way.
 
@@ -146,11 +148,13 @@ class ToolNodeWithContext(ToolNode):
         if last_message.tool_calls:
             for call in last_message.tool_calls:
                 match call['name']:
-                    case 'search_conversation':
+                    case "search_conversation":
                         query = call['args']['query']
                         result = await search_conversation_with_context(query, state)
                         results.append(AIMessage(content=result))
-        return {'messages': results}
+        state['messages'].pop() # Remove the empty-content tool call AIMessage object...
+        # It causes issues for Gemini.
+        state['messages'] += results
 
 # tools = [test_tool, echo_tool]
 # tool_node = ToolNode(tools)
@@ -191,7 +195,7 @@ async def get_user_node(name, account_uuid):
         return "no uuid found"
 
 def edges_to_facts_string(entities: list[EntityEdge]):
-    return '-' + '\n- '.join([edge.fact for edge in entities])
+    return '- ' + '\n- '.join([edge.fact for edge in entities])
 
 class State(TypedDict):
     messages: Annotated[list, add_messages]
@@ -204,7 +208,7 @@ async def chatbot(state: State):
     if len(state['messages']) > 0:
         last_message = state['messages'][-1]
         
-        logger.debug(f"User Sent: {last_message}")
+        logger.debug(f"Agent Input: {last_message}")
         
         graphiti_query = f'{"Chatbot" if isinstance(last_message, AIMessage) else state["user_name"]}: {last_message.content}'
 
@@ -242,7 +246,7 @@ Facts about the conversation:
     asyncio.create_task(
         graphiti.add_episode(
             name='Chatbot Response',
-            episode_body=f'{state["user_name"]}: {state["messages"][-1]}\nChatbot: {response.content}',
+            episode_body=f'{state["user_name"]}: {state["messages"][-1].content}\nChatbot: {response.content}',
             source=EpisodeType.message,
             reference_time=datetime.now(timezone.utc),
             source_description='Chatbot',
@@ -257,12 +261,15 @@ graph_builder = StateGraph(State)
 # Define the function that determines whether or not to continue.
 async def should_continue(state, config):
     messages = state['messages']
+    # logger.debug(f"All Current Messages: {messages}")
     last_message = messages[-1]
     # If there is no function call, then we finish.
     if not last_message.tool_calls:
+        logger.debug("Skipping tool invocation.")
         return "end"
     # Otherwise if there is, we continue.
     else:
+        logger.debug(f"Invoking tool(s): {last_message.tool_calls}")
         return "continue"
 graph_builder.add_node('agent', chatbot)
 graph_builder.add_node('tools', tool_node)
@@ -287,21 +294,23 @@ async def process_input(user_state: State, user_input: str):
             config=config,
         ):
             for value in event.values():
+                if value is None:
+                    continue
                 
                 logger.debug(f"Event Value: {value}")
                 
                 if 'messages' in value:
                     last_message = value['messages'][-1]
                     
-                    logger.debug(f"Chatbot Response: {last_message}")
-                    
-                    if isinstance(last_message, AIMessage) and isinstance(
+                    if isinstance(
+                        last_message, AIMessage
+                    ) and isinstance(
                         last_message.content, str
-                    ):
-                        return last_message.content
+                    ) and last_message.content:
+                        yield last_message.content
     except Exception as e:
         logger.error(f'CRITICAL ERROR DETAILS: {e}')
-        return "SYSTEM: The chatbot experienced a critical error."
+        yield "SYSTEM: The chatbot experienced a critical error."
 
 # For async operations which take place during initialization and possibly persist.
 async def main():
