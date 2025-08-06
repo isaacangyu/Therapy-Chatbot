@@ -29,19 +29,18 @@ load_dotenv(dotenv_path="../.env")
 
 """
 Current Problems:
-- Tool execution never occurs successfully.
-  RESOLVED: When the chatbot does get the schema correct, 
-  it causes some kind of API error because it sends content='' in the AIMessage during invocation.
-  UNRESOLVED: The tool doesn't work.
 - For some reason, it knows the user's UUID, but can't get the 
   user's name despite both pieces of information being stored and served in the same way.
+- Minor: The agent will either excessively use the search conversation tool, 
+  or only use it with specific prompts. Nothing inbetween.
 
 Other enhancements to look into:
+- API calls to the LLM may become excessive as the conversation advances
 - More custom entity types
 - Building and periodically refreshing graph communities
 - Optimized search recipe(s)
 - This implementation is tied to a single Redis database
-    - Langgraph checkpoints may not be clear properly at the moment.
+    - Langgraph checkpoints may not be cleared properly at the moment.
 - Not grabbing user node as soon as the first nodes are created.
   Possibly related to the latter problem above.
     - Define tools with more descriptive schemas.

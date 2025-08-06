@@ -162,7 +162,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
                               ),
                             ));
                             _messageLog.add(BubbleSpecialThree(
-                              text: message["chatbot"],
+                              // NOTE: "..." is a placeholder for now since the chatbot 
+                              // may respond with an empty string on the backend, 
+                              // which results in a null value here.
+                              text: message["chatbot"] ?? "...",
                               isSender: false,
                               color: theme.colorScheme.secondaryFixedDim,
                               textStyle: theme.textTheme.bodyMedium!.copyWith(
