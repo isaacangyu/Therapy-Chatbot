@@ -1,3 +1,4 @@
 {
-    "url": "http://localhost:8000"
+    "url": "http://localhost:8000",
+    "ws_url": "ws://localhost:8000"
 }

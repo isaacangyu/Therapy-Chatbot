@@ -11,6 +11,25 @@ import os
 
 from django.core.asgi import get_asgi_application
 
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.security.websocket import AllowedHostsOriginValidator
+
+from chatbot.routing import websocket_urlpatterns
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "therapy_chatbot.settings")
 
-application = get_asgi_application()
+django_asgi_app = get_asgi_application()
+
+application = ProtocolTypeRouter({
+    "http": django_asgi_app,
+    # "websocket": AllowedHostsOriginValidator(
+    #     AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+    # )
+    "websocket": (
+        # We'll have to do conditional compilation between the web and Android 
+        # since Android needs to set the origin header, while web can't 
+        # set headers at all.
+        AuthMiddlewareStack(URLRouter(websocket_urlpatterns))
+    )
+})

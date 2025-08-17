@@ -54,6 +54,7 @@ Future<InitializationState> initializeApp(
   try {
     var config = jsonDecode(await rootBundle.loadString('app_assets/config.json'));
     Global.appVersion = config['app_version'];
+    Global.showLegal = config['show_legal'];
     API.initBaseUrl = config['init_base_url${Global.androidDebugMode ? "_debug_android" : ""}'];
   } catch (e) {
     debugPrint(e.toString());
@@ -96,24 +97,25 @@ Future<InitializationState> initializeApp(
     );
   }
   
-  var backendBaseUrl = await _fetchBackendBaseUrl();
-  if (backendBaseUrl == null && !appState.session.loggedIn) {
+  var backendBaseUrls = await _fetchBackendBaseUrl();
+  if (backendBaseUrls == null && !appState.session.getLoggedIn()) {
     return InitializationState(
       false,
       message: 'Unable to reach online services. Please check your internet connection.'
     );
   }
   
-  if (latestAppVersion == null && backendBaseUrl != null) {
+  if (latestAppVersion == null && backendBaseUrls != null) {
     return InitializationState(
       false,
       message: 'Unable to resolve conflicting information.'
     );
   }
   
-  if (backendBaseUrl != null) {
+  if (backendBaseUrls != null) {
     appState.session.online = true;
-    API.baseUrl = backendBaseUrl;
+    API.baseUrl = backendBaseUrls.baseUrl;
+    API.wsBaseUrl = backendBaseUrls.wsBaseUrl;
     
     var keysLoaded = await loadKeys();
     if (!keysLoaded) {
@@ -126,10 +128,13 @@ Future<InitializationState> initializeApp(
     appState.session.online = false;
   }
   
-  if (appState.session.online && appState.session.loggedIn) {
-    var tokenValid = await _validateSessionToken(appState.session.token);
+  if (appState.session.online && appState.session.getLoggedIn()) {
+    var tokenValid = await _validateSessionToken(
+      appState.session.getEmail(), appState.session.getToken()
+    );
     if (!tokenValid) {
       try {
+        await appState.session.setEmail(null);
         await appState.session.setToken(null);
         await appState.session.setLoggedIn(false);
       } catch (e) {
@@ -147,13 +152,15 @@ Default preferences from app database:
 Color Scheme Seed: ${appState.preferences.colorScheme.primaryContainer}
 
 Session info:
-Token: ${appState.session.token}
-Logged in: ${appState.session.loggedIn}
+Email: ${appState.session.getEmail()}
+Token: ${appState.session.getToken()}
+Logged in: ${appState.session.getLoggedIn()}
 
 Latest App Version: $latestAppVersion
 Current App Version: ${Global.appVersion}
 Initialization Base URL: ${API.initBaseUrl}
-Backend Base URL: $backendBaseUrl
+Backend Base URL: ${backendBaseUrls?.baseUrl}
+WebSocket Backend Base URL: ${backendBaseUrls?.wsBaseUrl}
 ''');
   
   // Insert some artificial delay.
@@ -173,24 +180,30 @@ Future<String?> _fetchLatestAppVersion() {
   );
 }
 
-Future<String?> _fetchBackendBaseUrl() {
+class _BaseUrls {
+  _BaseUrls(this.baseUrl, this.wsBaseUrl);
+  
+  String baseUrl;
+  String wsBaseUrl;
+}
+Future<_BaseUrls?> _fetchBackendBaseUrl() {
   return httpGetApi(
     API.backendBase,
-    (json) => json['url'],
+    (json) => _BaseUrls(json['url'], json['ws_url']),
     () => null,
   );
 }
 
-Future<bool> _validateSessionToken(String? token) async {
-  if (token == null) {
+Future<bool> _validateSessionToken(String? email, String? token) async {
+  if (email == null || token == null) {
     return false;
   }
   
   return httpPostSecure(
     API.loginToken,
-    includeToken(token, {}),
+    includeToken(email, token, {}),
     (json) => json['valid'],
-    () => false,
+    (_) => false,
   );
 }
 

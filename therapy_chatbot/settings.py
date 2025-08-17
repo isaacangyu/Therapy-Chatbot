@@ -30,13 +30,15 @@ SECRET_KEY = "django-insecure-i7n98_=ykj*z#f4fx@olkhje$6%a^b)*-$vqc^rrpz_vpcrqwt
 DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2"] if DEBUG else os.environ["ALLOWED_HOSTS"].split(", ")
-if not DEBUG or os.environ.get("IDX_CHANNEL") != None:
+if not DEBUG or os.environ.get("IDX_CHANNEL"):
     CSRF_TRUSTED_ORIGINS = os.environ["CSRF_TRUSTED_ORIGINS"].split(", ")
 ACCESS_CONTROL_ALLOW_ORIGIN = "*" if DEBUG else os.environ["ACCESS_CONTROL_ALLOW_ORIGIN"]
 
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne", # Overrides the `runserver` command to an ASGI version.
+    "channels", # Provides the `runworker` command, which may be useful.
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -44,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core.apps.CoreConfig",
+    "chatbot.apps.ChatbotConfig",
 ]
 
 MIDDLEWARE = [
@@ -75,7 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "therapy_chatbot.wsgi.application"
-
+ASGI_APPLICATION = "therapy_chatbot.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -88,6 +91,15 @@ DATABASES = {
         "NAME": "postgres",
         "PORT": "5432",
         "PASSWORD": "postgres"
+    }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        }
     }
 }
 

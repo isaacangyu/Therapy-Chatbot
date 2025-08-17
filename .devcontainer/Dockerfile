@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/devcontainers/python:1-3.11-bullseye
 
-ENV FLUTTER_VERSION "3.24.4-stable"
+ENV FLUTTER_VERSION "3.29.0-stable"
 
 ENV PYTHONUNBUFFERED 1
 

@@ -10,6 +10,7 @@ import '/util/global.dart';
 import '/util/persistence.dart';
 import '/util/theme.dart';
 import '/app_state.dart';
+import '/navigation.dart';
 
 void main() {
   runApp(MultiProvider(
@@ -52,7 +53,7 @@ class _AppBase extends State<App> {
         ChangeNotifierProvider(create: (_) => CustomAppTheme()),
       ],
       child: Consumer2<AppState, CustomAppTheme>(
-        builder: (context, appState, projectTheme, child) {
+        builder: (context, appState, customTheme, child) {
           return FutureBuilder(
             future: appState.initializationComplete,
             builder: (context, snapshot) {
@@ -71,15 +72,15 @@ class _AppBase extends State<App> {
               }
               
               var themeData = calculateThemeData(appState.preferences.colorScheme);
-              projectTheme.set(themeData);
+              customTheme.set(themeData);
               
               debugPrint('Building main app widget tree.');
               
               return MaterialApp(
                 title: Global.appTitle,
                 theme: themeData,
-                home: appState.session.loggedIn 
-                  ? const BreathingPage() : const LoginPage(),
+                home: appState.session.getLoggedIn() 
+                  ? const Navigation() : const LoginPage(),
               );
             },
           );

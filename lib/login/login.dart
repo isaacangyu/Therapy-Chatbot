@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
+import '/navigation.dart';
 import '/app_state.dart';
 import '/util/crypto.dart';
 import '/util/network.dart';
@@ -26,11 +27,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return LoaderOverlay(
       child: Scaffold(
-        backgroundColor: projectTheme.primaryColor,
+        backgroundColor: customTheme.primaryColor,
         body: Scroll(
           child: Center(
             child: Padding(
@@ -43,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     Global.appTitle,
                     style: theme.textTheme.headlineLarge!.copyWith(
-                      color: projectTheme.activeColor,
+                      color: customTheme.activeColor,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -68,12 +69,12 @@ class GoToCreateAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-        foregroundColor: projectTheme.activeColor,
-        side: BorderSide(color: projectTheme.activeColor),
+        foregroundColor: customTheme.activeColor,
+        side: BorderSide(color: customTheme.activeColor),
       ),
       child: const Text('Create Account'),
       onPressed: () {
@@ -159,11 +160,11 @@ class GoToForgotPasswordPageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final projectTheme = context.watch<CustomAppTheme>();
+    final customTheme = context.watch<CustomAppTheme>();
     
     return TextButton(
       style: TextButton.styleFrom(
-        foregroundColor: projectTheme.activeColor,
+        foregroundColor: customTheme.activeColor,
       ),
       child: const Text('Forgot password?'),
       onPressed: () {
@@ -225,7 +226,7 @@ Future<void> _loginAction(
     if (loginState.success) {
       pushRoute(context, const PopScope(
         canPop: false,
-        child: Placeholder()
+        child: Navigation()
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -270,8 +271,12 @@ Future<_LoginState> _login(
       salt: json['salt'],
       token: json['token'],
     ),
-    () => const _LoginState(
-      false, message: 'Please check your internet connection.'
+    (status) => _LoginState(
+      false, message: {
+        -1: 'Please check your internet connection.',
+        400: 'Invalid request.',
+        422: 'Unprocessable request. Please check your field inputs.'
+      }[status]
     ),
   );
   
@@ -288,6 +293,7 @@ Future<_LoginState> _login(
   );
   initClientSideEncrypter(keyDetails.key);
   
+  await appState.session.setEmail(email);
   await appState.session.setToken(loginState.token);
   await appState.session.setLoggedIn(true);
   

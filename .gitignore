@@ -193,8 +193,13 @@ cython_debug/
 #.idea/
 
 # Custom
+android/app/.cxx/
 .idx/.data/
 .idx/postgres/
+.idx/neo4j/*
+!.idx/neo4j/conf/
 .idx/logfile
 cert/prod/
 temp/
+
+dump.rdb

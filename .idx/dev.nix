@@ -1,11 +1,13 @@
 {pkgs}: {
-  channel = "stable-24.05";
+  channel = "stable-25.05";
   packages = [
     pkgs.jdk17
     pkgs.unzip
     pkgs.python3Full
     pkgs.poetry
     pkgs.postgresql
+    pkgs.neo4j
+    pkgs.redis
   ];
   idx.extensions = [
     "Dart-Code.dart-code"

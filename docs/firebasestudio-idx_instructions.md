@@ -31,7 +31,10 @@ If you do not see the Android emulator panel, use the command pallette (<kbd>CTR
 5. Create a PostgreSQL database with the VSCode task "IDX: Initialize Database". This task only needs to be run once.
     - Each time you start your workspace, run the task "IDX: Start Postgres" to start the database.
     - Additional tasks available are prefixed with "IDX: ".
-6. Start backend servers (tasks: "Start API Test Backend" & "Start Backend").
+6. Create a Neo4j graph database with the task "IDX: Initialize Neo4j". This task only needs to be run once.
+    - Like Postgres, start using "IDX: Start Neo4j".
+7. You'll need to update the CSRF trusted origins. Copy `.env.example` to `.env` and add the scheme + hostname (e.g. `https://8000-idx-xxx.cluster-xxx.cloudworkstations.dev`) to `CSRF_TRUSTED_ORIGINS`.
+8. Start backend servers (tasks: "Start API Test Backend" & "Start Backend" OR "Start All Backends").
 
 > [!Note]
 > Flutter will perform **hot reloads** as opposed to **hot restarts** with the Android Emulator. This loads UI changes faster and preserves the app's state between reloads. To hard restart the app, using the command pallette to run "Firebase Studio: Hard Restart Previews".
@@ -39,4 +42,3 @@ If you do not see the Android emulator panel, use the command pallette (<kbd>CTR
 ## Tips
 - Go to the output panel and view the log "IDX" to see messages from the app and other vital development info.
 - Firebase Studio / IDX comes with Gemini AI assistance built-in.
-- Before trying to access Django site administration, you'll need to update the CSRF trusted origins. Copy `.env.example` to `.env` and add the scheme + hostname (e.g. `https://8000-idx-xxx.cluster-xxx.cloudworkstations.dev`) to `CSRF_TRUSTED_ORIGINS`.

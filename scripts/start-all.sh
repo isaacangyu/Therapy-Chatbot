@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Note: Background tasks are automatically terminated when the VSCode task ends.
 ./scripts/start-api-test-backend.py &
 ./scripts/start-backend.sh &
 

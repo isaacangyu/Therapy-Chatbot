@@ -7,13 +7,18 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.14"
 argon2-cffi = "^23.1.0"
 cryptography = "^44.0.2"
 django = "^5.2"
 psycopg = {extras = ["binary"], version = "^3.2.6"}
 python-dotenv = "^1.1.0"
-
+graphiti-core = {extras = ["google-genai"], version = "^0.11.6"}
+channels = {extras = ["daphne"], version = "^4.2.2"}
+channels-redis = "^4.2.1"
+langgraph = "^0.4.8"
+langchain-google-genai = "^2.1.5"
+langgraph-checkpoint-redis = "^0.0.7"
 
 [build-system]
 requires = ["poetry-core"]
