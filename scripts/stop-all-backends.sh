@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./scripts/stop-neo4j.sh
 ./scripts/clear-graphiti-data.py
-./scripts/stop-redis.sh
-./scripts/stop-postgres.sh
+./scripts/idx-stop-neo4j.sh
+./scripts/idx-stop-redis.sh
+./scripts/idx-stop-postgres.sh

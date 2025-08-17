@@ -104,33 +104,13 @@
         {
             "label": "IDX: Initialize Environment",
             "icon": {
-                "id": "issues",
+                "id": "beaker",
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
             "command": "./scripts/idx-initenv.sh",
             "problemMatcher": []
         },
-        {
-            "label": "IDX: Build Environment",
-            "icon": {
-                "id": "beaker",
-                "color": "terminal.ansiRed"
-            },
-            "type": "shell",
-            "command": "./scripts/idx-initdb.sh",
-            "problemMatcher": []
-        },
-        // {
-        //     "label": "IDX: Initialize Database",
-        //     "icon": {
-        //         "id": "fold-up",
-        //         "color": "terminal.ansiRed"
-        //     },
-        //     "type": "shell",
-        //     "command": "./scripts/idx-initdb.sh",
-        //     "problemMatcher": []
-        // },
         {
             "label": "IDX: Start Postgres",
             "icon": {
@@ -158,19 +138,9 @@
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
-            "command": "./scripts/idx-deletedb.sh",
+            "command": "./scripts/idx-clearenv.sh",
             "problemMatcher": []
         },
-        // {
-        //     "label": "IDX: Delete Database",
-        //     "icon": {
-        //         "id": "trash",
-        //         "color": "terminal.ansiRed"
-        //     },
-        //     "type": "shell",
-        //     "command": "./scripts/idx-deletedb.sh",
-        //     "problemMatcher": []
-        // },
         {
             "label": "Open Django Shell",
             "icon": {
@@ -229,6 +199,16 @@
             },
             "type": "shell",
             "command": "./scripts/start-all-backends.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop All Backends",
+            "icon": {
+                "id": "debug-disconnect",
+                "color": "terminal.ansiYellow"
+            },
+            "type": "shell",
+            "command": "./scripts/stop-all-backends.sh",
             "problemMatcher": []
         },
         {

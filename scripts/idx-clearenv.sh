@@ -1,5 +1,5 @@
 #!/bin/bash
 
+rm -rf .idx/postgres/ /run/postgresql/
 rm -r ~/.cache
 flutter clean
-rm -rf .idx/postgres/ /run/postgresql/
