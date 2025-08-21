@@ -108,7 +108,7 @@
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
-            "command": "./scripts/idx-initenv.sh",
+            "command": "./scripts/idx-init-env.sh",
             "problemMatcher": []
         },
         {
@@ -138,7 +138,7 @@
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
-            "command": "./scripts/idx-clearenv.sh",
+            "command": "./scripts/idx-clear-env.sh",
             "problemMatcher": []
         },
         {

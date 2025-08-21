@@ -2,5 +2,5 @@
 
 poetry install
 ./scripts/flutter-enforce-lockfile.sh
-./scripts/idx-initdb.sh
-./scripts/idx-start-postgres.sh
+./scripts/idx-init-db.sh
+./scripts/idx-init-neo4j.sh
