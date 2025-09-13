@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(DatabaseConnection super.connection);
   
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -82,6 +82,9 @@ class AppDatabase extends _$AppDatabase {
             await m.alterTable(TableMigration(preferences));
             await (delete(preferences)..where((t) => t.id.equals(2))).go();
             debugPrint('Ran database migration: 4 -> 5');
+          },
+          from5To6: (m, schema) async {
+            debugPrint('Ran database migration: 5 -> 6');
           },
         )
       ));

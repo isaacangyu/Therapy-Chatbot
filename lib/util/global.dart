@@ -31,8 +31,12 @@ class Global {
   static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
   
   static final defaultSeedColor = const Color.fromARGB(255, 100, 180, 100).toARGB32();
+  static const int defaultTimerValue = 1;
+  static const double defaultSpeedValue = 0.5;
   static final defaultUserPreferences = PreferencesCompanion(
     seedColor: Value(defaultSeedColor),
+    timerValue: const Value(defaultTimerValue),
+    speedValue: const Value(defaultSpeedValue),
   );
   
   static const largeScreenThreshold = 960.0;

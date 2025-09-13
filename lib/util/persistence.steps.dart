@@ -175,11 +175,53 @@ class Shape2 extends i0.VersionedTable {
       columnsByName['seed_color']! as i1.GeneratedColumn<int>;
 }
 
+final class Schema6 extends i0.VersionedSchema {
+  Schema6({required super.database}) : super(version: 6);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    preferences,
+  ];
+  late final Shape3 preferences = Shape3(
+      source: i0.VersionedTable(
+        entityName: 'preferences',
+        withoutRowId: false,
+        isStrict: false,
+        tableConstraints: [],
+        columns: [
+          _column_0,
+          _column_2,
+          _column_6,
+          _column_7,
+        ],
+        attachedDatabase: database,
+      ),
+      alias: null);
+}
+
+class Shape3 extends i0.VersionedTable {
+  Shape3({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get seedColor =>
+      columnsByName['seed_color']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get timerValue =>
+      columnsByName['timer_value']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get speedValue =>
+      columnsByName['speed_value']! as i1.GeneratedColumn<double>;
+}
+
+i1.GeneratedColumn<int> _column_6(String aliasedName) =>
+    i1.GeneratedColumn<int>('timer_value', aliasedName, false,
+        type: i1.DriftSqlType.int);
+i1.GeneratedColumn<double> _column_7(String aliasedName) =>
+    i1.GeneratedColumn<double>('speed_value', aliasedName, false,
+        type: i1.DriftSqlType.double);
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
   required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
+  required Future<void> Function(i1.Migrator m, Schema6 schema) from5To6,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -203,6 +245,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from4To5(migrator, schema);
         return 5;
+      case 5:
+        final schema = Schema6(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from5To6(migrator, schema);
+        return 6;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -214,6 +261,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
   required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
   required Future<void> Function(i1.Migrator m, Schema5 schema) from4To5,
+  required Future<void> Function(i1.Migrator m, Schema6 schema) from5To6,
 }) =>
     i0.VersionedSchema.stepByStepHelper(
         step: migrationSteps(
@@ -221,4 +269,5 @@ i1.OnUpgrade stepByStep({
       from2To3: from2To3,
       from3To4: from3To4,
       from4To5: from4To5,
+      from5To6: from5To6,
     ));

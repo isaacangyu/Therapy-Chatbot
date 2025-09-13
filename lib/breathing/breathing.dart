@@ -4,6 +4,7 @@ import 'package:blobs/blobs.dart';
 import 'package:flutter/material.dart';
 import 'package:number_inc_dec/number_inc_dec.dart';
 import 'package:provider/provider.dart';
+import 'package:therapy_chatbot/app_state.dart';
 
 import '/util/theme.dart';
 import '/widgets/scroll.dart';
@@ -16,9 +17,9 @@ class BreathingPage extends StatefulWidget {
 }
 
 class _BreathingPageState extends State<BreathingPage> {
-  double _speed = 0.5; // between 0 and 1
   bool _expanding = true;
   bool _playing = false;
+
 
   final String breatheInText = "Breathe in";
   final String breatheOutText = "Breathe out";
@@ -32,16 +33,24 @@ class _BreathingPageState extends State<BreathingPage> {
     });
   }
 
-  void _switchPlaying() {
-    setState(() {
-      _playing = !_playing;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final projectTheme = context.watch<CustomAppTheme>();
+    final appState = context.watch<AppState>();
+    final deviceWidth = MediaQuery.sizeOf(context).width;
+    int time = appState.preferences.timerValue;
+    double speed = appState.preferences.speedValue;
+
+  void switchPlaying() {
+    print("switched playing");
+    final timeInt = int.parse(_timeController.text);
+    appState.preferences.updateTimerValue(timeInt);
+    appState.preferences.updateSpeedValue(speed);
+    setState(() {
+      _playing = !_playing;
+    });
+  }
 
     return Scaffold(
       backgroundColor: projectTheme.primaryColor,
@@ -63,45 +72,44 @@ class _BreathingPageState extends State<BreathingPage> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(
-                          left: MediaQuery.sizeOf(context).width / 2 - 400),
-                      child: NumberInputWithIncrementDecrement(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: deviceWidth / 3),
+                      child: Expanded (child: NumberInputWithIncrementDecrement(
                         controller: _timeController,
-                        scaleWidth: 0.7,
+                        scaleWidth: 1,
                         scaleHeight: 0.7,
                         incDecBgColor: const Color.fromARGB(255, 131, 221, 246),
-                        initialValue: 2,
+                        initialValue: time,
                         min: 1,
                         max: 10,
                         onIncrement: (num newlyIncrementedValue) {
-                          print(
-                              'Newly incremented value is $newlyIncrementedValue');
+                          print('Newly incremented value is $newlyIncrementedValue');
                         },
                       ),
-                    ),
+                    )),
                     Padding(
                       padding: const EdgeInsets.all(50),
                       child: ElevatedButton.icon(
-                        onPressed: _switchPlaying,
+                        onPressed: switchPlaying,
                         label: const Icon(Icons.play_arrow),
                         style: ElevatedButton.styleFrom(
                             shape: const CircleBorder(), iconSize: 75.0),
                       ),
                     ),
                     SliderTheme(
-                      data: const SliderThemeData(
+                      data: SliderThemeData(
                           trackHeight: 5.0,
                           padding: EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 500),
+                              vertical: 0, horizontal: deviceWidth/10),
                           showValueIndicator: ShowValueIndicator.always),
                       child: Slider(
-                        value: _speed,
+                        value: speed,
                         onChanged: (value) {
                           setState(() {
-                            _speed = value;
+                            speed = value;
                           });
                         },
-                        label: "Speed: ${_speed.toStringAsFixed(1)}",
+                        label: "Speed: ${speed.toStringAsFixed(1)}",
                       ),
                     ),
                   ],
@@ -123,7 +131,7 @@ class _BreathingPageState extends State<BreathingPage> {
                             child: Text(breatheOutText)),
                     const SizedBox(height: 50),
                     BreathingAnimation(
-                        speed: _speed, switchExpanding: _switchExpanding)
+                        speed: speed, time: time, switchExpanding: _switchExpanding)
                   ],
                 ),
               ),
@@ -137,11 +145,13 @@ class _BreathingPageState extends State<BreathingPage> {
 
 class BreathingAnimation extends StatefulWidget {
   const BreathingAnimation(
-      {super.key, required double speed, required Function switchExpanding})
+      {super.key, required double speed, required int time, required Function switchExpanding})
       : _speed = speed,
+        _time = time,
         _switchExpanding = switchExpanding;
 
   final double _speed;
+  final int _time;
   final Function _switchExpanding;
 
   @override
@@ -152,12 +162,13 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
   double _scale = 1.5;
   late Timer _timer; // late means initialized later
   late int _speed;
+  late int _time;
 
   @override
   void initState() {
-    // initializing state
     super.initState();
-
+    // common milisecond unit to subtract
+    _time = widget._time * 60 * 1000;
     _speed = newSpeed();
     _timer = newTimer();
   }
@@ -170,6 +181,7 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget._speed != widget._speed) {
+      _time = widget._time * 60 * 1000;
       _speed = newSpeed();
       _timer.cancel();
       _timer = newTimer();
@@ -181,6 +193,11 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
       setState(() {
         _scale = _scale == 0.5 ? 1.5 : 0.5;
         widget._switchExpanding();
+        print('Time $_time Speed $_speed');
+        _time -= _speed;
+        if (_time <= 0) {
+          timer.cancel();
+        }
       });
     });
   }
