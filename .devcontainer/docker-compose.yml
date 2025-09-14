@@ -17,6 +17,18 @@ services:
 
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
+  
+  emulator:
+    image: budtmo/docker-android:emulator_11.0
+    environment:
+      EMULATOR_DEVICE: "Samsung Galaxy S10"
+      WEB_VNC: true
+    devices:
+      - /dev/kvm
+    volumes:
+      - emulator-data:/home/androidusr
+    
+    network_mode: service:app
 
   db:
     image: postgres:latest
@@ -50,5 +62,6 @@ services:
     network_mode: service:app
 
 volumes:
+  emulator-data:
   postgres-data:
   neo4j-data:
