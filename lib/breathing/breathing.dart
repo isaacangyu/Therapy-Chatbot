@@ -39,18 +39,20 @@ class _BreathingPageState extends State<BreathingPage> {
     final theme = Theme.of(context);
     final projectTheme = context.watch<CustomAppTheme>();
     final appState = context.watch<AppState>();
-    final deviceWidth = MediaQuery.sizeOf(context).width;
+    final device = MediaQuery.sizeOf(context);
     int time = appState.preferences.timerValue;
     double speed = appState.preferences.speedValue;
+    print("loaded time $time, loaded speed $speed");
 
     void switchPlaying() {
-      final timeInt = int.parse(_timeController.text);
-      appState.preferences.updateTimerValue(timeInt);
-      appState.preferences.updateSpeedValue(speed);
       setState(() {
         _playing = !_playing;
       });
       print("switched playing to $_playing");
+      final timeInt = int.parse(_timeController.text);
+      appState.preferences.updateTimerValue(timeInt);
+      appState.preferences.updateSpeedValue(speed);
+      print("updated time with $timeInt and speed with $speed");
     }
 
     return Scaffold(
@@ -74,7 +76,7 @@ class _BreathingPageState extends State<BreathingPage> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          horizontal: deviceWidth / 3),
+                          horizontal: device.width / 3),
                       child: NumberInputWithIncrementDecrement(
                         controller: _timeController,
                         scaleWidth: 1,
@@ -89,19 +91,19 @@ class _BreathingPageState extends State<BreathingPage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(50),
+                      padding: EdgeInsets.all(device.height / 15),
                       child: ElevatedButton.icon(
                         onPressed: switchPlaying,
                         label: const Icon(Icons.play_arrow),
                         style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(), iconSize: 150.0),
+                            shape: const CircleBorder(), iconSize: device.height / 8),
                       ),
                     ),
                     SliderTheme(
                       data: SliderThemeData(
-                          trackHeight: 50,
+                          trackHeight: device.height / 10,
                           padding: EdgeInsets.symmetric(
-                              vertical: 25, horizontal: deviceWidth / 10),
+                              vertical: device.height / 20, horizontal: device.width / 10),
                           showValueIndicator: ShowValueIndicator.always),
                       child: Slider(
                         value: speed,
@@ -133,10 +135,10 @@ class _BreathingPageState extends State<BreathingPage> {
                                 duration: const Duration(milliseconds: 500),
                                 child: Text(breatheInText))
                             : AnimatedOpacity(
-                                opacity: !_expanding ? 1.0 : 0.0,
+                                opacity: _expanding ? 0.0 : 1.0,
                                 duration: const Duration(milliseconds: 500),
                                 child: Text(breatheOutText)),
-                        const SizedBox(height: 50),
+                        SizedBox(height: device.height / 10),
                         BreathingAnimation(
                             speed: speed, time: time, switchExpanding: _switchExpanding)
                       ],
@@ -202,7 +204,7 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
       setState(() {
         _scale = _scale == 0.5 ? 1.5 : 0.5;
         widget._switchExpanding();
-        print('Time $_time Speed $_speed');
+        print('Time left $_time Speed $_speed');
         _time -= _speed;
         if (_time <= 0) {
           timer.cancel();
