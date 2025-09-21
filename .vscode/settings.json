@@ -2,5 +2,6 @@
     "IDX.aI.enableInlineCompletion": true,
     "IDX.aI.enableCodebaseIndexing": true,
     "dart.runPubGetOnPubspecChanges": "never",
-    "extensions.ignoreRecommendations": true
+    "extensions.ignoreRecommendations": true,
+    "github.codespaces.devcontainerChangedNotificationStyle": "none"
 }
