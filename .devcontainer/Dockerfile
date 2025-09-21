@@ -17,3 +17,12 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 RUN wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}.tar.xz" \
     && tar -xf "flutter_linux_${FLUTTER_VERSION}.tar.xz" -C /usr/local/ \
     && rm "flutter_linux_${FLUTTER_VERSION}.tar.xz"
+
+# Install Android command line tools.
+# Docs: https://developer.android.com/tools/sdkmanager
+RUN wget "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" \
+    && unzip commandlinetools-linux-*.zip -d cmdline-tools \
+    && mkdir -p /usr/local/android_sdk/cmdline-tools/latest \
+    && mv cmdline-tools/cmdline-tools/* /usr/local/android_sdk/cmdline-tools/latest \
+    && rm -r commandlinetools-linux-*.zip cmdline-tools \
+    && chown -R 1000:1000 /usr/local/android_sdk
