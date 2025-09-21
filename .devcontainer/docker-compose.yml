@@ -19,14 +19,17 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
   
   emulator:
-    image: budtmo/docker-android:emulator_11.0
+    image: budtmo/docker-android:emulator_13.0
     environment:
       EMULATOR_DEVICE: "Samsung Galaxy S10"
+      EMULATOR_NAME: "android-emulator"
       WEB_VNC: true
     devices:
       - /dev/kvm
-    volumes:
-      - emulator-data:/home/androidusr
+    # Persisting data may cause issues:
+    # https://github.com/budtmo/docker-android/issues/439
+    # volumes:
+    #   - emulator-data:/home/androidusr
     
     network_mode: service:app
 
@@ -62,6 +65,6 @@ services:
     network_mode: service:app
 
 volumes:
-  emulator-data:
+  # emulator-data:
   postgres-data:
   neo4j-data:

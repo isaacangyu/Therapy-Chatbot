@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/devcontainers/python:1-3.11-bullseye
 
 ENV FLUTTER_VERSION "3.29.0-stable"
+ENV ANDROID_HOME "/usr/local/android_sdk"
 
 ENV PYTHONUNBUFFERED 1
 
@@ -22,7 +23,7 @@ RUN wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/l
 # Docs: https://developer.android.com/tools/sdkmanager
 RUN wget "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" \
     && unzip commandlinetools-linux-*.zip -d cmdline-tools \
-    && mkdir -p /usr/local/android_sdk/cmdline-tools/latest \
-    && mv cmdline-tools/cmdline-tools/* /usr/local/android_sdk/cmdline-tools/latest \
+    && mkdir -p $ANDROID_HOME/cmdline-tools/latest \
+    && mv cmdline-tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest \
     && rm -r commandlinetools-linux-*.zip cmdline-tools \
-    && chown -R 1000:1000 /usr/local/android_sdk
+    && chown -R 1000:1000 $ANDROID_HOME

@@ -2,6 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Flutter Run Android",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
+        },
+        {
             "name": "Flutter Run Debug",
             "request": "launch",
             "type": "dart",

@@ -5,17 +5,15 @@ setup() {
         set -e
 
         echo 'export PATH="$PATH:/usr/local/flutter/bin"' >> ~/.bashrc
-
-        export ANDROID_HOME=/usr/local/android_sdk
-        echo 'export ANDROID_HOME='$ANDROID_HOME >> ~/.bashrc
         echo 'export PATH=$PATH:'$ANDROID_HOME'/cmdline-tools/latest:'$ANDROID_HOME'/cmdline-tools/latest/bin:'$ANDROID_HOME'/platform-tools' >> ~/.bashrc
 
         pipx install poetry && poetry install
 
         # Android Development Packages
-        # Android Version: 15 (Vanilla Ice Cream)
-        # API Level: 35
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+        # Android Version: 13 (Tiramisu)
+        # API Level: 33
+        # sdkmanager --list
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.3" "platform-tools"
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
     )
     return $?
