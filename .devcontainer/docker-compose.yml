@@ -19,7 +19,7 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
   
   emulator:
-    image: budtmo/docker-android:emulator_13.0
+    image: budtmo/docker-android:emulator_14.0
     environment:
       EMULATOR_DEVICE: "Samsung Galaxy S10"
       EMULATOR_NAME: "android-emulator"

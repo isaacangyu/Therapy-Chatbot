@@ -10,10 +10,10 @@ setup() {
         pipx install poetry && poetry install
 
         # Android Development Packages
-        # Android Version: 13 (Tiramisu)
-        # API Level: 33
-        # sdkmanager --list
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;33.0.3" "platform-tools"
+        # Flutter will automatically install the versions for:
+        # platforms, build-tools, ndk, cmake.
+        # during its first Android run.
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
     )
     return $?
