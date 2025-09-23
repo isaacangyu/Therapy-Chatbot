@@ -1,10 +1,10 @@
 # Base Installation
 FROM mcr.microsoft.com/devcontainers/python:1-3.11-bookworm AS devcontainer_base
 
-ENV FLUTTER_VERSION "3.29.0-stable"
-ENV ANDROID_HOME "/usr/local/android_sdk"
+ENV FLUTTER_VERSION="3.29.0-stable"
+ENV ANDROID_HOME="/usr/local/android_sdk"
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 # [Optional] If your requirements rarely change, uncomment this section to add them to the image.
 # COPY requirements.txt /tmp/pip-tmp/

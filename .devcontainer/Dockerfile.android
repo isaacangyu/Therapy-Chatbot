@@ -14,9 +14,9 @@
 FROM budtmo/docker-android:emulator_13.0
 
 # To reduce the chance of the password being obtained by scanning environment variables, name it something silly?
-ENV CHICKEN_KATSU "chicken_katsu_165"
+ENV CHICKEN_KATSU="chicken_katsu_165"
 
-ENV ANDROIDUSR_HOME "/home/androidusr/docker-android/cli/src/device/emulator.py"
+ENV ANDROIDUSR_HOME="/home/androidusr/docker-android/cli/src/device/emulator.py"
 
 USER root
 
