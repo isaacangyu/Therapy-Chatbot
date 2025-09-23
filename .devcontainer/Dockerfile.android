@@ -7,6 +7,7 @@
 # - Sets the password for sudo.
 # - Changes all occurrences of "sudo" in `emulator.py` to have the password via the environment variable.
 # - Prevents the CLI from removing the root user.
+# - Other unrelated fixes.
 # This issue has long persisted in budtmo/docker-android:
 # https://github.com/budtmo/docker-android/issues/439
 
@@ -23,5 +24,11 @@ RUN echo "androidusr:${CHICKEN_KATSU}" | chpasswd \
     && sed -i 's/androidusr ALL=(ALL) NOPASSWD: ALL/androidusr ALL=(ALL) ALL/' /etc/sudoers \
     && sed -i "s|sudo sed -i '1d' /etc/passwd|echo 'Skipping removing root.'|g" $ANDROIDUSR_HOME \
     && sed -i 's/sudo/echo $CHICKEN_KATSU | sudo --stdin/g' $ANDROIDUSR_HOME
+
+# Overwrite entrypoint to fix display issue.
+ENTRYPOINT rm -rf /tmp/.X0-lock /tmp/.X11-unix && /home/androidusr/docker-android/mixins/scripts/run.sh
+
+# Copy emulator restart script.
+COPY restart-emulator.sh /home/androidusr
 
 USER 1300:1301

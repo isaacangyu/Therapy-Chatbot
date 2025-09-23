@@ -13,7 +13,9 @@ ENV PYTHONUNBUFFERED 1
 # Additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa \
-    # The following packages are for Linux desktop development.
+    # Android development:
+    openjdk-17-jdk-headless gradle \
+    # Linux desktop development:
     clang cmake git \
     ninja-build pkg-config \
     libgtk-3-dev liblzma-dev \

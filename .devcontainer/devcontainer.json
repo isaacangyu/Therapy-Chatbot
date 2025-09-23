@@ -44,15 +44,5 @@
 				"Dart-Code.flutter"
 			]
 		}
-	},
-	"features": {
-		// Must specify "17-open":
-		// https://github.com/devcontainers/features/issues/766
-		"ghcr.io/devcontainers/features/java:1": {
-			"installGradle": true,
-			"version": "17-open",
-			"jdkDistro": "open",
-			"gradleVersion": "latest"
-		}
 	}
 }
