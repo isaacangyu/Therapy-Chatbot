@@ -12,7 +12,7 @@ ENV PYTHONUNBUFFERED 1
 #    && rm -rf /tmp/pip-tmp
 
 # Additional OS packages.
-RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+RUN echo "Building base installation." && apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
 
 # Install Flutter.
@@ -23,7 +23,7 @@ RUN wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/l
 # Android Installation
 FROM devcontainer_base AS devcontainer_android
 
-RUN export DEBIAN_FRONTEND=noninteractive \
+RUN echo "Building Android installation." && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends openjdk-17-jdk-headless gradle
 
 # Install Android command line tools.
@@ -38,7 +38,7 @@ RUN wget "https://dl.google.com/android/repository/commandlinetools-linux-131147
 # Desktop Installation
 FROM devcontainer_base AS devcontainer_desktop
 
-RUN export DEBIAN_FRONTEND=noninteractive \
+RUN echo "Building desktop installation." && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
     clang cmake git \
     ninja-build pkg-config \
