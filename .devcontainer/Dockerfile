@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:1-3.11-bullseye
+FROM mcr.microsoft.com/devcontainers/python:1-3.11-bookworm
 
 ENV FLUTTER_VERSION "3.29.0-stable"
 ENV ANDROID_HOME "/usr/local/android_sdk"
@@ -12,7 +12,12 @@ ENV PYTHONUNBUFFERED 1
 
 # Additional OS packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
+    && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa \
+    # The following packages are for Linux desktop development.
+    clang cmake git \
+    ninja-build pkg-config \
+    libgtk-3-dev liblzma-dev \
+    libstdc++-12-dev
 
 # Install Flutter.
 RUN wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}.tar.xz" \

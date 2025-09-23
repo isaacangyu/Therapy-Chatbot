@@ -22,7 +22,7 @@ services:
     build:
       dockerfile: Dockerfile.android
     environment:
-      EMULATOR_DEVICE: "Nexus 5"
+      EMULATOR_DEVICE: "Nexus 4"
       WEB_VNC: true
       WEB_LOG: true
       EMULATOR_NO_SKIN: true
