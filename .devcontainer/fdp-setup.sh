@@ -13,8 +13,10 @@ setup() {
         # Flutter will automatically install the versions for:
         # platforms, build-tools, ndk, cmake.
         # during its first Android run.
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        if [[ "$1" == "android" ]]; then
+            yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
+            yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        fi
     )
     return $?
 }

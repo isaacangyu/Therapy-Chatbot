@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  neo4j:
+    image: neo4j:latest
+    restart: unless-stopped
+    volumes:
+      - neo4j-data:/data
+    environment:
+      NEO4J_AUTH: neo4j/neo4j_pswd
+
+    network_mode: service:app
+
+volumes:
+  neo4j-data:
