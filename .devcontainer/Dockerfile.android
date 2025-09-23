@@ -10,7 +10,7 @@
 # This issue has long persisted in budtmo/docker-android:
 # https://github.com/budtmo/docker-android/issues/439
 
-FROM budtmo/docker-android:emulator_14.0
+FROM budtmo/docker-android:emulator_13.0
 
 # To reduce the chance of the password being obtained by scanning environment variables, name it something silly?
 ENV CHICKEN_KATSU "chicken_katsu_165"

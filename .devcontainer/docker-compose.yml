@@ -22,8 +22,11 @@ services:
     build:
       dockerfile: Dockerfile.android
     environment:
-      EMULATOR_DEVICE: "Samsung Galaxy S10"
+      EMULATOR_DEVICE: "Nexus 5"
       WEB_VNC: true
+      WEB_LOG: true
+      EMULATOR_NO_SKIN: true
+      EMULATOR_ADDITIONAL_ARGS: "-no-snapshot -camera-back none -camera-front none -accel on -no-boot-anim -no-audio"
     devices:
       - /dev/kvm
     # Persisting data may cause issues:
