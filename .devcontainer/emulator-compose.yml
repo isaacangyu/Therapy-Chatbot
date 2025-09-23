@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   emulator:
     build:
@@ -19,5 +17,5 @@ services:
     
     network_mode: service:app
 
-volumes:
+# volumes:
   # emulator-data:

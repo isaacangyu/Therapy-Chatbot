@@ -1,10 +1,8 @@
-version: '3.8'
-
 include:
-  - .devcontainer/emulator-compose.yml
-  - .devcontainer/db-compose.yml
-  - .devcontainer/cache_db-compose.yml
-  - .devcontainer/neo4j-compose.yml
+  - emulator-compose.yml
+  - db-compose.yml
+  - cache_db-compose.yml
+  - neo4j-compose.yml
 
 services:
   app:
