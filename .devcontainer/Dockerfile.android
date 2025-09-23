@@ -1,0 +1,27 @@
+# Currently, the docker-android CLI inside the container automatically removes the root user.
+# However, upon subsequent container starts, the CLI is unable to set ownership for /dev/kvm.
+# Without KVM, the emulator cannot run.
+# This Dockerfile performs the following:
+# - Enforces that the androidusr user must supply a password.
+# - Sets an environment variable containing the password for sudo.
+# - Sets the password for sudo.
+# - Changes all occurrences of "sudo" in `emulator.py` to have the password via the environment variable.
+# - Prevents the CLI from removing the root user.
+# This issue has long persisted in budtmo/docker-android:
+# https://github.com/budtmo/docker-android/issues/439
+
+FROM budtmo/docker-android:emulator_14.0
+
+# To reduce the chance of the password being obtained by scanning environment variables, name it something silly?
+ENV CHICKEN_KATSU "chicken_katsu_165"
+
+ENV ANDROIDUSR_HOME "/home/androidusr/docker-android/cli/src/device/emulator.py"
+
+USER root
+
+RUN echo "androidusr:${CHICKEN_KATSU}" | chpasswd \
+    && sed -i 's/androidusr ALL=(ALL) NOPASSWD: ALL/androidusr ALL=(ALL) ALL/' /etc/sudoers \
+    && sed -i "s|sudo sed -i '1d' /etc/passwd|echo 'Skipping removing root.'|g" $ANDROIDUSR_HOME \
+    && sed -i 's/sudo/echo $CHICKEN_KATSU | sudo --stdin/g' $ANDROIDUSR_HOME
+
+USER 1300:1301
