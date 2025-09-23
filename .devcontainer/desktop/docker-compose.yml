@@ -9,6 +9,8 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       target: devcontainer_desktop
+      args:
+        DESKTOP_CONFIG_PARENT: devcontainer_base
 
     volumes:
       - ../..:/workspaces:cached

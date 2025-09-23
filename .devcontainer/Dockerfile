@@ -1,3 +1,6 @@
+ARG ANDROID_CONFIG_PARENT=devcontainer_base
+ARG DESKTOP_CONFIG_PARENT=devcontainer_android
+
 # Base Installation
 FROM mcr.microsoft.com/devcontainers/python:1-3.11-bookworm AS devcontainer_base
 
@@ -21,7 +24,7 @@ RUN wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/l
     && rm "flutter_linux_${FLUTTER_VERSION}.tar.xz"
 
 # Android Installation
-FROM devcontainer_base AS devcontainer_android
+FROM $ANDROID_CONFIG_PARENT AS devcontainer_android
 
 RUN echo "Building Android installation." && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends openjdk-17-jdk-headless gradle
@@ -36,7 +39,7 @@ RUN wget "https://dl.google.com/android/repository/commandlinetools-linux-131147
     && chown -R 1000:1000 $ANDROID_HOME
 
 # Desktop Installation
-FROM devcontainer_base AS devcontainer_desktop
+FROM $DESKTOP_CONFIG_PARENT AS devcontainer_desktop
 
 RUN echo "Building desktop installation." && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
