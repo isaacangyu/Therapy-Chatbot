@@ -1,14 +1,14 @@
 include:
-  - emulator-compose.yml
-  - db-compose.yml
-  - cache_db-compose.yml
-  - neo4j-compose.yml
+  - ../emulator-compose.yml
+  - ../db-compose.yml
+  - ../cache_db-compose.yml
+  - ../neo4j-compose.yml
 
 services:
   app:
     build:
       context: ..
-      dockerfile: .devcontainer/Dockerfile
+      dockerfile: Dockerfile
       target: devcontainer_android
       args:
         ANDROID_CONFIG_PARENT: devcontainer_base
