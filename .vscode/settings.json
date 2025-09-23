@@ -3,5 +3,6 @@
     "IDX.aI.enableCodebaseIndexing": true,
     "dart.runPubGetOnPubspecChanges": "never",
     "extensions.ignoreRecommendations": true,
-    "github.codespaces.devcontainerChangedNotificationStyle": "none"
+    "github.codespaces.devcontainerChangedNotificationStyle": "none",
+    "java.server.launchMode": "LightWeight"
 }
