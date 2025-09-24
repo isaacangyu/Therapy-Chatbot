@@ -2,20 +2,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Flutter Run Android",
+            "name": "[UNSTABLE] Flutter Run Android Debug",
             "request": "launch",
             "type": "dart",
+            "flutterMode": "debug",
             "deviceId": "emulator-5554"
         },
         {
-            "name": "Flutter Run Debug",
+            "name": "[UNSTABLE] Flutter Run Android Profile",
             "request": "launch",
             "type": "dart",
+            "flutterMode": "profile",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "[UNSTABLE] Flutter Run Android Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "Flutter Run Web Debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
             "deviceId": "web-server",
             "toolArgs": ["--web-port", "3000"]
         },
         {
-            "name": "Flutter Run Profile",
+            "name": "Flutter Run Web Profile",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
@@ -23,7 +39,7 @@
             "toolArgs": ["--web-port", "3000"]
         },
         {
-            "name": "Flutter Run Release",
+            "name": "Flutter Run Web Release",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",

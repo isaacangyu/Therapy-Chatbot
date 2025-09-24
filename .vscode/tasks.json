@@ -250,6 +250,16 @@
             "type": "shell",
             "command": "./scripts/idx-stop-redis.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "[STABLE] Flutter Run Android Debug",
+            "icon": {
+                "id": "device-mobile",
+                "color": "terminal.ansiCyan"
+            },
+            "type": "shell",
+            "command": "./scripts/flutter-android-debug.sh",
+            "problemMatcher": []
         }
     ]
 }

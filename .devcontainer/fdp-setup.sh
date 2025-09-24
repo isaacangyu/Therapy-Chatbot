@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ANDROID_ENABLED=$([[ "$1" == "android" ]] && echo 1 || echo 0)
+echo "Android Enabled: ${ANDROID_ENABLED}"
+
 setup() {
     (
         set -e
@@ -13,7 +16,7 @@ setup() {
         # Flutter will automatically install the versions for:
         # platforms, build-tools, ndk, cmake.
         # during its first Android run.
-        if [[ "$1" == "android" ]]; then
+        if [[ "$ANDROID_ENABLED" -eq 1 ]]; then
             yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
             yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
         fi
