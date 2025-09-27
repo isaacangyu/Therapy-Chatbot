@@ -39,7 +39,7 @@ class _BreathingPageState extends State<BreathingPage> {
     final theme = Theme.of(context);
     final projectTheme = context.watch<CustomAppTheme>();
     final appState = context.watch<AppState>();
-    final device = MediaQuery.sizeOf(context);
+    final size = MediaQuery.sizeOf(context);
     int time = appState.preferences.timerValue;
     double speed = appState.preferences.speedValue;
     print("loaded time $time, loaded speed $speed");
@@ -76,7 +76,7 @@ class _BreathingPageState extends State<BreathingPage> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(
-                          horizontal: device.width / 3),
+                          horizontal: size.width / 3),
                       child: NumberInputWithIncrementDecrement(
                         controller: _timeController,
                         scaleWidth: 1,
@@ -91,19 +91,19 @@ class _BreathingPageState extends State<BreathingPage> {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.all(device.height / 15),
+                      padding: EdgeInsets.all(size.height / 15),
                       child: ElevatedButton.icon(
                         onPressed: switchPlaying,
                         label: const Icon(Icons.play_arrow),
                         style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(), iconSize: device.height / 8),
+                            shape: const CircleBorder(), iconSize: size.height / 8),
                       ),
                     ),
                     SliderTheme(
                       data: SliderThemeData(
-                          trackHeight: device.height / 10,
+                          trackHeight: size.height / 15,
                           padding: EdgeInsets.symmetric(
-                              vertical: device.height / 20, horizontal: device.width / 10),
+                              vertical: size.height / 20, horizontal: size.width / 10),
                           showValueIndicator: ShowValueIndicator.always),
                       child: Slider(
                         value: speed,
@@ -124,25 +124,21 @@ class _BreathingPageState extends State<BreathingPage> {
                 child: 
                 InkWell(
                   onTap: switchPlaying,
-                  child: Ink(
-                    width: 200,
-                    height: 200,
-                    child: Column(
-                      children: [
-                        _expanding
-                            ? AnimatedOpacity(
-                                opacity: _expanding ? 1.0 : 0.0,
-                                duration: const Duration(milliseconds: 500),
-                                child: Text(breatheInText))
-                            : AnimatedOpacity(
-                                opacity: _expanding ? 0.0 : 1.0,
-                                duration: const Duration(milliseconds: 500),
-                                child: Text(breatheOutText)),
-                        SizedBox(height: device.height / 10),
-                        BreathingAnimation(
-                            speed: speed, time: time, switchExpanding: _switchExpanding)
-                      ],
-                    ),
+                  child: Column(
+                    children: [
+                      _expanding
+                          ? AnimatedOpacity(
+                              opacity: _expanding ? 1.0 : 0.0,
+                              duration: const Duration(milliseconds: 500),
+                              child: Text(breatheInText))
+                          : AnimatedOpacity(
+                              opacity: _expanding ? 0.0 : 1.0,
+                              duration: const Duration(milliseconds: 500),
+                              child: Text(breatheOutText)),
+                      SizedBox(height: size.height / 10),
+                      _playing ? BreathingAnimation(
+                          speed: speed, time: time, switchExpanding: _switchExpanding, switchPlaying: switchPlaying,) : const SizedBox.shrink()
+                    ],
                   ),
                 ),
               ),
@@ -156,14 +152,16 @@ class _BreathingPageState extends State<BreathingPage> {
 
 class BreathingAnimation extends StatefulWidget {
   const BreathingAnimation(
-      {super.key, required double speed, required int time, required Function switchExpanding})
+      {super.key, required double speed, required int time, required Function switchExpanding, required Function switchPlaying})
       : _speed = speed,
         _time = time,
-        _switchExpanding = switchExpanding;
+        _switchExpanding = switchExpanding,
+        _switchPlaying = switchPlaying;
 
   final double _speed;
   final int _time;
   final Function _switchExpanding;
+  final Function _switchPlaying;
 
   @override
   State<BreathingAnimation> createState() => _BreathingAnimationState();
@@ -201,12 +199,13 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
 
   Timer newTimer() {
     return Timer.periodic(Duration(milliseconds: _speed), (timer) {
-      setState(() {
+      setState(() { 
         _scale = _scale == 0.5 ? 1.5 : 0.5;
         widget._switchExpanding();
         print('Time left $_time Speed $_speed');
         _time -= _speed;
         if (_time <= 0) {
+          widget._switchPlaying(); // navigate to original screen when done
           timer.cancel();
         }
       });
