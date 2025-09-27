@@ -1,7 +1,25 @@
 #!/bin/bash
 
-ANDROID_ENABLED=$([[ "$1" == "android" ]] && echo 1 || echo 0)
-echo "Android Enabled: ${ANDROID_ENABLED}"
+# Parse command line options.
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --android)
+            ANDROID_ENABLED=1
+            ;;
+        --desktop)
+            DESKTOP_ENABLED=1
+            ;;
+        *)
+            echo "Invalid option: $1"
+            exit 1
+            ;;
+    esac
+    shift
+done
+        
+
+echo "Android Enabled: $([[ "$ANDROID_ENABLED" ]] && echo 'true' || echo 'false')"
+echo "Desktop Enabled: $([[ "$DESKTOP_ENABLED" ]] && echo 'true' || echo 'false')"
 
 setup() {
     (
@@ -11,14 +29,23 @@ setup() {
         echo 'export PATH=$PATH:'$ANDROID_HOME'/cmdline-tools/latest:'$ANDROID_HOME'/cmdline-tools/latest/bin:'$ANDROID_HOME'/platform-tools' >> ~/.bashrc
 
         pipx install poetry && poetry install
+        # Letting the developer manually trigger the pub get enforce lockfile script 
+        # has some advantages, so we won't do that here.
 
         # Android Development Packages
         # Flutter will automatically install the versions for:
         # platforms, build-tools, ndk, cmake.
         # during its first Android run.
-        if [[ "$ANDROID_ENABLED" -eq 1 ]]; then
+        if [[ "$ANDROID_ENABLED" ]]; then
+            echo "Installing Android development packages..."
             yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
             yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+        fi
+        
+        # Fix a small bug in how Flutter interacts with CMake during the desktop build process.
+        if [[ "$DESKTOP_ENABLED" ]]; then
+            echo "Preparing desktop building..."
+            /usr/local/flutter/bin/flutter clean
         fi
     )
     return $?

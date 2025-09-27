@@ -3,7 +3,7 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	"postCreateCommand": "bash .devcontainer/fdp-setup.sh android",
+	"postCreateCommand": "bash .devcontainer/fdp-setup.sh --android --desktop",
 	"forwardPorts": [3000, 5000, 8000, 7474, 7687, 6080, 9000], // Add 5432 to forward PostgreSQL.
 	"portsAttributes": {
 		"3000": {

@@ -46,4 +46,6 @@ RUN echo "Building desktop installation." && export DEBIAN_FRONTEND=noninteracti
     clang cmake git \
     ninja-build pkg-config \
     libgtk-3-dev liblzma-dev \
-    libstdc++-12-dev
+    libstdc++-12-dev \
+    # The packages below are required for `flutter_secure_storage`.
+    libsecret-1-dev libjsoncpp-dev libsecret-1-0 gnome-keyring dbus-x11

@@ -23,6 +23,27 @@
             "deviceId": "emulator-5554"
         },
         {
+            "name": "Flutter Run Desktop Debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "linux"
+        },
+        {
+            "name": "Flutter Run Desktop Profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "deviceId": "linux"
+        },
+        {
+            "name": "Flutter Run Desktop Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "deviceId": "linux"
+        },
+        {
             "name": "Flutter Run Web Debug",
             "request": "launch",
             "type": "dart",

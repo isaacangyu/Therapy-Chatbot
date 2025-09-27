@@ -52,11 +52,15 @@ class Session {
     if (online) {
       return false;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("This function isn't available offline.")
-      )
-    );
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("This function isn't available offline.")
+        )
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
     return true;
   }
 }
