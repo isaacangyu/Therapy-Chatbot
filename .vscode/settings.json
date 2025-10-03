@@ -1,7 +1,8 @@
 {
-    "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true,
+    "dart.flutterSdkPath": "/usr/local/flutter",
     "dart.runPubGetOnPubspecChanges": "never",
     "extensions.ignoreRecommendations": true,
-    "github.codespaces.devcontainerChangedNotificationStyle": "none"
+    "github.codespaces.devcontainerChangedNotificationStyle": "none",
+    "IDX.aI.enableInlineCompletion": true,
+    "IDX.aI.enableCodebaseIndexing": true
 }
