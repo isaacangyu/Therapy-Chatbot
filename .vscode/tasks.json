@@ -260,6 +260,16 @@
             "type": "shell",
             "command": "./scripts/flutter-android-debug.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Linux Clear Data",
+            "icon": {
+                "id": "terminal-linux",
+                "color": "terminal.ansiMagenta"
+            },
+            "type": "shell",
+            "command": "./scripts/linux-clear-data.sh",
+            "problemMatcher": []
         }
     ]
 }
