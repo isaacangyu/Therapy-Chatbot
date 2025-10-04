@@ -280,6 +280,16 @@
             "type": "shell",
             "command": "./scripts/linux-clear-data.sh",
             "problemMatcher": []
+        },
+        {
+            "label": "Poetry Install Project",
+            "icon": {
+                "id": "python",
+                "color": "terminal.ansiGreen"
+            },
+            "type": "shell",
+            "command": "./scripts/poetry-install.sh",
+            "problemMatcher": []
         }
     ]
 }
