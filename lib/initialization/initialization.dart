@@ -70,9 +70,8 @@ Future<InitializationState> initializeApp(
       seedColor: Color(appState.preferences.data.seedColor),
       dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
     );
-    appState.preferences.updateTimerValue(appState.preferences.data.timerValue);
-    appState.preferences.updateSpeedValue(appState.preferences.data.speedValue);
-    // appState.preferences.data.
+    appState.preferences.timerValue = appState.preferences.data.timerValue;
+    appState.preferences.speedValue = appState.preferences.data.speedValue;
   } catch (e) {
     debugPrint(e.toString());
     return InitializationState(

@@ -31,7 +31,7 @@ class _BreathingPageState extends State<BreathingPage> {
     setState(() {
       _expanding = !_expanding;
     });
-    print('switched expanding to $_expanding');
+    debugPrint('switched expanding to $_expanding');
   }
 
   @override
@@ -42,17 +42,17 @@ class _BreathingPageState extends State<BreathingPage> {
     final size = MediaQuery.sizeOf(context);
     int time = appState.preferences.timerValue;
     double speed = appState.preferences.speedValue;
-    print("loaded time $time, loaded speed $speed");
+    debugPrint("loaded time $time, loaded speed $speed");
 
     void switchPlaying() {
       setState(() {
         _playing = !_playing;
       });
-      print("switched playing to $_playing");
+      debugPrint("switched playing to $_playing");
       final timeInt = int.parse(_timeController.text);
       appState.preferences.updateTimerValue(timeInt);
       appState.preferences.updateSpeedValue(speed);
-      print("updated time with $timeInt and speed with $speed"); // also updates current
+      debugPrint("updated time with $timeInt and speed with $speed"); // also updates current
     }
 
     return Scaffold(
@@ -86,7 +86,7 @@ class _BreathingPageState extends State<BreathingPage> {
                         min: 1,
                         max: 10,
                         onIncrement: (num newlyIncrementedValue) {
-                          print('Newly incremented timer value is $newlyIncrementedValue');
+                          debugPrint('Newly incremented timer value is $newlyIncrementedValue');
                         },
                       ),
                     ),
@@ -202,7 +202,7 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
       setState(() { 
         _scale = _scale == 0.5 ? 1.5 : 0.5;
         widget._switchExpanding(); // switch breathing text
-        print('Time left $_time Speed $_speed Scale $_scale');
+        debugPrint('Time left $_time Speed $_speed Scale $_scale');
         _time -= _speed;
         if (_time <= 0) {
           widget._switchPlaying(); // navigate to original screen when done
