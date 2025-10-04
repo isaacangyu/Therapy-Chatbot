@@ -2,27 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "[UNSTABLE] Flutter Run Android Debug",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "debug",
-            "deviceId": "emulator-5554"
-        },
-        {
-            "name": "[UNSTABLE] Flutter Run Android Profile",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile",
-            "deviceId": "emulator-5554"
-        },
-        {
-            "name": "[UNSTABLE] Flutter Run Android Release",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release",
-            "deviceId": "emulator-5554"
-        },
-        {
             "name": "Flutter Run Desktop Debug",
             "request": "launch",
             "type": "dart",
@@ -66,6 +45,27 @@
             "flutterMode": "release",
             "deviceId": "web-server",
             "toolArgs": ["--web-port", "3000"]
+        },
+        {
+            "name": "[UNSTABLE] Flutter Run Android Debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "[UNSTABLE] Flutter Run Android Profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "[UNSTABLE] Flutter Run Android Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "deviceId": "emulator-5554"
         },
         {
             "name": "Python Django Debug",

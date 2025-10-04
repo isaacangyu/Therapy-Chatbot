@@ -1,48 +1,9 @@
 {
-	"name": "Full Development Environment",
+	"name": "None",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	"postCreateCommand": "bash .devcontainer/fdp-setup.sh --android --desktop",
-	"forwardPorts": [3000, 5000, 8000, 7474, 7687, 6080, 9000], // Add 5432 to forward PostgreSQL.
-	"portsAttributes": {
-		"3000": {
-			"label": "Flutter Web App",
-			"onAutoForward": "silent"
-		},
-		"5000": {
-			"label": "API Test Backend",
-			"onAutoForward": "silent"
-		},
-		"8000": {
-			"label": "Django Backend",
-			"onAutoForward": "silent"
-		},
-		"7474": {
-			"label": "Neo4J Web Interface",
-			"onAutoForward": "silent"
-		},
-		"7687": {
-			"label": "Neo4J Database (required by web interface)",
-			"onAutoForward": "silent"
-		},
-		"6080": {
-			"label": "Android Emulator Web View",
-			"onAutoForward": "silent"
-		},
-		"9000": {
-			"label": "Android Emulator Logs",
-			"onAutoForward": "silent"
-		}
-	},
 	"otherPortsAttributes": {
 		"onAutoForward": "silent"
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"Dart-Code.flutter"
-			]
-		}
 	}
 }
