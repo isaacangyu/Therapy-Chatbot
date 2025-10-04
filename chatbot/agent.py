@@ -81,7 +81,7 @@ graphiti = Graphiti(
     embedder=GeminiEmbedder(
         config=GeminiEmbedderConfig(
             api_key=api_key,
-            embedding_model="embedding-001"
+            embedding_model="gemini-embedding-001"
         )
     )
 )
@@ -288,6 +288,7 @@ async def process_input(user_state: State, user_input: str):
     config = {'configurable': {'thread_id': user_state['user_account_uuid']}}
 
     try:
+        # Requires `REDIS_URL` environment variable even if it was already provided.
         async for event in graph.astream(
             graph_state,
             config=config,
