@@ -1,89 +1,43 @@
+// Start your Codelab here: https://codelabs.developers.google.com/codelabs/flutter-codelab-first#2
+
+import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import '/initialization/splash.dart';
-import '/initialization/notice.dart';
-import '/login/login.dart';
-import '/util/global.dart';
-import '/util/persistence.dart';
-import '/util/theme.dart';
-import '/app_state.dart';
-import '/navigation.dart';
 
 void main() {
-  runApp(MultiProvider(
-    providers: [
-      Provider<AppDatabase>(
-        create: (_) => AppDatabase(),
-        dispose: (context, db) => db.close(),
-      ),
-      Provider<FlutterSecureStorage>(
-        create: (_) => const FlutterSecureStorage()
-      ),
-    ],
-    child: const App(),
-  ));
+  runApp(MyApp());
 }
 
-class App extends StatefulWidget {
-  const App({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  @override
-  State<App> createState() => _AppBase();
-}
-
-class _AppBase extends State<App> {
-  late final AppDatabase database;
-  late final FlutterSecureStorage secureStorage;
-  
-  @override
-  void initState() {
-    super.initState();
-    database = context.read<AppDatabase>();
-    secureStorage = context.read<FlutterSecureStorage>();
-  }
-  
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AppState(database, secureStorage)),
-        ChangeNotifierProvider(create: (_) => CustomAppTheme()),
-      ],
-      child: Consumer2<AppState, CustomAppTheme>(
-        builder: (context, appState, customTheme, child) {
-          return FutureBuilder(
-            future: appState.initializationComplete,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const MaterialApp(
-                  title: Global.appTitle,
-                  home: SplashScreen(),
-                );
-              }
-              
-              if (!snapshot.data!.success) {
-                return MaterialApp(
-                  title: Global.appTitle,
-                  home: NoticeScreen(snapshot.data!.message!),
-                );
-              }
-              
-              var themeData = calculateThemeData(appState.preferences.colorScheme);
-              customTheme.set(themeData);
-              
-              debugPrint('Building main app widget tree.');
-              
-              return MaterialApp(
-                title: Global.appTitle,
-                theme: themeData,
-                home: appState.session.getLoggedIn() 
-                  ? const Navigation() : const LoginPage(),
-              );
-            },
-          );
-        },
+    return ChangeNotifierProvider(
+      create: (context) => MyAppState(),
+      child: MaterialApp(
+        title: 'Namer App',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        ),
+        home: MyHomePage(),
+      ),
+    );
+  }
+}
+
+class MyAppState extends ChangeNotifier {
+  var current = WordPair.random();
+}
+
+class MyHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    return Scaffold(
+      body: Column(
+        children: [Text('A random idea:'), Text(appState.current.asLowerCase)],
       ),
     );
   }
