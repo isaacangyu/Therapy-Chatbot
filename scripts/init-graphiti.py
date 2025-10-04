@@ -13,7 +13,7 @@ from langgraph.checkpoint.redis import AsyncRedisSaver
 
 load_dotenv()
 
-redis_checkpointer_url = os.environ.get("REDIS_URL")
+redis_checkpointer_url = os.environ.get("REDIS_URL", "redis://localhost:6379")
 if not redis_checkpointer_url:
     raise ValueError("REDIS_URL environment variable must be set.")
 

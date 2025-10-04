@@ -11,6 +11,7 @@ FROM devcontainer_none AS devcontainer_base
 
 ENV FLUTTER_VERSION="3.29.0-stable"
 ENV ANDROID_HOME="/usr/local/android_sdk"
+ENV SKIP_POST_CREATE=0
 
 ENV PYTHONUNBUFFERED=1
 

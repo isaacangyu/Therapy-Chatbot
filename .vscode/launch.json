@@ -76,8 +76,8 @@
             ],
             "django": true,
             "autoStartBrowser": false,
-            "program": "${workspaceFolder}/manage.py",
-            "envFile": "${workspaceFolder}/chatbot/.env"
+            // "justMyCode": false,
+            "program": "${workspaceFolder}/manage.py"
         }
     ]
 }
