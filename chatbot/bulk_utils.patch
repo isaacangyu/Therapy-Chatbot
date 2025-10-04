@@ -1,0 +1,33 @@
+--- /home/vscode/.cache/pypoetry/virtualenvs/therapy-chatbot-MJ0EwMlU-py3.11/lib/python3.11/site-packages/graphiti_core/utils/bulk_utils.py	2025-10-04 05:49:32.274231156 +0000
++++ temp/bulk_utils.py	2025-10-04 05:47:49.241770293 +0000
+@@ -14,6 +14,11 @@
+ limitations under the License.
+ """
+ 
++import time, os, asyncio
++
++PATCHED_SLEEP_TIME = float(os.getenv("PATCHED_SLEEP_TIME", 0))
++print(f"Patched Sleep Time: {PATCHED_SLEEP_TIME}")
++
+ import logging
+ import typing
+ from collections import defaultdict
+@@ -124,6 +129,9 @@
+     for node in entity_nodes:
+         if node.name_embedding is None:
+             await node.generate_name_embedding(embedder)
++            
++            await asyncio.sleep(PATCHED_SLEEP_TIME)
++            
+         entity_data: dict[str, Any] = {
+             'uuid': node.uuid,
+             'name': node.name,
+@@ -140,6 +148,8 @@
+     for edge in entity_edges:
+         if edge.fact_embedding is None:
+             await edge.generate_embedding(embedder)
++            
++            await asyncio.sleep(PATCHED_SLEEP_TIME)
+ 
+     await tx.run(EPISODIC_NODE_SAVE_BULK, episodes=episodes)
+     await tx.run(ENTITY_NODE_SAVE_BULK, nodes=nodes)
