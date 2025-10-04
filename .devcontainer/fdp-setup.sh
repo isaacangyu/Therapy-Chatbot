@@ -28,9 +28,11 @@ setup() {
         echo 'export PATH="$PATH:/usr/local/flutter/bin"' >> ~/.bashrc
         echo 'export PATH=$PATH:'$ANDROID_HOME'/cmdline-tools/latest:'$ANDROID_HOME'/cmdline-tools/latest/bin:'$ANDROID_HOME'/platform-tools' >> ~/.bashrc
 
-        pipx install poetry && poetry install
-        # Letting the developer manually trigger the pub get enforce lockfile script 
-        # has some advantages, so we won't do that here.
+        pipx install poetry
+        ./scripts/poetry-install.sh
+        ./scripts/django-migrate.sh
+        ./scripts/init-graphiti.py
+        ./scripts/flutter-enforce-lockfile.sh
 
         # Android Development Packages
         # Flutter will automatically install the versions for:
