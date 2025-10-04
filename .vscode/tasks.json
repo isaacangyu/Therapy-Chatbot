@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Start Servers",
+            "label": "[LEGACY] Start Servers",
             "icon": {
                 "id": "server-process",
                 "color": "terminal.ansiYellow"
@@ -12,7 +12,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Start Frontend",
+            "label": "[LEGACY] Start Frontend",
             "icon": {
                 "id": "browser",
                 "color": "terminal.ansiCyan"

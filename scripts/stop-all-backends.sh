@@ -1,5 +1,6 @@
 #!/bin/bash
-# Equivalent to Ctrl-C on start-all-backends
+
+# Equivalent to Ctrl-C on task "Start All Backends".
 
 ./scripts/idx-stop-neo4j.sh
 ./scripts/idx-stop-redis.sh

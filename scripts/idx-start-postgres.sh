@@ -7,7 +7,7 @@ MAX_ITERATIONS=5
 ITERATION=0
 
 pg_ctl -D .idx/postgres -l .idx/logfile start &
-echo "Started Postgres DB in background"
+echo "Started Postgres DB in background."
 
 echo "Waiting to connect to database server..."
 while ! timeout 1 bash -c "echo > /dev/tcp/localhost/5432" &> /dev/null; do
