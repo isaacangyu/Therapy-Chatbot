@@ -42,6 +42,8 @@ setup() {
             echo "Installing Android development packages..."
             yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
             yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+            # Will automatically install remaining packages.
+            /usr/local/flutter/bin/flutter build apk
         fi
         
         # Fix a small bug in how Flutter interacts with CMake during the desktop build process.
