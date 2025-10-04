@@ -102,13 +102,13 @@
             "problemMatcher": []
         },
         {
-            "label": "IDX: Initialize Database",
+            "label": "IDX: Initialize Environment",
             "icon": {
-                "id": "fold-up",
+                "id": "beaker",
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
-            "command": "./scripts/idx-initdb.sh",
+            "command": "./scripts/idx-init-env.sh",
             "problemMatcher": []
         },
         {
@@ -132,13 +132,13 @@
             "problemMatcher": []
         },
         {
-            "label": "IDX: Delete Database",
+            "label": "IDX: Clear Environment",
             "icon": {
-                "id": "trash",
+                "id": "beaker-stop",
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
-            "command": "./scripts/idx-deletedb.sh",
+            "command": "./scripts/idx-clear-env.sh",
             "problemMatcher": []
         },
         {
@@ -199,6 +199,16 @@
             },
             "type": "shell",
             "command": "./scripts/start-all-backends.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop All Backends",
+            "icon": {
+                "id": "debug-disconnect",
+                "color": "terminal.ansiYellow"
+            },
+            "type": "shell",
+            "command": "./scripts/stop-all-backends.sh",
             "problemMatcher": []
         },
         {

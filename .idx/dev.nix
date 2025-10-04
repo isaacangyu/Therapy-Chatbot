@@ -8,6 +8,7 @@
     pkgs.postgresql
     pkgs.neo4j
     pkgs.redis
+    pkgs.htop
   ];
   idx.extensions = [
     "Dart-Code.dart-code"
