@@ -43,6 +43,7 @@ setup() {
         fi
         
         # Fix a small bug in how Flutter interacts with CMake during the desktop build process.
+        # https://github.com/flutter/flutter/issues/59890
         if [[ "$DESKTOP_ENABLED" ]]; then
             echo "Preparing desktop building..."
             /usr/local/flutter/bin/flutter clean
@@ -51,7 +52,7 @@ setup() {
     return $?
 }
 
-setup
+[[ "$SKIP_POST_CREATE" -eq 0 ]] && setup || echo "SKIP_POST_CREATE is set. Skipping setup."
 
 STATUS=$?
 if [[ $STATUS -ne 0 ]]; then
