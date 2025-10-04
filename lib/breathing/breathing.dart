@@ -17,7 +17,7 @@ class BreathingPage extends StatefulWidget {
 }
 
 class _BreathingPageState extends State<BreathingPage> {
-  bool _expanding = true;
+  bool _expanding = false;
   bool _playing = false;
 
 
@@ -52,7 +52,7 @@ class _BreathingPageState extends State<BreathingPage> {
       final timeInt = int.parse(_timeController.text);
       appState.preferences.updateTimerValue(timeInt);
       appState.preferences.updateSpeedValue(speed);
-      print("updated time with $timeInt and speed with $speed");
+      print("updated time with $timeInt and speed with $speed"); // also updates current
     }
 
     return Scaffold(
@@ -201,8 +201,8 @@ class _BreathingAnimationState extends State<BreathingAnimation> {
     return Timer.periodic(Duration(milliseconds: _speed), (timer) {
       setState(() { 
         _scale = _scale == 0.5 ? 1.5 : 0.5;
-        widget._switchExpanding();
-        print('Time left $_time Speed $_speed');
+        widget._switchExpanding(); // switch breathing text
+        print('Time left $_time Speed $_speed Scale $_scale');
         _time -= _speed;
         if (_time <= 0) {
           widget._switchPlaying(); // navigate to original screen when done
