@@ -80,7 +80,7 @@ graphiti = Graphiti(
     embedder=GeminiEmbedder(
         config=GeminiEmbedderConfig(
             api_key=api_key,
-            embedding_model="embedding-001"
+            embedding_model="gemini-embedding-001"
         )
     )
 )
