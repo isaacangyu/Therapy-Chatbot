@@ -1,4 +1,5 @@
 // Start your Codelab here: https://codelabs.developers.google.com/codelabs/flutter-codelab-first#2
+// Django tutorials: https://docs.djangoproject.com/en/5.2/intro/tutorial01/
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
