@@ -31,6 +31,7 @@ setup() {
         pipx install poetry
         ./scripts/poetry-install.sh
         ./scripts/django-migrate.sh
+        cp .env.example .env
         ./scripts/init-graphiti.py
         ./scripts/flutter-enforce-lockfile.sh
 
