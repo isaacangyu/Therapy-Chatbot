@@ -52,7 +52,6 @@ class _BreathingPageState extends State<BreathingPage> {
       debugPrint("switched playing to $_playing");
       final timeInt = int.parse(_timeController.text);
       appState.preferences.updateTimerValue(timeInt);
-      appState.preferences.updateSpeedValue(speed);
       debugPrint("updated time with $timeInt and speed with $speed"); // also updates current
     }
 
@@ -86,6 +85,7 @@ class _BreathingPageState extends State<BreathingPage> {
                         scaleWidth: 1,
                         scaleHeight: 0.7,
                         incDecBgColor: const Color.fromARGB(255, 131, 221, 246),
+                        buttonArrangement: ButtonArrangement.incRightDecLeft,
                         initialValue: time,
                         min: 1,
                         max: 10,
@@ -111,9 +111,12 @@ class _BreathingPageState extends State<BreathingPage> {
                           showValueIndicator: ShowValueIndicator.always),
                       child: Slider(
                         value: speed,
+                        min: 0.1,
                         onChanged: (value) {
                           setState(() {
                             speed = value;
+                            appState.preferences.updateSpeedValue(speed);
+                            debugPrint('new speed is $speed');
                           });
                         },
                         label: "Speed: ${speed.toStringAsFixed(1)}",
