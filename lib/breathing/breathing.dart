@@ -51,7 +51,6 @@ class _BreathingPageState extends State<BreathingPage> {
       print("switched playing to $_playing");
       final timeInt = int.parse(_timeController.text);
       appState.preferences.updateTimerValue(timeInt);
-      appState.preferences.updateSpeedValue(speed);
       print("updated time with $timeInt and speed with $speed"); // also updates current
     }
 
@@ -82,6 +81,7 @@ class _BreathingPageState extends State<BreathingPage> {
                         scaleWidth: 1,
                         scaleHeight: 0.7,
                         incDecBgColor: const Color.fromARGB(255, 131, 221, 246),
+                        buttonArrangement: ButtonArrangement.incRightDecLeft,
                         initialValue: time,
                         min: 1,
                         max: 10,
@@ -107,9 +107,12 @@ class _BreathingPageState extends State<BreathingPage> {
                           showValueIndicator: ShowValueIndicator.always),
                       child: Slider(
                         value: speed,
+                        min: 0.1,
                         onChanged: (value) {
                           setState(() {
                             speed = value;
+                            appState.preferences.updateSpeedValue(speed);
+                            print('new speed is $speed');
                           });
                         },
                         label: "Speed: ${speed.toStringAsFixed(1)}",
@@ -130,7 +133,7 @@ class _BreathingPageState extends State<BreathingPage> {
                           ? AnimatedOpacity(
                               opacity: _expanding ? 1.0 : 0.0,
                               duration: const Duration(milliseconds: 500),
-                              child: Text(breatheInText))
+                              child: Text(breatheInText, style: L,))
                           : AnimatedOpacity(
                               opacity: _expanding ? 0.0 : 1.0,
                               duration: const Duration(milliseconds: 500),

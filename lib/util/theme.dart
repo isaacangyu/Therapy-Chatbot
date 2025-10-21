@@ -35,13 +35,16 @@ class CustomAppTheme extends ChangeNotifier {
 ThemeData calculateThemeData(ColorScheme colorScheme) {
   var themeData = ThemeData(
     useMaterial3: true,
+    fontFamily: 'Lexend',
     colorScheme: colorScheme,
   );
   return themeData.copyWith(
+    primaryTextTheme: themeData.fontFamily,
     textSelectionTheme: themeData.textSelectionTheme.copyWith(
       selectionColor: themeData.colorScheme.inversePrimary,
       selectionHandleColor: themeData.colorScheme.inversePrimary,
       cursorColor: themeData.colorScheme.onPrimaryContainer,
+      // fontFamily: themeData.fon
     ),
   );
 }

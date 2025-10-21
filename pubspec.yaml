@@ -116,3 +116,25 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: Lexend
+      fonts:
+        - asset: fonts/static/Lexend-Regular.ttf
+        - asset: fonts/static/Lexend-Light.ttf
+          style: light
+        - asset: fonts/static/Lexend-ExtraLight.ttf
+          style: extraLight
+        - asset: fonts/static/Lexend-Light.ttf
+          style: light
+        - asset: fonts/static/Lexend-Bold.ttf
+          style: bold
+        - asset: fonts/static/Lexend-ExtraBold.ttf
+          style: extraBold
+        - asset: fonts/static/Lexend-SemiBold.ttf
+          style: semiBold
+        - asset: fonts/static/Lexend-Thin.ttf
+          style: thin
+        - asset: fonts/static/Lexend-Medium.ttf
+          style: medium
+        - asset: fonts/static/Lexend-Black.ttf
+          style: black
