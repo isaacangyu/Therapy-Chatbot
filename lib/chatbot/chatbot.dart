@@ -105,7 +105,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
           "Chatbot",
           style: theme.textTheme.titleLarge!.copyWith(color: customTheme.inactiveColor)
         ), 
-        backgroundColor: theme.colorScheme.primary
+        backgroundColor: theme.colorScheme.primary,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: customTheme.primaryColor,
       body: appState.session.online ? (_socketStatus == null 

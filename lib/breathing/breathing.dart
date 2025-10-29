@@ -37,6 +37,7 @@ class _BreathingPageState extends State<BreathingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final customTheme = context.watch<CustomAppTheme>();
     final projectTheme = context.watch<CustomAppTheme>();
     final appState = context.watch<AppState>();
     final size = MediaQuery.sizeOf(context);
@@ -59,10 +60,13 @@ class _BreathingPageState extends State<BreathingPage> {
       backgroundColor: projectTheme.primaryColor,
       appBar: AppBar(
         // back button should automatically appear once home page goes to this page, if not set 'leading'
-        title: const Text("Breathing"),
+        title: Text(
+          "Breathing", 
+          style: theme.textTheme.titleLarge!.copyWith(color: customTheme.inactiveColor),
+        ),
         centerTitle: true,
         backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimaryFixed,
+        automaticallyImplyLeading: false,
       ),
       body: Scroll(
         child: Center(
