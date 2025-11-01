@@ -77,4 +77,5 @@ async def agent_response(account, prompt):
         'user_node_uuid': user_node,
         'user_account_uuid': account.id.hex
     }
-    return await agent.process_input(user_state, prompt)
+    async for response in agent.process_input(user_state, prompt):
+        return response

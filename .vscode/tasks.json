@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Start Servers",
+            "label": "[LEGACY] Start Servers",
             "icon": {
                 "id": "server-process",
                 "color": "terminal.ansiYellow"
@@ -12,7 +12,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Start Frontend",
+            "label": "[LEGACY] Start Frontend",
             "icon": {
                 "id": "browser",
                 "color": "terminal.ansiCyan"
@@ -259,6 +259,36 @@
             },
             "type": "shell",
             "command": "./scripts/idx-stop-redis.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "[STABLE] Flutter Run Android Debug",
+            "icon": {
+                "id": "device-mobile",
+                "color": "terminal.ansiCyan"
+            },
+            "type": "shell",
+            "command": "./scripts/flutter-android-debug.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Linux Clear Data",
+            "icon": {
+                "id": "terminal-linux",
+                "color": "terminal.ansiMagenta"
+            },
+            "type": "shell",
+            "command": "./scripts/linux-clear-data.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Poetry Install Project",
+            "icon": {
+                "id": "python",
+                "color": "terminal.ansiGreen"
+            },
+            "type": "shell",
+            "command": "./scripts/poetry-install.sh",
             "problemMatcher": []
         }
     ]

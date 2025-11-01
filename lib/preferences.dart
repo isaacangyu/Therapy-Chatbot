@@ -5,10 +5,11 @@ import '/util/persistence.dart';
 
 class Preferences {
   late final AppState appState;
+  late Preference data;
+  
   late ColorScheme colorScheme;
   late int timerValue;
   late double speedValue;
-  late Preference data;
   
   void updateColorScheme(Color seedColor, double contrastLevel) {
     colorScheme = ColorScheme.fromSeed(
@@ -26,5 +27,4 @@ class Preferences {
   void updateSpeedValue(double newSpeedValue) {
     speedValue = newSpeedValue;
   }
-
 }

@@ -2,14 +2,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Flutter Run Debug",
+            "name": "Flutter Run Desktop Debug",
             "request": "launch",
             "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "linux"
+        },
+        {
+            "name": "Flutter Run Desktop Profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "deviceId": "linux"
+        },
+        {
+            "name": "Flutter Run Desktop Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "deviceId": "linux"
+        },
+        {
+            "name": "Flutter Run Web Debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
             "deviceId": "web-server",
             "toolArgs": ["--web-port", "3000"]
         },
         {
-            "name": "Flutter Run Profile",
+            "name": "Flutter Run Web Profile",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
@@ -17,12 +39,33 @@
             "toolArgs": ["--web-port", "3000"]
         },
         {
-            "name": "Flutter Run Release",
+            "name": "Flutter Run Web Release",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
             "deviceId": "web-server",
             "toolArgs": ["--web-port", "3000"]
+        },
+        {
+            "name": "[UNSTABLE] Flutter Run Android Debug",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "[UNSTABLE] Flutter Run Android Profile",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "deviceId": "emulator-5554"
+        },
+        {
+            "name": "[UNSTABLE] Flutter Run Android Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "deviceId": "emulator-5554"
         },
         {
             "name": "Python Django Debug",
@@ -33,8 +76,8 @@
             ],
             "django": true,
             "autoStartBrowser": false,
-            "program": "${workspaceFolder}/manage.py",
-            "envFile": "${workspaceFolder}/chatbot/.env"
+            // "justMyCode": false,
+            "program": "${workspaceFolder}/manage.py"
         }
     ]
 }

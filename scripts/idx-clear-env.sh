@@ -2,6 +2,5 @@
 
 ./scripts/idx-delete-neo4j.sh
 ./scripts/idx-delete-db.sh
-# rm -rf .idx/postgres/ /run/postgresql/
-rm -r ~/.cache
+rm -r ~/.cache/pypoetry # Other cache directories: .pub-cache, .gradle
 flutter clean

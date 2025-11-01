@@ -105,7 +105,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
           "Chatbot",
           style: theme.textTheme.titleLarge!.copyWith(color: customTheme.inactiveColor)
         ), 
-        backgroundColor: theme.colorScheme.primary
+        backgroundColor: theme.colorScheme.primary,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: customTheme.primaryColor,
       body: appState.session.online ? (_socketStatus == null 
@@ -162,7 +164,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
                               ),
                             ));
                             _messageLog.add(BubbleSpecialThree(
-                              text: message["chatbot"],
+                              // NOTE: "..." is a placeholder for now since the chatbot 
+                              // may respond with an empty string on the backend, 
+                              // which results in a null value here.
+                              text: message["chatbot"] ?? "...",
                               isSender: false,
                               color: theme.colorScheme.secondaryFixedDim,
                               textStyle: theme.textTheme.bodyMedium!.copyWith(

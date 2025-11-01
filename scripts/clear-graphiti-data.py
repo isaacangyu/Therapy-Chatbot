@@ -9,7 +9,7 @@ from graphiti_core.utils.maintenance.graph_data_operations import clear_data
 from graphiti_core.llm_client.gemini_client import GeminiClient, LLMConfig
 from graphiti_core.embedder.gemini import GeminiEmbedder, GeminiEmbedderConfig
 
-load_dotenv(dotenv_path="chatbot/.env")
+load_dotenv()
 
 neo4j_uri = os.environ.get('NEO4J_URI', 'bolt://localhost:7687')
 neo4j_user = os.environ.get('NEO4J_USER', 'neo4j')

@@ -29,10 +29,10 @@ IDX configuration files and environment data (once initialized) can be found und
 **It will take a while** for your app to assemble and be loaded into the emulator, but subsequent usage will be much faster.  
 If you do not see the Android emulator panel, use the command palette (<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd>) to show it with "Show Android Emulator Preview".
 5. Create a PostgreSQL and Neo4j database with the VSCode task "IDX: Initialize Environment". This task only needs to be run once.
-6. Each time you start your workspace, run the task "IDX: Start All Backends" to start the PostgreSQL database and start the Django, Neo4j, and Redis servers.
+6. Each time you start your workspace, run the task "Start All Backends" to start the PostgreSQL database and start the Django, Neo4j, and Redis servers.
     - Additional tasks available are prefixed with "IDX: ".
 7. You'll need to update the CSRF trusted origins. Copy `.env.example` to `.env` and add the scheme + hostname (e.g. `https://8000-idx-xxx.cluster-xxx.cloudworkstations.dev`) to `CSRF_TRUSTED_ORIGINS`.
-8. To stop all servers, hit Ctrl-C on the start all backends task. To debug, run the task "IDX: Clear Environment". This will delete the PostgreSQL and Neo4j databases, and clear Graphiti data. 
+8. To stop all servers, hit <kbd>Ctrl</kbd>+<kbd>C</kbd> on the start all backends task. To debug, run the task "IDX: Clear Environment". This will delete the PostgreSQL and Neo4j databases, and clear Graphiti data. 
 
 > [!Note]
 > Flutter will perform **hot reloads** as opposed to **hot restarts** with the Android Emulator. This loads UI changes faster and preserves the app's state between reloads. To hard restart the app, using the command pallette to run "Firebase Studio: Hard Restart Previews".

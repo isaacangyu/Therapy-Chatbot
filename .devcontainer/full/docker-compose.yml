@@ -1,9 +1,14 @@
+include:
+  - ../emulator-compose.yml
+  - ../db-compose.yml
+  - ../cache_db-compose.yml
+  - ../neo4j-compose.yml
+
 services:
   app:
     build:
       context: ..
-      dockerfile: .devcontainer/Dockerfile
-      target: devcontainer_none
+      dockerfile: Dockerfile
 
     volumes:
       - ../..:/workspaces:cached

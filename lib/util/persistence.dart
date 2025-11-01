@@ -79,11 +79,17 @@ class AppDatabase extends _$AppDatabase {
           },
           from4To5: (m, schema) async {
             await m.deleteTable('Session');
-            await m.alterTable(TableMigration(preferences));
-            await (delete(preferences)..where((t) => t.id.equals(2))).go();
+            m.dropColumn(preferences, 'name');
+            // await (delete(preferences)..where((t) => t.id.equals(2))).go();
             debugPrint('Ran database migration: 4 -> 5');
           },
           from5To6: (m, schema) async {
+            await m.addColumn(preferences, preferences.timerValue);
+            await m.addColumn(preferences, preferences.speedValue);
+            await (update(preferences)..where((t) => t.id.equals(1))).write(const PreferencesCompanion(
+              timerValue: Value(Global.defaultTimerValue),
+              speedValue: Value(Global.defaultSpeedValue)
+            ));
             debugPrint('Ran database migration: 5 -> 6');
           },
         )

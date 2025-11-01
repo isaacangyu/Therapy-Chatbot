@@ -1,15 +1,9 @@
 {
-	"name": "Flutter + Django & PostgreSQL",
+	"name": "None",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-	"postCreateCommand": "sh .devcontainer/fdp-setup.sh",
-	"forwardPorts": [3000, 5000, 8000, 7474, 7687], // Add 5432 to forward PostgreSQL.
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"Dart-Code.flutter"
-			]
-		}
+	"otherPortsAttributes": {
+		"onAutoForward": "silent"
 	}
 }

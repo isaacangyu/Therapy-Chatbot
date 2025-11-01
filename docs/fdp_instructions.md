@@ -1,31 +1,47 @@
-# fdp_template
-This repository contains devcontainer configuration files for a Flutter + Django & PostgreSQL project.  
-The devcontainer is compatible with both GitHub Codespaces and a locally running devcontainer.
+# Dev Container Guide
 
-## Usage
-1. (Optional) Specify package versions (ignore for default versions):
-    - Specify the desired Flutter version using the `FLUTTER_VERSION` environment variable in `.devcontainer/Dockerfile`.
-    - Specify the desired Django version in `requirements.txt`.
-    - All other package versions will likely require modifying the base image used by the Dockerfile.
-2. (Optional) If the devcontainer will be run locally, install the [Dart Debug Extension](https://chrome.google.com/webstore/detail/dart-debug-extension/eljbmlghnomdjgdjmbdekegdkbabckhm).
-3. Create a devcontainer either locally or with GitHub Codespaces. Then, you can optionally connect to your Codespace in VS Code (preferred). 
-> The Flutter SDK path should be `/usr/local/flutter/` (initial / specifies absolute path).
+This Dev Container is compatible with both GitHub Codespaces and a locally running devcontainer.
 
-### Running the App
+> If prompted at any point, the Flutter SDK path should be `/usr/local/flutter/`.
+
+## Running the App
 > Use the command palette (<kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd>) to search and select "Run Task" to see a list of configured tasks.
 
-#### Local devcontainer (faster)
+### Local Dev Container
 **See the [setup guide](./local_setup.md).**
-1. Make sure you have the VS Code Dev Containers extension installed. Create a Dev Container in Remote Explorer and Clone repository in container volume. Set a descriptive name for the volume and keep hitting enter. Your project structure should load. 
-1. Run the "Start API Test Backend" and "Start Backend" tasks to start the Django web server (or "Start All Backends").
-2. Navigate to the debug side bar and launch the "Flutter Run Debug" configuration.
-3. Once the Flutter web server has started, open `localhost:3000` in a browser to view the Flutter app.
-4. Make sure you have the Dart Debug chrome extension installed. Activate (by clicking) the Dart Debug extension and clicking any blank space in the browser. The website should open load. 
-6. (Optional) Open `localhost:8000` to access Django web interfaces.
-- To hot **reload** the Flutter app, press <kbd>CTRL</kbd>+<kbd>S</kbd> (even if autosave is enabled; this can be changed in the VSCode settings).
-7. To close your container, <kbd>CTRL</kbd>+<kbd>SHIFT</kbd>+<kbd>P</kbd> and "Close Remote Connection". 
+1. Make sure you have the VS Code Dev Containers extension installed. Create a Dev Container in Remote Explorer and Clone repository in container volume. Set a descriptive name for the volume and keep hitting enter.
+2. Once connected to the initial container, use the command palette to access the "Switch Container" menu. Switch to a container with your preferred development platform. This option is intended for machine which may struggle to support the Android emulator. All options have web support.
+- If you choose to use the "Full" or "Android" containers, be sure you have adequate storage (32 GB free) and memory (8 GB free).
+- Before switching to the Android container, follow the steps in [these docs](https://developer.android.com/studio/run/emulator-acceleration#vm-linux
+) to enable KVM acceleration on Windows and Linux machines.
+    - Summary: Install the required packages, run `sudo modprobe kvm_<arch>`, verify with `kvm-ok`.
+3. Wait for the post creation script to finish.
+4. Run the "Start API Test Backend" and "Start Backend" tasks to start the Django web server (or "Start All Backends").
 
-#### GitHub Codespace
+#### Desktop
+5. Navigate to the debug side bar and launch the "Flutter Run Desktop Debug" configuration.
+6. You do not need to provide a keyring password if asked, just click "Continue".
+- To hot **reload** the Flutter app, press <kbd>CTRL</kbd>+<kbd>S</kbd> (even if autosave is enabled; this can be changed in the VSCode settings).
+
+#### Android
+5. Open port 6080. If a window containing the booting Android device is not present: right click on the interface, open a terminal, and run `./restart-emulator.sh`.
+6. Run the "[STABLE] Flutter Run Android Debug" task.
+- On Codespaces, you may need to remove port 6080, and then readd it when encountering 5XX errors.
+    - You can also use the "Flutter Run Android Debug" configuration here.
+- To hot **reload** the Flutter app, press <kbd>r</kbd> in the terminal.
+
+#### Web
+5. Navigate to the debug side bar and launch the "Flutter Run Web Debug" configuration.
+6. Once the Flutter web server has started, open `localhost:3000` in a browser to view the Flutter app.
+7. Make sure you have the Dart Debug chrome extension installed. Activate (by clicking) the Dart Debug extension and clicking any blank space in the browser. The website should open load. 
+8. (Optional) Open `localhost:8000` to access Django web interfaces.
+- To hot **restart** the Flutter app, press <kbd>CTRL</kbd>+<kbd>S</kbd> (even if autosave is enabled; this can be changed in the VSCode settings).
+
+___
+
+To close your container, open the command palette and use "Close Remote Connection".
+
+### [LEGACY] GitHub Codespace (Web)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/isaacangyu/Therapy-Chatbot?quickstart=1)
 
