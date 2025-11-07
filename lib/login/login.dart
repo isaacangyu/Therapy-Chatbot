@@ -292,6 +292,7 @@ Future<_LoginState> _login(
     initialKey: password, salt: loginState.salt
   );
   initClientSideEncrypter(keyDetails.key);
+  appState.session.setEncryptionKey(keyDetails.key);
   
   await appState.session.setEmail(email);
   await appState.session.setToken(loginState.token);

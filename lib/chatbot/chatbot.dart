@@ -22,11 +22,25 @@ class _ChatbotPageState extends State<ChatbotPage> {
   WebSocketStatus? _socketStatus;
   final _messageLog = <Widget>[];
   final ScrollController _scrollController = ScrollController();
+  var outgoingMessageCount = 0;
+  
+  // Add a flag and a listener reference to avoid duplicate callbacks.
+  bool _hasReachedTop = false;
+  late VoidCallback _onScrollListener;
 
   void _sendMessage(String message) {
     websocketAddFrame(_socketStatus!.channel!, {
       "type": "message",
       "message": message,
+      "message_encrypted": symmetricEncrypt(message)
+    });
+    ++outgoingMessageCount;
+  }
+  
+  void _echoChatbotReplyEncrypted(String chatbotReply) {
+    websocketAddFrame(_socketStatus!.channel!, {
+      "type": "chatbot_echo",
+      "reply_encrypted": symmetricEncrypt(chatbotReply)
     });
   }
 
@@ -49,6 +63,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
         }
       });
     }
+  }
+  
+  void _fetchPreviousMessages() {
+    debugPrint("Reached top.");
   }
 
   @override
@@ -81,11 +99,26 @@ class _ChatbotPageState extends State<ChatbotPage> {
         );
       }
     });
+    
+    _onScrollListener = () {
+      if (!_scrollController.hasClients) return;
+      final pos = _scrollController.position.pixels;
+      if (pos <= 0.0) {
+        if (!_hasReachedTop) {
+          _hasReachedTop = true;
+          _fetchPreviousMessages();
+        }
+      } else {
+        _hasReachedTop = false;
+      }
+    };
+    _scrollController.addListener(_onScrollListener);
   }
   
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.removeListener(_onScrollListener);
     _scrollController.dispose();
     if (_socketStatus != null && _socketStatus!.channel != null) {
       websocketClose(_socketStatus!.channel!);
@@ -155,25 +188,33 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         switch (responseCode) {
                           case 0:
                             var message = chatbotResponse['response'];
+                            var isOutgoingMessage = outgoingMessageCount > 0;
+                            if (!isOutgoingMessage) {
+                              _messageLog.add(BubbleSpecialThree(
+                                text: message["user"],
+                                isSender: true,
+                                color: theme.colorScheme.secondaryFixedDim,
+                                textStyle: theme.textTheme.bodyMedium!.copyWith(
+                                  color: theme.colorScheme.onSecondaryFixed,
+                                ),
+                              ));
+                            }
+                            // NOTE: "..." is a placeholder for now since the chatbot 
+                            // may respond with an empty string on the backend, 
+                            // which results in a null value here.
+                            var chatbotMessage = message["chatbot"] ?? "...";
                             _messageLog.add(BubbleSpecialThree(
-                              text: message["user"],
-                              isSender: true,
-                              color: theme.colorScheme.secondaryFixedDim,
-                              textStyle: theme.textTheme.bodyMedium!.copyWith(
-                                color: theme.colorScheme.onSecondaryFixed,
-                              ),
-                            ));
-                            _messageLog.add(BubbleSpecialThree(
-                              // NOTE: "..." is a placeholder for now since the chatbot 
-                              // may respond with an empty string on the backend, 
-                              // which results in a null value here.
-                              text: message["chatbot"] ?? "...",
+                              text: chatbotMessage,
                               isSender: false,
                               color: theme.colorScheme.secondaryFixedDim,
                               textStyle: theme.textTheme.bodyMedium!.copyWith(
                                 color: theme.colorScheme.onSecondaryFixed,
                               ),
                             ));
+                            if (isOutgoingMessage) {
+                              _echoChatbotReplyEncrypted(chatbotMessage);
+                              --outgoingMessageCount;
+                            }
                             break;
                           case 2:
                             _messageLog.add(BubbleSpecialThree(
@@ -236,7 +277,17 @@ class _ChatbotPageState extends State<ChatbotPage> {
               ),
             ),
             MessageBar(
-              onSend: (message) => _sendMessage(message),
+              onSend: (message) {
+                _messageLog.add(BubbleSpecialThree(
+                  text: message,
+                  isSender: true,
+                  color: theme.colorScheme.secondaryFixedDim,
+                  textStyle: theme.textTheme.bodyMedium!.copyWith(
+                    color: theme.colorScheme.onSecondaryFixed,
+                  ),
+                ));
+                _sendMessage(message);
+              },
               // actions: [
               // ],
               sendButtonColor: customTheme.activeColor,
