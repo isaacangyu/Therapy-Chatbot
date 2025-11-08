@@ -1,0 +1,2 @@
+mkdir djangotutorial
+cd djangotutorial

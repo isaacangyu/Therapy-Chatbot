@@ -57,6 +57,8 @@ dependencies:
   chat_bubbles: ^1.7.0
   blobs: ^2.0.0
   number_inc_dec: ^0.8.0
+  english_words: ^4.0.0
+  google_fonts: ^6.3.2
 
 dev_dependencies:
   flutter_test:

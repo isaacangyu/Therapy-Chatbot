@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'api_service.dart';
-
 
 void main() {
   runApp(JournalApp());
@@ -39,38 +37,19 @@ class JournalPage extends StatefulWidget {
 
 class JournalPageState extends State<JournalPage> {
   final TextEditingController textCtrl = TextEditingController();
-  List<JournalEntry> journalList = [];
+  final List<JournalEntry> journalList = [];
 
-  // Fetch all entries from Django API
-  Future<void> loadEntries() async {
-    try {
-      final data = await fetchEntries();
-      setState(() {
-        journalList = data.map((e) => JournalEntry(
-          e['content'],
-          DateTime.parse(e['date']),
-        )).toList();
-      });
-    } catch (e) {
-      print("Error loading entries: $e");
-    }
-  }
-
-  // Add new entry to API
-  Future<void> addEntry() async {
+  void addEntry() {
     final entryText = textCtrl.text.trim();
-    if (entryText.isEmpty) return;
-
-    try {
-      await addEntryToApi(entryText);
-      textCtrl.clear();
-      loadEntries(); // refresh after adding
-    } catch (e) {
-      print("Error adding entry: $e");
+    if (entryText.isNotEmpty) {
+      setState(() {
+        final now = DateTime.now().toLocal();
+        journalList.insert(0, JournalEntry(entryText, now));
+        textCtrl.clear();
+      });
     }
   }
 
-  // Group entries by date
   Map<String, List<JournalEntry>> groupByDate() {
     final Map<String, List<JournalEntry>> grouped = {};
     for (var entry in journalList) {
@@ -87,12 +66,6 @@ class JournalPageState extends State<JournalPage> {
 
   String formatTime(DateTime date) {
     return DateFormat('h:mm a').format(date.toLocal());
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadEntries();
   }
 
   @override
