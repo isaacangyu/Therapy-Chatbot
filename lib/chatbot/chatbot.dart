@@ -70,14 +70,48 @@ class _ChatbotPageState extends State<ChatbotPage> {
   
   void _fetchPreviousMessages() async {
     var appState = context.read<AppState>();
+    var theme = Theme.of(context);
     
     var recentHistory = await httpPostSecure(
       "${API.recentHistory}$oldestMessageTimestamp/",
       includeToken(appState.session.getEmail()!, appState.session.getToken()!, {}),
-      (json) => json,
+      (json) => json["success"] ? json["log"] : null,
       (status) => null,
     );
-    debugPrint(jsonEncode(recentHistory));
+    if (recentHistory == null) {
+      return;
+    }
+    
+    if (recentHistory.isNotEmpty) {
+      // We'll accept losing some time precision for now.
+      oldestMessageTimestamp = recentHistory.last["timestamp"].toInt();
+      debugPrint("Loaded old messages from UNIX time: $oldestMessageTimestamp");
+    }
+    for (var message in recentHistory) {
+      if (message["sender"] == "Sender.USER") {
+        setState(() {
+          _messageLog.insert(0, BubbleSpecialThree(
+            text: symmetricDecrypt(message["encrypted_content"], clientEncrypter!),
+            isSender: true,
+            color: theme.colorScheme.secondaryFixedDim,
+            textStyle: theme.textTheme.bodyMedium!.copyWith(
+              color: theme.colorScheme.onSecondaryFixed,
+            ),
+          ));
+        });
+      } else if (message["sender"] == "Sender.CHATBOT") {
+        setState(() {
+          _messageLog.insert(0, BubbleSpecialThree(
+            text: symmetricDecrypt(message["encrypted_content"], clientEncrypter!),
+            isSender: false,
+            color: theme.colorScheme.secondaryFixedDim,
+            textStyle: theme.textTheme.bodyMedium!.copyWith(
+              color: theme.colorScheme.onSecondaryFixed,
+            ),
+          ));
+        });
+      }
+    }
   }
 
   @override
@@ -291,14 +325,16 @@ class _ChatbotPageState extends State<ChatbotPage> {
             ),
             MessageBar(
               onSend: (message) {
-                _messageLog.add(BubbleSpecialThree(
-                  text: message,
-                  isSender: true,
-                  color: theme.colorScheme.secondaryFixedDim,
-                  textStyle: theme.textTheme.bodyMedium!.copyWith(
-                    color: theme.colorScheme.onSecondaryFixed,
-                  ),
-                ));
+                setState(() {
+                  _messageLog.add(BubbleSpecialThree(
+                    text: message,
+                    isSender: true,
+                    color: theme.colorScheme.secondaryFixedDim,
+                    textStyle: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSecondaryFixed,
+                    ),
+                  ));
+                });
                 _sendMessage(message);
               },
               // actions: [
