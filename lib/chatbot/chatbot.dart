@@ -64,9 +64,20 @@ class _ChatbotPageState extends State<ChatbotPage> {
       });
     }
   }
+    
+  // Using 0 for now to indicate that no messages have been fetched yet.
+  int oldestMessageTimestamp = 0;
   
-  void _fetchPreviousMessages() {
-    debugPrint("Reached top.");
+  void _fetchPreviousMessages() async {
+    var appState = context.read<AppState>();
+    
+    var recentHistory = await httpPostSecure(
+      "${API.recentHistory}$oldestMessageTimestamp/",
+      includeToken(appState.session.getEmail()!, appState.session.getToken()!, {}),
+      (json) => json,
+      (status) => null,
+    );
+    debugPrint(jsonEncode(recentHistory));
   }
 
   @override
@@ -98,6 +109,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
           )
         );
       }
+      
+      _fetchPreviousMessages();
     });
     
     _onScrollListener = () {
