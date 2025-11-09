@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '/journal/journal.dart';
+
 
 import '/widgets/adaptive_scaffold.dart';
 import '/chatbot/chatbot.dart';
@@ -17,6 +19,7 @@ class _NavigationState extends State<Navigation> {
   final pages = <Widget>[
     const ChatbotPage(),
     const BreathingPage(),
+    JournalApp()
   ];
   
   @override
@@ -53,6 +56,10 @@ class _NavigationState extends State<Navigation> {
         AdaptiveScaffoldDestination(
           title: 'Breathing',
           icon: Icons.cloud,
+        ),
+        AdaptiveScaffoldDestination(
+          title: 'Journal',
+          icon: Icons.book,
         ),
       ],
       currentIndex: _pageIndex,

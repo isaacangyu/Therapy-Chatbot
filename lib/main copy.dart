@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '/api_service.dart';
 import 'package:intl/intl.dart';
-// import 'journal_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'api_service.dart';
+
+
+void main() {
+  runApp(JournalApp());
+}
 
 class JournalApp extends StatelessWidget {
   @override
