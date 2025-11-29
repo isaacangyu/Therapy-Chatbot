@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/widgets/adaptive_scaffold.dart';
 import '/chatbot/chatbot.dart';
 import '/breathing/breathing.dart';
+import '/profile/profile.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -16,7 +17,8 @@ class _NavigationState extends State<Navigation> {
 
   final pages = <Widget>[
     const ChatbotPage(),
-    const BreathingPage(),
+    const BreathingPage(), 
+    const ProfilePage(),
   ];
   
   @override
@@ -54,6 +56,10 @@ class _NavigationState extends State<Navigation> {
           title: 'Breathing',
           icon: Icons.cloud,
         ),
+        AdaptiveScaffoldDestination(
+          title: 'Profile',
+          icon: Icons.person
+        )
       ],
       currentIndex: _pageIndex,
       onNavigationIndexChange: (value) {

@@ -54,7 +54,7 @@ class Session {
     await secureStorage.write(key: _SecureStorageKeys.loggedIn, value: loggedIn ? '1' : '0');
   }
   
-  Future<void> setEncryptionKey(String encryptionKeyBase64) async {
+  Future<void> setEncryptionKey(String? encryptionKeyBase64) async {
     await secureStorage.write(key: _SecureStorageKeys.encryptionKey, value: encryptionKeyBase64);
   }
   

@@ -62,3 +62,17 @@ def login_token(request, form):
         return {"valid": True} if account == session.account else {"valid": False}
     except (Session.DoesNotExist, Account.DoesNotExist):
         return {"valid": False}
+
+@utils.require_POST_OPTIONS
+@utils.app_view
+@utils.decrypt_body
+def update_info(request, form):
+    account = Account.objects.get(email=form.get("_email"))
+    session = Session.objects.get(token=form.get("_token"))
+    new_account_email = form.get("email")
+    if account != session.account or new_account_email is None:
+        return {"success": False}
+    
+    account.email = new_account_email
+    account.save()
+    return {"success": True}

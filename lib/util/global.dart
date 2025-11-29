@@ -18,6 +18,7 @@ class API {
   static const loginPassword = 'account/login/password/';
   static const loginToken = 'account/login/token/';
   static const recentHistory = 'chatbot/recent_history/';
+  static const updateInfo = 'account/update_info/';
   
   static const wsChatbot = 'ws/chatbot/';
 }

@@ -104,7 +104,7 @@ class AppDatabase extends _$AppDatabase {
     onCreate: (m) async {
       await m.createAll();
       
-      await into(preferences).insert(Global.defaultUserPreferences);
+      await insertDatabaseDefaults();
     },
     beforeOpen: (details) async {
       if (!kDebugMode) {
@@ -118,7 +118,29 @@ class AppDatabase extends _$AppDatabase {
     }
   );
 
+  Future<void> insertDatabaseDefaults() async {
+    await into(preferences).insert(Global.defaultUserPreferences);
+  }
+
   Future<Preference> getUserPreferences() {
     return (select(preferences)..where((t) => t.id.equals(1))).getSingle();
+  }
+  
+  Future<void> dropAllTables() async {
+    // Note: This method is under construction. It breaks the database.
+    
+    // https://github.com/simolus3/drift/issues/265
+    await customStatement('PRAGMA foreign_keys = OFF');
+    try {
+      await transaction(() async {
+        for (final table in allTables) {
+          await delete(table).go();
+        }
+        await insertDatabaseDefaults();
+      });
+      debugPrint("Cleared database.");
+    } finally {
+      await customStatement('PRAGMA foreign_keys = ON');
+    }
   }
 }
