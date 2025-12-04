@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const String baseUrl = "http://127.0.0.1:8000/api/entries/";
+const String baseUrl = "http://127.0.0.1:8001/api/entries/";
 
 // POST new entry
 Future<void> addEntryToApi(String content) async {

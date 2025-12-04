@@ -67,6 +67,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
     
   // Using 0 for now to indicate that no messages have been fetched yet.
   int oldestMessageTimestamp = 0;
+  Map<String, dynamic>? lastMessageText;
   
   void _fetchPreviousMessages() async {
     var appState = context.read<AppState>();
@@ -235,6 +236,13 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         switch (responseCode) {
                           case 0:
                             var message = chatbotResponse['response'];
+                            if (lastMessageText != null 
+                              && message["user"] == lastMessageText!["user"] 
+                              && message["chatbot"] == lastMessageText!["chatbot"]
+                            ) { // Temporary workaround.
+                              break;
+                            }
+                            lastMessageText = message;
                             var isOutgoingMessage = outgoingMessageCount > 0;
                             if (!isOutgoingMessage) {
                               _messageLog.add(BubbleSpecialThree(

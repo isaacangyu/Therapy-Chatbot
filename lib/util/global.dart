@@ -30,7 +30,7 @@ class Global {
   static const rsaKeySizeBytes = rsaKeySizeBits ~/ 8;
   static late bool showLegal;
   
-  static const appTitle = kDebugMode ? '[DEBUG] Therapy Chatbot' : 'Therapy Chatbot';
+  static const appTitle = kDebugMode ? '[DEBUG] Mental Health App' : 'Mental Health App';
   
   static final defaultSeedColor = const Color.fromARGB(255, 100, 180, 100).toARGB32();
   static const int defaultTimerValue = 1;

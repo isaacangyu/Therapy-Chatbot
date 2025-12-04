@@ -6,7 +6,7 @@ from core import utils
 from core.models import Account, Session
 from chatbot.models import Conversation
 
-RECENT_HISTORY_REQUEST_COUNT = 10
+RECENT_HISTORY_REQUEST_COUNT = 20
 
 @utils.app_view
 @utils.decrypt_body
