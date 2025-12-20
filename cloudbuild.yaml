@@ -2,9 +2,9 @@ steps:
 - name: "gcr.io/cloud-builders/docker"
   args:
   - build
-  - "--tag=gcr.io/$mental-health-app-479702/quickstart-image"
-  - "--file=./.devcontainer/Dockerfile"
+  - "--tag=gcr.io/$mental-health-app-479702/python-image"
+  - "--file=./.cloud/Dockerfile"
   - .
 
 images:
-- "gcr.io/$PROJECT_ID/quickstart-image"
+- "gcr.io/$mental-health-app-479702/python-image"
