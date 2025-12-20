@@ -11,5 +11,5 @@ images:
 
 serviceAccount: “1435599822-compute@developer.gserviceaccount.com”
 
-logging:
+options:
   logging: CLOUD_LOGGING_ONLY
