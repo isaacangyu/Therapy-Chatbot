@@ -22,11 +22,25 @@ class _ChatbotPageState extends State<ChatbotPage> {
   WebSocketStatus? _socketStatus;
   final _messageLog = <Widget>[];
   final ScrollController _scrollController = ScrollController();
+  var outgoingMessageCount = 0;
+  
+  // Add a flag and a listener reference to avoid duplicate callbacks.
+  bool _hasReachedTop = false;
+  late VoidCallback _onScrollListener;
 
   void _sendMessage(String message) {
     websocketAddFrame(_socketStatus!.channel!, {
       "type": "message",
       "message": message,
+      "message_encrypted": symmetricEncrypt(message)
+    });
+    ++outgoingMessageCount;
+  }
+  
+  void _echoChatbotReplyEncrypted(String chatbotReply) {
+    websocketAddFrame(_socketStatus!.channel!, {
+      "type": "chatbot_echo",
+      "reply_encrypted": symmetricEncrypt(chatbotReply)
     });
   }
 
@@ -48,6 +62,55 @@ class _ChatbotPageState extends State<ChatbotPage> {
           );
         }
       });
+    }
+  }
+    
+  // Using 0 for now to indicate that no messages have been fetched yet.
+  int oldestMessageTimestamp = 0;
+  
+  void _fetchPreviousMessages() async {
+    var appState = context.read<AppState>();
+    var theme = Theme.of(context);
+    
+    var recentHistory = await httpPostSecure(
+      "${API.recentHistory}$oldestMessageTimestamp/",
+      includeToken(appState.session.getEmail()!, appState.session.getToken()!, {}),
+      (json) => json["success"] ? json["log"] : null,
+      (status) => null,
+    );
+    if (recentHistory == null) {
+      return;
+    }
+    
+    if (recentHistory.isNotEmpty) {
+      // We'll accept losing some time precision for now.
+      oldestMessageTimestamp = recentHistory.last["timestamp"].toInt();
+      debugPrint("Loaded old messages from UNIX time: $oldestMessageTimestamp");
+    }
+    for (var message in recentHistory) {
+      if (message["sender"] == "Sender.USER") {
+        setState(() {
+          _messageLog.insert(0, BubbleSpecialThree(
+            text: symmetricDecrypt(message["encrypted_content"], clientEncrypter!),
+            isSender: true,
+            color: theme.colorScheme.secondaryFixedDim,
+            textStyle: theme.textTheme.bodyMedium!.copyWith(
+              color: theme.colorScheme.onSecondaryFixed,
+            ),
+          ));
+        });
+      } else if (message["sender"] == "Sender.CHATBOT") {
+        setState(() {
+          _messageLog.insert(0, BubbleSpecialThree(
+            text: symmetricDecrypt(message["encrypted_content"], clientEncrypter!),
+            isSender: false,
+            color: theme.colorScheme.secondaryFixedDim,
+            textStyle: theme.textTheme.bodyMedium!.copyWith(
+              color: theme.colorScheme.onSecondaryFixed,
+            ),
+          ));
+        });
+      }
     }
   }
 
@@ -80,12 +143,29 @@ class _ChatbotPageState extends State<ChatbotPage> {
           )
         );
       }
+      
+      _fetchPreviousMessages();
     });
+    
+    _onScrollListener = () {
+      if (!_scrollController.hasClients) return;
+      final pos = _scrollController.position.pixels;
+      if (pos <= 0.0) {
+        if (!_hasReachedTop) {
+          _hasReachedTop = true;
+          _fetchPreviousMessages();
+        }
+      } else {
+        _hasReachedTop = false;
+      }
+    };
+    _scrollController.addListener(_onScrollListener);
   }
   
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.removeListener(_onScrollListener);
     _scrollController.dispose();
     if (_socketStatus != null && _socketStatus!.channel != null) {
       websocketClose(_socketStatus!.channel!);
@@ -105,7 +185,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
           "Chatbot",
           style: theme.textTheme.titleLarge!.copyWith(color: customTheme.inactiveColor)
         ), 
-        backgroundColor: theme.colorScheme.primary
+        backgroundColor: theme.colorScheme.primary,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       backgroundColor: customTheme.primaryColor,
       body: appState.session.online ? (_socketStatus == null 
@@ -153,25 +235,33 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         switch (responseCode) {
                           case 0:
                             var message = chatbotResponse['response'];
+                            var isOutgoingMessage = outgoingMessageCount > 0;
+                            if (!isOutgoingMessage) {
+                              _messageLog.add(BubbleSpecialThree(
+                                text: message["user"],
+                                isSender: true,
+                                color: theme.colorScheme.secondaryFixedDim,
+                                textStyle: theme.textTheme.bodyMedium!.copyWith(
+                                  color: theme.colorScheme.onSecondaryFixed,
+                                ),
+                              ));
+                            }
+                            // NOTE: "..." is a placeholder for now since the chatbot 
+                            // may respond with an empty string on the backend, 
+                            // which results in a null value here.
+                            var chatbotMessage = message["chatbot"] ?? "...";
                             _messageLog.add(BubbleSpecialThree(
-                              text: message["user"],
-                              isSender: true,
-                              color: theme.colorScheme.secondaryFixedDim,
-                              textStyle: theme.textTheme.bodyMedium!.copyWith(
-                                color: theme.colorScheme.onSecondaryFixed,
-                              ),
-                            ));
-                            _messageLog.add(BubbleSpecialThree(
-                              // NOTE: "..." is a placeholder for now since the chatbot 
-                              // may respond with an empty string on the backend, 
-                              // which results in a null value here.
-                              text: message["chatbot"] ?? "...",
+                              text: chatbotMessage,
                               isSender: false,
                               color: theme.colorScheme.secondaryFixedDim,
                               textStyle: theme.textTheme.bodyMedium!.copyWith(
                                 color: theme.colorScheme.onSecondaryFixed,
                               ),
                             ));
+                            if (isOutgoingMessage) {
+                              _echoChatbotReplyEncrypted(chatbotMessage);
+                              --outgoingMessageCount;
+                            }
                             break;
                           case 2:
                             _messageLog.add(BubbleSpecialThree(
@@ -234,7 +324,19 @@ class _ChatbotPageState extends State<ChatbotPage> {
               ),
             ),
             MessageBar(
-              onSend: (message) => _sendMessage(message),
+              onSend: (message) {
+                setState(() {
+                  _messageLog.add(BubbleSpecialThree(
+                    text: message,
+                    isSender: true,
+                    color: theme.colorScheme.secondaryFixedDim,
+                    textStyle: theme.textTheme.bodyMedium!.copyWith(
+                      color: theme.colorScheme.onSecondaryFixed,
+                    ),
+                  ));
+                });
+                _sendMessage(message);
+              },
               // actions: [
               // ],
               sendButtonColor: customTheme.activeColor,

@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Start Servers",
+            "label": "[LEGACY] Start Servers",
             "icon": {
                 "id": "server-process",
                 "color": "terminal.ansiYellow"
@@ -12,7 +12,7 @@
             "problemMatcher": []
         },
         {
-            "label": "Start Frontend",
+            "label": "[LEGACY] Start Frontend",
             "icon": {
                 "id": "browser",
                 "color": "terminal.ansiCyan"
@@ -102,13 +102,13 @@
             "problemMatcher": []
         },
         {
-            "label": "IDX: Initialize Database",
+            "label": "IDX: Initialize Environment",
             "icon": {
-                "id": "fold-up",
+                "id": "beaker",
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
-            "command": "./scripts/idx-initdb.sh",
+            "command": "./scripts/idx-init-env.sh",
             "problemMatcher": []
         },
         {
@@ -132,13 +132,13 @@
             "problemMatcher": []
         },
         {
-            "label": "IDX: Delete Database",
+            "label": "IDX: Clear Environment",
             "icon": {
-                "id": "trash",
+                "id": "beaker-stop",
                 "color": "terminal.ansiRed"
             },
             "type": "shell",
-            "command": "./scripts/idx-deletedb.sh",
+            "command": "./scripts/idx-clear-env.sh",
             "problemMatcher": []
         },
         {
@@ -199,6 +199,16 @@
             },
             "type": "shell",
             "command": "./scripts/start-all-backends.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop All Backends",
+            "icon": {
+                "id": "debug-disconnect",
+                "color": "terminal.ansiYellow"
+            },
+            "type": "shell",
+            "command": "./scripts/stop-all-backends.sh",
             "problemMatcher": []
         },
         {
@@ -269,6 +279,16 @@
             },
             "type": "shell",
             "command": "./scripts/linux-clear-data.sh",
+            "problemMatcher": []
+        },
+        {
+            "label": "Poetry Install Project",
+            "icon": {
+                "id": "python",
+                "color": "terminal.ansiGreen"
+            },
+            "type": "shell",
+            "command": "./scripts/poetry-install.sh",
             "problemMatcher": []
         }
     ]

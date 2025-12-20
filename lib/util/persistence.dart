@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(DatabaseConnection super.connection);
   
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -79,9 +79,18 @@ class AppDatabase extends _$AppDatabase {
           },
           from4To5: (m, schema) async {
             await m.deleteTable('Session');
-            await m.alterTable(TableMigration(preferences));
-            await (delete(preferences)..where((t) => t.id.equals(2))).go();
+            m.dropColumn(preferences, 'name');
+            // await (delete(preferences)..where((t) => t.id.equals(2))).go();
             debugPrint('Ran database migration: 4 -> 5');
+          },
+          from5To6: (m, schema) async {
+            await m.addColumn(preferences, preferences.timerValue);
+            await m.addColumn(preferences, preferences.speedValue);
+            await (update(preferences)..where((t) => t.id.equals(1))).write(const PreferencesCompanion(
+              timerValue: Value(Global.defaultTimerValue),
+              speedValue: Value(Global.defaultSpeedValue)
+            ));
+            debugPrint('Ran database migration: 5 -> 6');
           },
         )
       ));
@@ -95,7 +104,7 @@ class AppDatabase extends _$AppDatabase {
     onCreate: (m) async {
       await m.createAll();
       
-      await into(preferences).insert(Global.defaultUserPreferences);
+      await insertDatabaseDefaults();
     },
     beforeOpen: (details) async {
       if (!kDebugMode) {
@@ -109,7 +118,29 @@ class AppDatabase extends _$AppDatabase {
     }
   );
 
+  Future<void> insertDatabaseDefaults() async {
+    await into(preferences).insert(Global.defaultUserPreferences);
+  }
+
   Future<Preference> getUserPreferences() {
     return (select(preferences)..where((t) => t.id.equals(1))).getSingle();
+  }
+  
+  Future<void> dropAllTables() async {
+    // Note: This method is under construction. It breaks the database.
+    
+    // https://github.com/simolus3/drift/issues/265
+    await customStatement('PRAGMA foreign_keys = OFF');
+    try {
+      await transaction(() async {
+        for (final table in allTables) {
+          await delete(table).go();
+        }
+        await insertDatabaseDefaults();
+      });
+      debugPrint("Cleared database.");
+    } finally {
+      await customStatement('PRAGMA foreign_keys = ON');
+    }
   }
 }

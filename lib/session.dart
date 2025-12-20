@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '/util/crypto.dart';
 
 import '/app_state.dart';
 
@@ -15,6 +16,11 @@ class Session {
     _email = await secureStorage.read(key: _SecureStorageKeys.email);
     _token = await secureStorage.read(key: _SecureStorageKeys.token);
     _loggedIn = await secureStorage.read(key: _SecureStorageKeys.loggedIn) == '1';
+    var encryptionKey = await secureStorage.read(key: _SecureStorageKeys.encryptionKey);
+    
+    if (_loggedIn && encryptionKey != null) {
+      initClientSideEncrypter(encryptionKey);
+    }
   }
   
   void setOnline(bool state) {
@@ -48,6 +54,10 @@ class Session {
     await secureStorage.write(key: _SecureStorageKeys.loggedIn, value: loggedIn ? '1' : '0');
   }
   
+  Future<void> setEncryptionKey(String? encryptionKeyBase64) async {
+    await secureStorage.write(key: _SecureStorageKeys.encryptionKey, value: encryptionKeyBase64);
+  }
+  
   bool offline(BuildContext context) {
     if (online) {
       return false;
@@ -69,4 +79,5 @@ class _SecureStorageKeys {
   static const email = 'email';
   static const token = 'token';
   static const loggedIn = 'logged_in';
+  static const encryptionKey = "encryption_key";
 }

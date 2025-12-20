@@ -46,7 +46,8 @@ class ChatbotConsumer(AsyncWebsocketConsumer):
                 return
 
             message = json_data.get("message")
-            if message is None:
+            message_encrypted = json_data.get("message_encrypted")
+            if message is None or message_encrypted is None:
                 await ws_process_out(self, {"status": 2})
                 return
             
@@ -58,6 +59,20 @@ class ChatbotConsumer(AsyncWebsocketConsumer):
                     "response": {"user": message, "chatbot": chatbot_response}
                 }
             )
+            
+            conversation = await database_sync_to_async(lambda: Conversation.objects.get(account=self.account))()
+            await database_sync_to_async(lambda: conversation.add_user_message(message_encrypted))()
+        elif frame_type == "chatbot_echo":
+            if not self.authenticated:
+                await self.close(code=3003)
+                return
+
+            reply_encrypted = json_data.get("reply_encrypted")
+            if reply_encrypted is None:
+                await ws_process_out(self, {"status": 2})
+                return
+            conversation = await database_sync_to_async(lambda: Conversation.objects.get(account=self.account))()
+            await database_sync_to_async(lambda: conversation.add_chatbot_reply(reply_encrypted))()
         else:
             await ws_process_out(self, {"status": 3})
     

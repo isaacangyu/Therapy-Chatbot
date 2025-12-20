@@ -10,6 +10,18 @@ class Conversation(models.Model):
     )
     creation_date    = models.DateTimeField(auto_now_add=True)
     termination_date = models.DateTimeField(null=True, blank=True)
+    
+    def add_user_message(self, message_encrypted):
+        message_store = Message.objects.create(
+            session=self, sender=Message.Sender.USER, encrypted_content=message_encrypted.encode()
+        )
+        message_store.save()
+    
+    def add_chatbot_reply(self, reply_encrypted):
+        reply_store = Message.objects.create(
+            session=self, sender=Message.Sender.CHATBOT, encrypted_content=reply_encrypted.encode()
+        )
+        reply_store.save()
 
     def __str__(self):
         return f"{self.account} ({self.creation_date})"
@@ -25,5 +37,4 @@ class Message(models.Model):
     timestamp         = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        prefix = "USER" if self.sender == Message.Sender.USER else "CHATBOT"
-        return f"{prefix} ({self.timestamp})"
+        return f"{self.sender} ({self.timestamp})"
