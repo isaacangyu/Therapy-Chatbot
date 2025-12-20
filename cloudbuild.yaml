@@ -8,3 +8,8 @@ steps:
 
 images:
 - "gcr.io/$mental-health-app-479702/python-image"
+
+serviceAccount: “1435599822-compute@developer.gserviceaccount.com”
+
+logging:
+  logging: CLOUD_LOGGING_ONLY
