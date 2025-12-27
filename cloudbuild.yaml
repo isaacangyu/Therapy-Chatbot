@@ -2,14 +2,14 @@ steps:
 - name: "gcr.io/cloud-builders/docker"
   args:
   - build
-  - "--tag=gcr.io/$mental-health-app-479702/python-image"
+  - "--tag=gcr.io/$PROJECT_ID/python-image"
   - "--file=./.cloud/Dockerfile"
   - .
 
 images:
-- "gcr.io/$mental-health-app-479702/python-image"
+- "gcr.io/$PROJECT_ID/python-image"
 
-serviceAccount: “1435599822-compute@developer.gserviceaccount.com”
+serviceAccount: “$SERVICE_ACCOUNT”
 
 options:
   logging: CLOUD_LOGGING_ONLY
