@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '/widgets/adaptive_scaffold.dart';
 import '/chatbot/chatbot.dart';
 import '/breathing/breathing.dart';
-import '/journal/journal.dart';
+// import '/journal/journal.dart';
 import '/profile/profile.dart';
 
 class Navigation extends StatefulWidget {
@@ -19,7 +19,7 @@ class _NavigationState extends State<Navigation> {
   final pages = <Widget>[
     const ChatbotPage(),
     const BreathingPage(), 
-    JournalApp(),
+    // JournalApp(),
     const ProfilePage(),
   ];
   
@@ -58,10 +58,10 @@ class _NavigationState extends State<Navigation> {
           title: 'Breathing',
           icon: Icons.cloud,
         ),
-        AdaptiveScaffoldDestination(
-          title: 'Journal',
-          icon: Icons.book,
-        ),
+        // AdaptiveScaffoldDestination(
+        //   title: 'Journal',
+        //   icon: Icons.book,
+        // ),
         AdaptiveScaffoldDestination(
           title: 'Profile',
           icon: Icons.person

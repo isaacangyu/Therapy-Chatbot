@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '/app_state.dart';
 import '/util/theme.dart';
 import '/widgets/fields/email_large.dart';
-import '/widgets/fields/password_large.dart';
+// import '/widgets/fields/password_large.dart';
 import '/util/global.dart';
 import '/util/network.dart';
 // import '/util/persistence.dart';
@@ -91,16 +91,16 @@ class _ProfilePageState extends State<ProfilePage> {
                         formKey: _formKey,
                         emailController: _emailController,
                       ),
-                      const SizedBox(height: 20),
-                      PasswordFieldLarge(
-                        _passwordController,
-                        (value) => value.isEmpty ? 'Invalid password.' : null
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton(
-                        child: const Text('Update Password'),
-                        onPressed: () {},
-                      ),
+                      // const SizedBox(height: 20),
+                      // PasswordFieldLarge(
+                      //   _passwordController,
+                      //   (value) => value.isEmpty ? 'Invalid password.' : null
+                      // ),
+                      // const SizedBox(height: 10),
+                      // ElevatedButton(
+                      //   child: const Text('Update Password'),
+                      //   onPressed: () {},
+                      // ),
                     ]
                   )
                 ),
