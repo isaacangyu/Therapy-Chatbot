@@ -1,6 +1,0 @@
-services:
-  cache_db:
-    image: redis:latest
-    restart: unless-stopped
-
-    network_mode: service:app
