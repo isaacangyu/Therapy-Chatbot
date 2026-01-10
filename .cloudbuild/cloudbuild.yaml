@@ -4,6 +4,7 @@ steps:
   args:
   - 'build'
   - '--tag=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
+  - '--file=./.cloudbuild/Dockerfile'
   - '.'
 # Push the image to Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
@@ -31,7 +32,7 @@ substitutions:
 images:
 - '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
 
-# serviceAccount: "$SERVICE_ACCOUNT"
+# serviceAccount: "${SERVICE_ACCOUNT}"
 
 # options:
 #   logging: CLOUD_LOGGING_ONLY
