@@ -1,0 +1,65 @@
+# References:
+# https://github.com/actions/starter-workflows/blob/main/pages/static.yml
+
+name: Deploy static content to Pages
+
+on:
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      # Reference: https://stackoverflow.com/questions/64868918/how-to-download-artifact-release-asset-in-another-workflow
+      - name: Get web artifact workflow run ID
+        id: get-run-id
+        run: |
+          WORKFLOW_NAME="Create Release"
+          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WORKFLOW_NAME} --json databaseId --jq .[0].databaseId`
+          echo "Detected latest run id ${RUN_ID} for workflow: ${WORKFLOW_NAME}"
+          echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Download Web Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-1-web
+          path: output/app
+          run-id: ${{ steps.get-run-id.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy Static Assets
+        run: cp -r api output
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'output'
+
+  deploy:
+    name: Deploy
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
