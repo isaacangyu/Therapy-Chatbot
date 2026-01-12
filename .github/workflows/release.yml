@@ -11,6 +11,10 @@ on:
 
 env:
   FLUTTER_VERSION: "3.29.0"
+  LINUX_BUILD_DIR: app-linux-x64
+  ANDROID_BUILD_DIR: . # Each build per ABI is a single file named according to itself.
+  WEB_BUILD_DIR: web-standalone
+  WINDOWS_BUILD_DIR: app-windows-x64
 
 jobs:
   build-1:
@@ -18,9 +22,6 @@ jobs:
     env:
       FLUTTER_CMD: /usr/local/flutter/bin/flutter
       ANDROID_HOME: /usr/local/android_sdk
-      LINUX_BUILD_DIR: linux-x64
-      ANDROID_BUILD_DIR: android
-      WEB_BUILD_DIR: web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,18 +80,22 @@ jobs:
       - name: Copy Build Artifacts
         run: |
           mkdir output
+          
           mv build/linux/x64/release/bundle output/${{ env.LINUX_BUILD_DIR }}
-          mkdir output/${{ env.ANDROID_BUILD_DIR }}
-          mv build/app/outputs/apk/release/*.apk output/${{ env.ANDROID_BUILD_DIR }}
+
+          for apk in build/app/outputs/apk/release/*.apk; do
+            APK_DIR="android-$(basename "$apk" .apk)"
+            mkdir -p "output/${{ env.ANDROID_BUILD_DIR }}/$APK_DIR"
+            mv "$apk" "output/${{ env.ANDROID_BUILD_DIR }}/$APK_DIR"
+          done
+          
           mv build/web output/${{ env.WEB_BUILD_DIR }}
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         # if: github.ref_type == 'tag'
         with:
           name: build-1
-          path: |
-            output/${{ env.LINUX_BUILD_DIR }}
-            output/${{ env.ANDROID_BUILD_DIR }}
+          path: output
           if-no-files-found: error
           retention-days: 1
       - name: Upload Web Artifact
@@ -98,14 +103,11 @@ jobs:
         # if: github.ref_type == 'tag'
         with:
           name: build-1-web
-          path: |
-            output/${{ env.WEB_BUILD_DIR }}
+          path: output/${{ env.WEB_BUILD_DIR }}
           if-no-files-found: error
           retention-days: 1
   build-2:
     name: Build (Windows)
-    env:
-      WINDOWS_BUILD_DIR: windows-x64
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -128,8 +130,7 @@ jobs:
         # if: github.ref_type == 'tag'
         with:
           name: build-2
-          path: |
-            output\${{ env.WINDOWS_BUILD_DIR }}
+          path: output\${{ env.WINDOWS_BUILD_DIR }}
           if-no-files-found: error
           retention-days: 1
   
@@ -142,11 +143,16 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Download Build Artifacts
+      - name: Download Build 1 Artifacts
         uses: actions/download-artifact@v4
         with:
+          name: build-1
           path: dists
-          merge-multiple: true
+      - name: Download Build 2 Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-2
+          path: dists/${{ env.WINDOWS_BUILD_DIR }}
       - name: Output Structure 1
         run: ls -R dists
       - name: Prepare Artifacts
