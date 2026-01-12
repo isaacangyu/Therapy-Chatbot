@@ -18,19 +18,18 @@ steps:
     - 'run'
     - 'deploy'
     - '${_SERVICE_NAME}'
-    - '--image'
-    - '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
-    - '--region'
-    - '${_SERVICE_REGION}'
-    - '--platform'
-    - 'managed'
+    - '--image=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
+    - '--region=${_SERVICE_REGION}'
+    - '--platform=managed'
+    - '--vpc-egress=private-ranges-only'
     - '--allow-unauthenticated'
+    - '--update-secrets=/app/cert/prod/private/private.pem=RSA_PRIVATE_KEY:latest,/app/.env=ENV_FILE:latest'
 substitutions:
   _IMAGE_NAME: 'django-backend'
   _SERVICE_NAME: 'backend-service'
   _SERVICE_REGION: 'us-central1'
 images:
-- '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${_IMAGE_NAME}:${COMMIT_SHA}'
+- '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
 
 # serviceAccount: "${SERVICE_ACCOUNT}"
 

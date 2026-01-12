@@ -199,7 +199,7 @@ android/app/.cxx/
 .idx/neo4j/*
 !.idx/neo4j/conf/
 .idx/logfile
-cert/prod/
+cert/prod/private/
 temp/
 
 dump.rdb

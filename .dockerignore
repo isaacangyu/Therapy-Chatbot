@@ -1,0 +1,3 @@
+.git/
+.cloudbuild/postgres-data/
+.cloudbuild/neo4j-data/

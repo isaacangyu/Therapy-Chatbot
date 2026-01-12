@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-i7n98_=ykj*z#f4fx@olkhje$6%a^b)*-$vqc^rrpz_vpcrqwt"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-i7n98_=ykj*z#f4fx@olkhje$6%a^b)*-$vqc^rrpz_vpcrqwt")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -86,11 +86,11 @@ ASGI_APPLICATION = "therapy_chatbot.asgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "HOST": "localhost",
-        "USER": "postgres",
-        "NAME": "postgres",
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "USER": os.environ.get("POSTGRES_USER", "postgres"),
+        "NAME": os.environ.get("POSTGRES_DB_NAME", "postgres"),
         "PORT": "5432",
-        "PASSWORD": "postgres"
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "postgres")
     }
 }
 
@@ -98,7 +98,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [(os.environ.get("REDIS_HOST", "localhost"), 6379)],
         }
     }
 }
