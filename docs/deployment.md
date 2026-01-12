@@ -20,6 +20,8 @@
    ```
 1. Generate RSA keys:
    ```sh
+   mkdir -p cert/prod/private
+   mkdir -p cert/prod/public
    openssl genpkey -algorithm RSA -out cert/prod/private/private.pem -pkeyopt rsa_keygen_bits:3072
    openssl rsa -in cert/prod/private/private.pem -pubout -out cert/prod/public/public.pem
    ```
@@ -27,6 +29,7 @@
 1. Commit and push public RSA key only to the production branch.
 1. Set up Cloud Run on prod and trigger build, deployment; update secrets if necessary
 1. Add firewall rules as needed [[1](https://docs.cloud.google.com/firewall/docs/using-firewalls)]
+1. Adjust configurations in `app_assets` and `api`
 1. Use GH Actions to build app artifacts from prod
 1. Use GH Actions to build static web app and static asset API from prod
 1. Configure GH Pages to serve assets from prod

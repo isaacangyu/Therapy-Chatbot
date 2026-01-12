@@ -44,7 +44,9 @@ jobs:
           run-id: ${{ steps.get-run-id.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Copy Static Assets
-        run: cp -r api output
+        run: |
+          cp -r api output
+          cp --parents cert/prod/public/public.pem output
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload Artifact
