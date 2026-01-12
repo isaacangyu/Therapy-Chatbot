@@ -25,17 +25,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Base Dependencies
         run: >
-          apt-get update && export DEBIAN_FRONTEND=noninteractive 
-          && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
+          sudo apt-get update && export DEBIAN_FRONTEND=noninteractive 
+          && sudo apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
       - name: Install Flutter
         run: |
-          wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
-          tar -xf "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz" -C /usr/local/
+          wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
+          sudo tar -xf "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz" -C /usr/local/
           rm "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
       - name: Install Desktop Dependencies
         run: >
           export DEBIAN_FRONTEND=noninteractive
-          && apt-get -y install --no-install-recommends
+          && sudo apt-get -y install --no-install-recommends
           clang cmake git
           ninja-build pkg-config
           libgtk-3-dev liblzma-dev
@@ -44,15 +44,15 @@ jobs:
       - name: Install Android Dependencies
         run: >
           export DEBIAN_FRONTEND=noninteractive
-          && apt-get -y install --no-install-recommends openjdk-17-jdk-headless gradle
+          && sudo apt-get -y install --no-install-recommends openjdk-17-jdk-headless gradle
       - name: Install Android Commmand Line Tools
         run: >
-          wget "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" \
+          wget -q "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" \
           && unzip commandlinetools-linux-*.zip -d cmdline-tools \
-          && mkdir -p ${{ env.ANDROID_HOME }}/cmdline-tools/latest \
-          && mv cmdline-tools/cmdline-tools/* ${{ env.ANDROID_HOME }}/cmdline-tools/latest \
+          && sudo mkdir -p ${{ env.ANDROID_HOME }}/cmdline-tools/latest \
+          && sudo mv cmdline-tools/cmdline-tools/* ${{ env.ANDROID_HOME }}/cmdline-tools/latest \
           && rm -r commandlinetools-linux-*.zip cmdline-tools \
-          && chown -R 1000:1000 ${{ env.ANDROID_HOME }}
+          && sudo chown -R 1000:1000 ${{ env.ANDROID_HOME }}
       - name: Cache pub deps
         uses: actions/cache@v3
         with:
