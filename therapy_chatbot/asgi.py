@@ -15,11 +15,12 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 
-from chatbot.routing import websocket_urlpatterns
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "therapy_chatbot.settings")
 
 django_asgi_app = get_asgi_application()
+
+# Must occur after ASGI application is initialized.
+from chatbot.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
