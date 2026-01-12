@@ -1,6 +1,6 @@
 {
     "app_version": "1.0.0+1",
-    "init_base_url": "http://localhost:5000",
+    "init_base_url": "https://isaacangyu.github.io/Therapy-Chatbot",
     "init_base_url_debug_android": "http://10.0.2.2:5000",
     "show_legal": true
 }

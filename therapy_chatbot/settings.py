@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-i7n98_=ykj*z#f4fx@olkhje$6%a^b)*-$vqc^rrpz_vpcrqwt")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.2.2"] if DEBUG else os.environ["ALLOWED_HOSTS"].split(", ")
 if not DEBUG or os.environ.get("IDX_CHANNEL"):
