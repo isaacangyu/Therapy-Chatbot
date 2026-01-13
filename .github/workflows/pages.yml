@@ -5,6 +5,11 @@ name: Deploy static content to Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      web-artifact-run-id:
+        type: string
+        description: "(Optional) Workflow run ID for the web artifact."
+        required: false
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages.
 permissions:
@@ -31,7 +36,10 @@ jobs:
         id: get-run-id
         run: |
           WORKFLOW_NAME="Create Release"
-          RUN_ID=`gh run --repo ${{ github.repository }} list --workflow ${WORKFLOW_NAME} --json databaseId --jq .[0].databaseId`
+          RUN_ID="${{ inputs.web-artifact-run-id }}"
+          if [ -z "$RUN_ID" ]; then
+            RUN_ID=$(gh run --repo ${{ github.repository }} list --workflow "${WORKFLOW_NAME}" --json databaseId --jq .[0].databaseId)
+          fi
           echo "Detected latest run id ${RUN_ID} for workflow: ${WORKFLOW_NAME}"
           echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
         env:
