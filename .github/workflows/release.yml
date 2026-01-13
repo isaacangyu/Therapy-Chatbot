@@ -11,31 +11,34 @@ on:
 
 env:
   FLUTTER_VERSION: "3.29.0"
+  LINUX_BUILD_DIR: app-linux-x64
+  ANDROID_BUILD_DIR: . # Each build per ABI is a single file named according to itself.
+  WEB_BUILD_DIR: web-standalone
+  WINDOWS_BUILD_DIR: app-windows-x64
 
 jobs:
   build-1:
     name: Build (Linux, Android, Web)
     env:
+      FLUTTER_CMD: /usr/local/flutter/bin/flutter
       ANDROID_HOME: /usr/local/android_sdk
-      LINUX_BUILD_DIR: linux-x64
-      ANDROID_BUILD_DIR: android
-      WEB_BUILD_DIR: web
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install Base Dependencies
         run: >
-          apt-get update && export DEBIAN_FRONTEND=noninteractive 
-          && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
+          sudo apt-get update && export DEBIAN_FRONTEND=noninteractive 
+          && sudo apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
       - name: Install Flutter
         run: |
-          wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
-          tar -xf "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz" -C /usr/local/
+          wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
+          sudo tar -xf "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz" -C /usr/local/
+          sudo chown -R $(whoami) /usr/local/flutter
           rm "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
       - name: Install Desktop Dependencies
         run: >
           export DEBIAN_FRONTEND=noninteractive
-          && apt-get -y install --no-install-recommends
+          && sudo apt-get -y install --no-install-recommends
           clang cmake git
           ninja-build pkg-config
           libgtk-3-dev liblzma-dev
@@ -44,15 +47,22 @@ jobs:
       - name: Install Android Dependencies
         run: >
           export DEBIAN_FRONTEND=noninteractive
-          && apt-get -y install --no-install-recommends openjdk-17-jdk-headless gradle
+          && sudo apt-get -y install --no-install-recommends openjdk-17-jdk-headless gradle
       - name: Install Android Commmand Line Tools
-        run: >
-          wget "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" \
-          && unzip commandlinetools-linux-*.zip -d cmdline-tools \
-          && mkdir -p ${{ env.ANDROID_HOME }}/cmdline-tools/latest \
-          && mv cmdline-tools/cmdline-tools/* ${{ env.ANDROID_HOME }}/cmdline-tools/latest \
-          && rm -r commandlinetools-linux-*.zip cmdline-tools \
-          && chown -R 1000:1000 ${{ env.ANDROID_HOME }}
+        run: |
+          wget -q "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip"
+          unzip commandlinetools-linux-*.zip -d cmdline-tools
+          sudo mkdir -p ${{ env.ANDROID_HOME }}/cmdline-tools/latest
+          sudo mv cmdline-tools/cmdline-tools/* ${{ env.ANDROID_HOME }}/cmdline-tools/latest
+          rm -r commandlinetools-linux-*.zip cmdline-tools
+          sudo chown -R $(whoami) ${{ env.ANDROID_HOME }}
+          echo "$ANDROID_HOME/cmdline-tools/latest" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+      - name: Accept Android SDK Licenses
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
       - name: Cache pub deps
         uses: actions/cache@v3
         with:
@@ -60,28 +70,32 @@ jobs:
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
           restore-keys: ${{ runner.os }}-pub-
       - name: Install Flutter Dependencies
-        run: flutter pub get --enforce-lockfile
+        run: ${{ env.FLUTTER_CMD }} pub get --enforce-lockfile
       - name: Build Linux # Only x64 for now.
-        run: flutter build linux --no-pub
+        run: ${{ env.FLUTTER_CMD }} build linux --no-pub
       - name: Build Android # Only APK for now. App Bundle for future consideration.
-        run: flutter build apk --no-pub --split-per-abi
+        run: ${{ env.FLUTTER_CMD }} build apk --no-pub --split-per-abi
       - name: Build Web
-        run: flutter build web --no-pub --base-href="/${{ github.event.repository.name }}/app/"
+        run: ${{ env.FLUTTER_CMD }} build web --no-pub --base-href="/${{ github.event.repository.name }}/app/"
       - name: Copy Build Artifacts
         run: |
           mkdir output
+          
           mv build/linux/x64/release/bundle output/${{ env.LINUX_BUILD_DIR }}
-          mkdir output/${{ env.ANDROID_BUILD_DIR }}
-          mv build/app/outputs/apk/release/*.apk output/${{ env.ANDROID_BUILD_DIR }}
+
+          for apk in build/app/outputs/apk/release/*.apk; do
+            APK_DIR="android-$(basename "$apk" .apk)"
+            mkdir -p "output/${{ env.ANDROID_BUILD_DIR }}/$APK_DIR"
+            mv "$apk" "output/${{ env.ANDROID_BUILD_DIR }}/$APK_DIR"
+          done
+          
           mv build/web output/${{ env.WEB_BUILD_DIR }}
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         # if: github.ref_type == 'tag'
         with:
           name: build-1
-          path: |
-            output/${{ env.LINUX_BUILD_DIR }}
-            output/${{ env.ANDROID_BUILD_DIR }}
+          path: output
           if-no-files-found: error
           retention-days: 1
       - name: Upload Web Artifact
@@ -89,14 +103,11 @@ jobs:
         # if: github.ref_type == 'tag'
         with:
           name: build-1-web
-          path: |
-            output/${{ env.WEB_BUILD_DIR }}
+          path: output/${{ env.WEB_BUILD_DIR }}
           if-no-files-found: error
           retention-days: 1
   build-2:
     name: Build (Windows)
-    env:
-      WINDOWS_BUILD_DIR: windows-x64
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -113,14 +124,13 @@ jobs:
       - name: Copy Build Artifacts
         run: |
           New-Item -Path output -ItemType Directory
-          Move-Item -Path build\windows\runner\Release -Destination output\${{ env.WINDOWS_BUILD_DIR }}
+          Move-Item -Path build\windows\x64\runner\Release -Destination output\${{ env.WINDOWS_BUILD_DIR }}
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         # if: github.ref_type == 'tag'
         with:
           name: build-2
-          path: |
-            output\${{ env.WINDOWS_BUILD_DIR }}
+          path: output\${{ env.WINDOWS_BUILD_DIR }}
           if-no-files-found: error
           retention-days: 1
   
@@ -133,11 +143,16 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Download Build Artifacts
+      - name: Download Build 1 Artifacts
         uses: actions/download-artifact@v4
         with:
+          name: build-1
           path: dists
-          merge-multiple: true
+      - name: Download Build 2 Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-2
+          path: dists/${{ env.WINDOWS_BUILD_DIR }}
       - name: Output Structure 1
         run: ls -R dists
       - name: Prepare Artifacts
