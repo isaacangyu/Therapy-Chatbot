@@ -1,25 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '/api_service.dart';
 import 'package:intl/intl.dart';
-// import 'journal_screen.dart';
+import 'package:provider/provider.dart';
 
-class JournalApp extends StatelessWidget {
+import '/api_service.dart';
+import '/app_state.dart';
+
+class JournalApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'My Journal',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
-          brightness: Brightness.light,
-        ),
-        textTheme: GoogleFonts.caveatTextTheme(),
-      ),
-      home: JournalPage(),
-    );
-  }
+  JournalPageState createState() => JournalPageState();
 }
 
 class JournalEntry {
@@ -28,21 +17,30 @@ class JournalEntry {
   JournalEntry(this.content, this.date);
 }
 
-class JournalPage extends StatefulWidget {
-  @override
-  JournalPageState createState() => JournalPageState();
-}
-
-class JournalPageState extends State<JournalPage> {
+class JournalPageState extends State<JournalApp> {
   final TextEditingController textCtrl = TextEditingController();
   List<JournalEntry> journalList = [];
 
-  // Fetch all entries from Django API
+  @override
+  void initState() {
+    super.initState();
+    loadEntries();
+  }
+
   Future<void> loadEntries() async {
     try {
-      final data = await fetchEntries();
+      final appState = context.read<AppState>();
+      final token = await appState.session.getToken();
+
+      if (token == null) {
+        print("Not logged in — no token.");
+        return;
+      }
+
+      final data = await fetchEntries(token);
+
       setState(() {
-        journalList = data.map((e) => JournalEntry(
+        journalList = data.map<JournalEntry>((e) => JournalEntry(
           e['content'],
           DateTime.parse(e['date']),
         )).toList();
@@ -52,23 +50,31 @@ class JournalPageState extends State<JournalPage> {
     }
   }
 
-  // Add new entry to API
   Future<void> addEntry() async {
     final entryText = textCtrl.text.trim();
     if (entryText.isEmpty) return;
 
     try {
-      await addEntryToApi(entryText);
+      final appState = context.read<AppState>();
+      final token = await appState.session.getToken();
+
+      if (token == null) {
+        print("No user token found");
+        return;
+      }
+
+      await addEntryToApi(entryText, token);
+
       textCtrl.clear();
-      loadEntries(); // refresh after adding
+      await loadEntries();
     } catch (e) {
       print("Error adding entry: $e");
     }
   }
 
-  // Group entries by date
   Map<String, List<JournalEntry>> groupByDate() {
     final Map<String, List<JournalEntry>> grouped = {};
+
     for (var entry in journalList) {
       final dateKey = DateFormat('yMMMMd').format(entry.date);
       grouped.putIfAbsent(dateKey, () => []).add(entry);
@@ -81,15 +87,8 @@ class JournalPageState extends State<JournalPage> {
     return {for (var key in sortedKeys) key: grouped[key]!};
   }
 
-  String formatTime(DateTime date) {
-    return DateFormat('h:mm a').format(date.toLocal());
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadEntries();
-  }
+  String formatTime(DateTime date) =>
+      DateFormat('h:mm a').format(date.toLocal());
 
   @override
   Widget build(BuildContext context) {
@@ -114,17 +113,13 @@ class JournalPageState extends State<JournalPage> {
           children: [
             TextField(
               controller: textCtrl,
-              maxLines: 5,
+              maxLines: 4,
               style: GoogleFonts.caveat(
+                fontSize: 20,
                 color: Colors.brown.shade800,
-                fontSize: 22,
               ),
               decoration: InputDecoration(
-                hintText: 'Write your thoughts here...',
-                hintStyle: GoogleFonts.caveat(
-                  color: Colors.brown.shade400,
-                  fontSize: 22,
-                ),
+                hintText: 'Write your thoughts...',
                 filled: true,
                 fillColor: Colors.brown.shade50,
                 border: OutlineInputBorder(
@@ -132,24 +127,18 @@ class JournalPageState extends State<JournalPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: addEntry,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.shade600,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 12),
               ),
-              child: Text(
-                'Save Entry',
-                style: GoogleFonts.caveat(fontSize: 22),
-              ),
+              child: Text('Save Entry',
+                  style: GoogleFonts.caveat(fontSize: 22)),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Expanded(
               child: journalList.isEmpty
                   ? Center(
@@ -166,31 +155,26 @@ class JournalPageState extends State<JournalPage> {
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           child: ExpansionTile(
-                            tilePadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
-                            iconColor: Colors.green.shade800,
-                            collapsedIconColor: Colors.green.shade800,
                             title: Text(
                               group.key,
                               style: GoogleFonts.caveat(
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green.shade800,
-                                fontSize: 24,
                               ),
                             ),
                             children: group.value.map((entry) {
                               return ListTile(
-                                leading: Icon(Icons.bookmark,
-                                    color: Colors.green.shade700),
                                 title: Text(
                                   entry.content,
-                                  style: GoogleFonts.caveat(fontSize: 22),
+                                  style:
+                                      GoogleFonts.caveat(fontSize: 20),
                                 ),
                                 subtitle: Text(
                                   formatTime(entry.date),
                                   style: GoogleFonts.caveat(
-                                    color: Colors.grey[700],
-                                    fontSize: 18,
+                                    fontSize: 16,
+                                    color: Colors.grey.shade700,
                                   ),
                                 ),
                               );
@@ -199,7 +183,7 @@ class JournalPageState extends State<JournalPage> {
                         );
                       }).toList(),
                     ),
-            ),
+            )
           ],
         ),
       ),
