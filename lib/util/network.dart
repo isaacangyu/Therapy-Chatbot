@@ -108,11 +108,11 @@ Object includeToken(String email, String token, Map<String, dynamic> data) {
 
 enum HttpRequestType {post, delete}
 
-Future<T> httpDataSecure<T>(
+Future<T> httpDataSecure<T, K>(
   HttpRequestType type,
   String path,
   Object data,
-  T Function(Map<String, dynamic>) onHttpOK,
+  T Function(K) onHttpOK,
   T Function(int) onError,
 ) async {
   int statusCode = -1;
@@ -129,13 +129,15 @@ Future<T> httpDataSecure<T>(
       Uri.parse(API.baseUrl!).resolve(path),
       headers: {
         // 'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
         'X-Custom-Response-Key': responseKeyEncrypted,
       },
       body: cipherText.bytes,
     );
     if (response.statusCode == 200) {
       var body = verifyData(symmetricDecrypt(response.body, responseDecrypter));
-      var json = jsonDecode(body) as Map<String, dynamic>;
+      debugPrint(body);
+      var json = jsonDecode(body) as K;
       return onHttpOK(json);
     }
     statusCode = response.statusCode;

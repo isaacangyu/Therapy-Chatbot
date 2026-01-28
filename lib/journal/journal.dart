@@ -3,8 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '/api_service.dart';
 import '/app_state.dart';
+import '/util/network.dart';
+import '/util/global.dart';
 
 class JournalApp extends StatefulWidget {
   @override
@@ -30,14 +31,18 @@ class JournalPageState extends State<JournalApp> {
   Future<void> loadEntries() async {
     try {
       final appState = context.read<AppState>();
-      final token = await appState.session.getToken();
-
-      if (token == null) {
-        print("Not logged in — no token.");
-        return;
-      }
-
-      final data = await fetchEntries(token);
+      
+      final data = await httpDataSecure<List<dynamic>, List<dynamic>>(
+        HttpRequestType.post, 
+        API.journalEntries, 
+        includeToken(
+          appState.session.getEmail()!, 
+          appState.session.getToken()!, 
+          {"method_override": "GET"}
+        ), 
+        (json) => json, 
+        (status) => []
+      );
 
       setState(() {
         journalList = data.map<JournalEntry>((e) => JournalEntry(
@@ -56,14 +61,17 @@ class JournalPageState extends State<JournalApp> {
 
     try {
       final appState = context.read<AppState>();
-      final token = await appState.session.getToken();
 
-      if (token == null) {
-        print("No user token found");
-        return;
-      }
-
-      await addEntryToApi(entryText, token);
+      await httpPostSecure(
+        API.journalEntries, 
+        includeToken(
+          appState.session.getEmail()!, 
+          appState.session.getToken()!, 
+          {"content": entryText}
+        ), 
+        (_) {}, 
+        (_) {}
+      );
 
       textCtrl.clear();
       await loadEntries();
