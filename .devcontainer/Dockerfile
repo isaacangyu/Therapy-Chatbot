@@ -20,6 +20,10 @@ ENV PYTHONUNBUFFERED=1
 # RUN pip3 --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
 #    && rm -rf /tmp/pip-tmp
 
+# Remove the yarnpkg repository from apt.
+# Occasionally, its GPG key will expire and cause problems.
+RUN rm /etc/apt/sources.list.d/yarn.list
+
 # Additional OS packages.
 RUN echo "Building base installation." && apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
