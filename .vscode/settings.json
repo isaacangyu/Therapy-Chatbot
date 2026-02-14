@@ -4,5 +4,7 @@
     "extensions.ignoreRecommendations": true,
     "github.codespaces.devcontainerChangedNotificationStyle": "none",
     "IDX.aI.enableInlineCompletion": true,
-    "IDX.aI.enableCodebaseIndexing": true
+    "IDX.aI.enableCodebaseIndexing": true,
+    "colab.terminal": true,
+    "colab.activityBar": true
 }
