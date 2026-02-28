@@ -29,7 +29,7 @@ RUN echo "Building base installation." && apt-get update && export DEBIAN_FRONTE
     && apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
 
 # Install Flutter.
-RUN wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}.tar.xz" \
+RUN wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}.tar.xz" \
     && tar -xf "flutter_linux_${FLUTTER_VERSION}.tar.xz" -C /usr/local/ \
     && rm "flutter_linux_${FLUTTER_VERSION}.tar.xz"
 
@@ -53,7 +53,7 @@ RUN echo "Building Android installation." && export DEBIAN_FRONTEND=noninteracti
 
 # Install Android command line tools.
 # Docs: https://developer.android.com/tools/sdkmanager
-RUN wget "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" \
+RUN wget -q "https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip" \
     && unzip commandlinetools-linux-*.zip -d cmdline-tools \
     && mkdir -p $ANDROID_HOME/cmdline-tools/latest \
     && mv cmdline-tools/cmdline-tools/* $ANDROID_HOME/cmdline-tools/latest \
