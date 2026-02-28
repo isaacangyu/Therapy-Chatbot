@@ -15,6 +15,7 @@ from graphiti_core.search.search_config_recipes import COMBINED_HYBRID_SEARCH_MM
 from langchain_core.messages import AIMessage, SystemMessage
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph, add_messages
 from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.redis import AsyncRedisSaver
@@ -61,12 +62,14 @@ neo4j_password = os.environ.get('NEO4J_PASSWORD', 'neo4j_pswd')
 if not neo4j_uri or not neo4j_user or not neo4j_password:
     raise ValueError('NEO4J_URI, NEO4J_USER, and NEO4J_PASSWORD must be set.')
 
-if os.environ.get("USE_GEMINI"):
-    import gemini
+use_gemini = os.environ.get("USE_GEMINI")
+
+if use_gemini:
+    from . import gemini
     gemini.gemini_init(neo4j_uri, neo4j_user, neo4j_password)
     graphiti = gemini.graphiti
 else:
-    import ollama
+    from . import ollama
     ollama.ollama_init(neo4j_uri, neo4j_user, neo4j_password)
     graphiti = ollama.graphiti
 
@@ -144,7 +147,14 @@ class ToolNodeWithContext(ToolNode):
 tools = [search_conversation]
 tool_node = ToolNodeWithContext(tools)
 
-llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)#.bind_tools(tools)
+if use_gemini:
+    llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)#.bind_tools(tools)
+else:
+    llm = ChatOllama(
+        base_url=ollama.endpoint, 
+        model='deepseek-r1:7b', 
+        temperature=0
+    )#.bind_tools(tools)
 
 class User(BaseModel):
     real_name: str | None = Field(..., description="The name of the user.")
