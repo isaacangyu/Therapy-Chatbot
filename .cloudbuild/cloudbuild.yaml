@@ -3,14 +3,14 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
-  - '--tag=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
+  - '--tag=${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
   - '--file=./.cloudbuild/Dockerfile'
   - '.'
 # Push the image to Artifact Registry
 - name: 'gcr.io/cloud-builders/docker'
   args:
   - 'push'
-  - '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
+  - '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
 # Deploy image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
@@ -18,7 +18,7 @@ steps:
     - 'run'
     - 'deploy'
     - '${_SERVICE_NAME}'
-    - '--image=${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
+    - '--image=${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
     - '--region=${_SERVICE_REGION}'
     - '--platform=managed'
     - '--vpc-egress=private-ranges-only'
@@ -29,7 +29,7 @@ substitutions:
   _SERVICE_NAME: 'backend-service'
   _SERVICE_REGION: 'us-central1'
 images:
-- '${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
+- '${_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${_IMAGE_NAME}:${COMMIT_SHA}'
 
 # serviceAccount: "${SERVICE_ACCOUNT}"
 
