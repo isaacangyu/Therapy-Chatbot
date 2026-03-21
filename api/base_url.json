@@ -1,4 +1,4 @@
 {
-    "url": "http://localhost:8000",
-    "ws_url": "ws://localhost:8000"
+    "url": "https://therapy-chatbot-1435599822.europe-west1.run.app",
+    "ws_url": "ws://therapy-chatbot-1435599822.europe-west1.run.app"
 }
