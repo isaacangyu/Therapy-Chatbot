@@ -7,4 +7,4 @@ RUN python -m venv .venv \
     && ./.venv/bin/poetry config virtualenvs.create false --local \
     && ./.venv/bin/poetry install --no-interaction --no-ansi
 
-CMD [ "/app/.venv/bin/daphne", "--port", "8080", "therapy_chatbot.asgi:application" ]
+CMD [ "/app/.venv/bin/daphne", "-b", "0.0.0.0", "--port", "8080", "therapy_chatbot.asgi:application" ]
