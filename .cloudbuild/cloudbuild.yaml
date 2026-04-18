@@ -25,7 +25,7 @@ steps:
     # - '--subnet=SUBNET'
     # - '--network-tags=NETWORK_TAG_NAMES'
     - '--vpc-egress=private-ranges-only'
-    - '--allow-unauthenticated'
+    - '--no-invoker-iam-check'
     - '--update-secrets=/app/cert/prod/private/private.pem=RSA_PRIVATE_KEY:latest,/app/.env=ENV_FILE:latest'
 substitutions:
   _IMAGE_NAME: 'django-backend'
