@@ -1,0 +1,40 @@
+name: Flutter Tests
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main, staging ]
+  workflow_dispatch:
+
+
+env:
+  FLUTTER_VERSION: "3.29.0"
+  FLUTTER_CMD: /usr/local/flutter/bin/flutter
+
+jobs:
+  test:
+    name: Flutter Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Base Dependencies
+        run: >
+          sudo apt-get update && export DEBIAN_FRONTEND=noninteractive 
+          && sudo apt-get -y install --no-install-recommends curl git unzip xz-utils zip libglu1-mesa
+      - name: Install Flutter
+        run: |
+          wget -q "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
+          sudo tar -xf "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz" -C /usr/local/
+          sudo chown -R $(whoami) /usr/local/flutter
+          rm "flutter_linux_${{ env.FLUTTER_VERSION }}-stable.tar.xz"
+      - name: Cache pub deps
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: ${{ runner.os }}-pub-
+      - name: Install Flutter Dependencies
+        run: ${{ env.FLUTTER_CMD }} pub get --enforce-lockfile
+      - name: flutter test
+        run: ${{ env.FLUTTER_CMD }} test
