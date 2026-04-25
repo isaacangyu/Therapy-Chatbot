@@ -63,6 +63,7 @@ if not neo4j_uri or not neo4j_user or not neo4j_password:
     raise ValueError('NEO4J_URI, NEO4J_USER, and NEO4J_PASSWORD must be set.')
 
 use_gemini = os.environ.get("USE_GEMINI")
+skip_memory_tools = os.environ.get("SKIP_MEMORY_TOOLS")
 
 if use_gemini:
     from . import gemini
@@ -148,7 +149,9 @@ tools = [search_conversation]
 tool_node = ToolNodeWithContext(tools)
 
 if use_gemini:
-    llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)#.bind_tools(tools)
+    llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)
+    if not skip_memory_tools:
+        llm = llm.bind_tools(tools)
 else:
     llm = ChatOllama(
         base_url=ollama.endpoint, 
@@ -207,13 +210,14 @@ async def chatbot(state: State):
 
         # Search graphiti using the user's node UUID as the center node.
         # Graph edges (facts) further from the user node will be ranked lower.
-        # edge_results = (await graphiti.search_(
-        #     query=graphiti_query, 
-        #     center_node_uuid=state['user_node_uuid'], 
-        #     config=node_search_config,
-        #     group_ids=[augment_account_uuid(state['user_account_uuid'])]
-        # )).edges
-        # facts_string = edges_to_facts_string(edge_results)
+        if not skip_memory_tools:
+            edge_results = (await graphiti.search_(
+                query=graphiti_query, 
+                center_node_uuid=state['user_node_uuid'], 
+                config=node_search_config,
+                group_ids=[augment_account_uuid(state['user_account_uuid'])]
+            )).edges
+            facts_string = edges_to_facts_string(edge_results)
 
     system_message = SystemMessage(
 #         content=f"""You are a casual chatbot that talks to users about whatever. Review information about the user and their prior conversation below and respond accordingly.
@@ -236,16 +240,17 @@ Facts about the conversation:
     # Add the response to the Graphiti graph.
     # This will allow us to use the Graphiti search later in the conversation.
     # We're doing async here to avoid blocking the graph execution.
-    # asyncio.create_task(
-    #     graphiti.add_episode(
-    #         name='Chatbot Response',
-    #         episode_body=f'{state["user_name"]}: {state["messages"][-1].content}\nChatbot: {response.content}',
-    #         source=EpisodeType.message,
-    #         reference_time=datetime.now(timezone.utc),
-    #         source_description='Chatbot',
-    #         group_id=augment_account_uuid(state['user_account_uuid'])
-    #     )
-    # )
+    if not skip_memory_tools:
+        asyncio.create_task(
+            graphiti.add_episode(
+                name='Chatbot Response',
+                episode_body=f'{state["user_name"]}: {state["messages"][-1].content}\nChatbot: {response.content}',
+                source=EpisodeType.message,
+                reference_time=datetime.now(timezone.utc),
+                source_description='Chatbot',
+                group_id=augment_account_uuid(state['user_account_uuid'])
+            )
+        )
     return {'messages': [response]}
 
 graph_builder = StateGraph(State)
@@ -265,10 +270,11 @@ async def should_continue(state, config):
         logger.debug(f"Invoking tool(s): {last_message.tool_calls}")
         return "continue"
 graph_builder.add_node('agent', chatbot)
-# graph_builder.add_node('tools', tool_node)
 graph_builder.add_edge(START, 'agent')
-# graph_builder.add_conditional_edges('agent', should_continue, {'continue': 'tools', 'end': END})
-# graph_builder.add_edge('tools', 'agent')
+if not skip_memory_tools:
+    graph_builder.add_node('tools', tool_node)
+    graph_builder.add_conditional_edges('agent', should_continue, {'continue': 'tools', 'end': END})
+    graph_builder.add_edge('tools', 'agent')
 graph = None # Set in main.
 
 async def process_input(user_state: State, user_input: str):
