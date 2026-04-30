@@ -66,7 +66,7 @@ def require_POST_OPTIONS(view):
             response = HttpResponse()
             response["Access-Control-Allow-Origin"] = settings.ACCESS_CONTROL_ALLOW_ORIGIN
             response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-            response["Access-Control-Allow-Headers"] = "X-Custom-Response-Key"# , Cache-Control"
+            response["Access-Control-Allow-Headers"] = "X-Custom-Response-Key, Content-Type"# , Cache-Control"
             return response
         return view(request, *args, **kwargs)
     return wrapper
