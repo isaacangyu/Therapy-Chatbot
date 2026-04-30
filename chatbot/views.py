@@ -8,6 +8,7 @@ from chatbot.models import Conversation
 
 RECENT_HISTORY_REQUEST_COUNT = 20
 
+@utils.require_POST_OPTIONS
 @utils.app_view
 @utils.decrypt_body
 def recent_history(request, form, oldest_timestamp):
