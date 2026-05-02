@@ -12,7 +12,7 @@
 1. Obtain Gemini API key [[1](https://aistudio.google.com/app/apikey)]
 1. Install Python dependencies, create temporary `.env` with API key, and set up Postgres, Neo4J
    ```sh
-   pipx install poetry
+   sudo apt install python3-poetry
    
    ./scripts/poetry-install.sh
    ./scripts/django-migrate.sh

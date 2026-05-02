@@ -33,7 +33,8 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"Dart-Code.flutter"
+				"Dart-Code.flutter", 
+				"Google.colab"
 			]
 		}
 	}

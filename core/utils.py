@@ -13,6 +13,8 @@ def decrypt_body(view):
         # Decrypt and parse the request body.
         try:
             raw_data = crypto.asymmetric_decrypt(request.body)
+            # This is hacky. We do this so that the serialized views don't have issues.
+            request._body = raw_data
             form = json.loads(raw_data)
         except (json.decoder.JSONDecodeError, ValueError):
             raise MalformedRequestError()
@@ -43,7 +45,10 @@ def app_view(view):
             response.status_code = 422
             return response
         
-        response_data = json.dumps(response_data)
+        if isinstance(response_data, HttpResponse):
+            response_data = response_data.render().content.decode()
+        else:
+            response_data = json.dumps(response_data)
         response_data = crypto.asymmetric_sign(response_data.encode())
         response_data = crypto.symmetric_encrypt(
             response_data.encode(), base64.b64decode(response_key)
@@ -61,8 +66,16 @@ def require_POST_OPTIONS(view):
             response = HttpResponse()
             response["Access-Control-Allow-Origin"] = settings.ACCESS_CONTROL_ALLOW_ORIGIN
             response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
-            response["Access-Control-Allow-Headers"] = "X-Custom-Response-Key"# , Cache-Control"
+            response["Access-Control-Allow-Headers"] = "X-Custom-Response-Key, Content-Type"# , Cache-Control"
             return response
+        return view(request, *args, **kwargs)
+    return wrapper
+
+def override_request_method(view):
+    @functools.wraps(view)
+    def wrapper(request, form, *args, **kwargs):
+        request.method = form.get("method_override", request.method)
+        setattr(request, "form", form)
         return view(request, *args, **kwargs)
     return wrapper
 
