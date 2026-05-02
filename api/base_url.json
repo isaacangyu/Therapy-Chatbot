@@ -1,4 +1,4 @@
 {
     "url": "https://backend-service-1435599822.us-central1.run.app",
-    "ws_url": "ws://backend-service-1435599822.us-central1.run.app"
+    "ws_url": "wss://backend-service-1435599822.us-central1.run.app"
 }
