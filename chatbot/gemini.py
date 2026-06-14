@@ -19,7 +19,7 @@ def gemini_init(neo4j_uri, neo4j_user, neo4j_password):
         llm_client=GeminiClient(
             config=LLMConfig(
                 api_key=api_key,
-                model="gemini-2.0-flash"
+                model="gemini-3.5-flash"
             )
         ),
         embedder=GeminiEmbedder(

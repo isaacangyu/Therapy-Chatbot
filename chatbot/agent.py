@@ -149,7 +149,7 @@ tools = [search_conversation]
 tool_node = ToolNodeWithContext(tools)
 
 if use_gemini:
-    llm = ChatGoogleGenerativeAI(model='gemini-2.0-flash', temperature=0)
+    llm = ChatGoogleGenerativeAI(model='gemini-3.5-flash', temperature=0)
     if not skip_memory_tools:
         llm = llm.bind_tools(tools)
 else:

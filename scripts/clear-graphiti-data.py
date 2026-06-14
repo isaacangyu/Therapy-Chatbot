@@ -28,13 +28,13 @@ graphiti = Graphiti(
     llm_client=GeminiClient(
         config=LLMConfig(
             api_key=api_key,
-            model="gemini-2.0-flash"
+            model="gemini-3.5-flash"
         )
     ),
     embedder=GeminiEmbedder(
         config=GeminiEmbedderConfig(
             api_key=api_key,
-            embedding_model="embedding-001"
+            embedding_model="gemini-embedding-001"
         )
     )
 )
