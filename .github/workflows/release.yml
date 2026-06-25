@@ -108,7 +108,7 @@ jobs:
           retention-days: 1
   build-2:
     name: Build (Windows)
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
       - name: Set Up Flutter
