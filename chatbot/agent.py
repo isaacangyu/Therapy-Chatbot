@@ -169,6 +169,9 @@ def augment_account_uuid(user_account_uuid):
     return f"user_{user_account_uuid}"
 
 async def create_user(name, user_account_uuid):
+    if skip_memory_tools:
+        return
+    
     await graphiti.add_episode(
         name="User Creation",
         episode_body=f"\"{name}\" is the name of the user interacting with this chatbot. Their account UUID is {user_account_uuid}.",
@@ -180,6 +183,9 @@ async def create_user(name, user_account_uuid):
     )
 
 async def get_user_node(name, account_uuid):
+    if skip_memory_tools:
+        return "skipped searching for uuid"
+    
     try:
         return (await graphiti.search_(
             query=f"Real Name: {name}, Account UUID: {account_uuid}", 
@@ -227,11 +233,12 @@ async def chatbot(state: State):
 # {facts_string or 'No facts about the user and their conversation yet.'}"""
         content=f"""You are a chatbot currently under development. Only developers will be talking with you.
 Review information about the prior conversation below and respond accordingly.
-Keep responses short and concise. NEVER REPLY WITH NO CONTENT, a thumbs up is the minimum.
-
+Keep responses short and concise. NEVER REPLY WITH NO CONTENT, a thumbs up is the minimum."""
+    )
+    if not skip_memory_tools:
+        system_message.content += f"""
 Facts about the conversation:
 {facts_string or 'No facts about the conversation yet.'}"""
-    )
 
     messages = [system_message] + state['messages']
 
