@@ -24,11 +24,37 @@ For local development, follow the documentation as outlined in [`docs/local_setu
 
 > Development with IDX / Firebase Studio is no longer possible since Google deprecated the product.
 
-
+<img width="500" alt="Tech Stack" src="https://github.com/user-attachments/assets/44711885-0fe9-488e-a945-2062fa624be9" />
 
 ## Media
 
+> Media collected during development. Messages with the chatbot are unrelated to the app's purpose.
 
+<img width="250" alt="Chat" src="https://github.com/user-attachments/assets/ca86b290-23ac-4342-8661-1b8c194d7dc5" />
+<img width="250" alt="Breathing" src="https://github.com/user-attachments/assets/36fbc25f-0881-4e43-ba51-676dfb9bc28b" />
+
+<br>
+
+<img width="500" alt="Fruit" src="https://github.com/user-attachments/assets/1f586731-9c0b-4024-966d-0bf818866764" />
+
+<br>
+
+<img width="500" alt="Journal" src="https://github.com/user-attachments/assets/f0891c21-a682-477b-b39b-8684c463567d" />
+
+<br>
+
+<img width="508" height="490" alt="Memory Graph" src="https://github.com/user-attachments/assets/a32a0baf-e049-4fe5-af20-157b209ea876" />
+
+> The memory graph is not an app feature.
+
+<img width="250" alt="Login 1" src="https://github.com/user-attachments/assets/9b81b6a8-063f-4e66-b7d5-61942bdd109d" />
+<img width="250" alt="Login 2" src="https://github.com/user-attachments/assets/1d57c493-c82d-4f22-a8f8-f9bc8bf86b7e" />
+
+<br>
+
+<img width="500" alt="Adaptive Layout" src="https://github.com/user-attachments/assets/37d600f5-7263-4c10-89fa-4f2f0b29e75d" />
+
+https://github.com/user-attachments/assets/26593acc-07d2-4ae1-b563-aade4afe2697
 
 ## Live Deployment
 
